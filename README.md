@@ -6,16 +6,16 @@ A starter **Mechanic Shop / Workshop Management System** built on **.NET 9** wit
 
 ## What’s inside
 
-- **GOATY.Api** ? ASP.NET Core Web API (presentation layer)
-- **GOATY.Client** ? Blazor Server UI (Razor Components)
-- **GOATY.Domain** ? Core business rules (Entities, Domain Events, Result/Error pattern)
-- **GOATY.Application** ? CQRS (Commands/Queries + handlers)
-- **GOATY.Infrastructure** ? DB / persistence / external services
-- **GOATY.Contracts** ? Shared DTOs/contracts between API & Client 
+- **GOATY.Api** : ASP.NET Core Web API (presentation layer)
+- **GOATY.Client** : Blazor Server UI (Razor Components)
+- **GOATY.Domain** : Core business rules (Entities, Domain Events, Result/Error pattern)
+- **GOATY.Application** : CQRS (Commands/Queries + handlers)
+- **GOATY.Infrastructure** : DB / persistence / external services
+- **GOATY.Contracts** : Shared DTOs/contracts between API & Client 
 
 ---
 
-## Architecture (Clean Architecture vibe)
+## Architecture (Clean Architecture)
 
 The idea is simple:
 
