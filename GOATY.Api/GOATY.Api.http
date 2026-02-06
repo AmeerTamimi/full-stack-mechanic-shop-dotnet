@@ -1,0 +1,6 @@
+@GOATY.Api_HostAddress = http://localhost:5055
+
+GET {{GOATY.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
