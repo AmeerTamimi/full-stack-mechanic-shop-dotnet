@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GOATY.Application\GOATY.Application.csproj" />
   </ItemGroup>
 

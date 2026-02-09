@@ -1,6 +1,7 @@
-@GOATY.Api_HostAddress = http://localhost:5055
+@baseUrl = https://localhost:7196
 
-GET {{GOATY.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+@partId = 22222222-2222-2222-2222-222222222222
+GET {{baseUrl}}/api/parts
 
 ###
+GET {{baseUrl}}/api/parts/{{partId}}

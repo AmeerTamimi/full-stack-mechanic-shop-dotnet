@@ -8,11 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GOATY.Application\GOATY.Application.csproj" />
     <ProjectReference Include="..\GOATY.Contracts\GOATY.Contracts.csproj" />
+    <ProjectReference Include="..\GOATY.Infrastructure\GOATY.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
