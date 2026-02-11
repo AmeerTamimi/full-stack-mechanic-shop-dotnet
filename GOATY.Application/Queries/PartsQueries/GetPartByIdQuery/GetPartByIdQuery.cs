@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Mapping.PartsMapping;
+﻿using GOATY.Application.DTOs;
 using GOATY.Domain.Common.Results;
 using MediatR;
 

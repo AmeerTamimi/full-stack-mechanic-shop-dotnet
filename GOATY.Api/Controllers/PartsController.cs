@@ -7,7 +7,7 @@ namespace GOATY.Api.Controllers
 {
     [Route("api/parts")]
     [ApiController]
-    public class PartsController(IMediator mediator) : ControllerBase
+    public class PartsController(IMediator mediator) : ApiController
     {
         [HttpGet]
         public async Task<IActionResult> GetParts()
@@ -25,7 +25,7 @@ namespace GOATY.Api.Controllers
             var result = await mediator.Send(new GetPartByIdQuery(id));
             return result.Match<IActionResult>(
                 response => Ok(response),
-                errors => BadRequest(errors)
+                Problem
                 );
         }
     }

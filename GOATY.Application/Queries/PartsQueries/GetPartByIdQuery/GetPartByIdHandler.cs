@@ -1,5 +1,6 @@
 ﻿using GOATY.Application.Common;
-using GOATY.Application.Mapping.PartsMapping;
+using GOATY.Application.DTOs;
+using GOATY.Application.Mapping;
 using GOATY.Domain.Common.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,18 @@ namespace GOATY.Application.Queries.PartsQueries.GetPartByIdQuery
     {
         public async Task<Result<PartDto>> Handle(GetPartByIdQuery request, CancellationToken cancellationToken)
         {
-            var partModel = await context.Parts.SingleOrDefaultAsync(p => p.Id == request.id);
-            return PartDto.ToDto(partModel!);
+            var id = request.id;
+
+            var partModel = await context.Parts.SingleOrDefaultAsync(p => p.Id == id);
+
+            if(partModel is null)
+            {
+                return Error.NotFound( // this return Result<T>(error) -> T : partDtp , error : the error we made
+                    code: "Part_NotFound",
+                    description: $"Part With Id {id} was Not Found"
+                );
+            }
+            return partModel.ToDto();
         }
     }
 }
