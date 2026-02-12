@@ -11,13 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Behaviours\" />
-    <Folder Include="Commands\PartsCommands\CreatePartCommand\" />
-    <Folder Include="Commands\PartsCommands\DeletePartCommand\" />
-    <Folder Include="Commands\PartsCommands\UpdatePartCommand\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
   </ItemGroup>

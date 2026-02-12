@@ -5,8 +5,8 @@ namespace GOATY.Domain.Parts
     public static class PartErrors
     {
         public static readonly Error CostRequiredError = Error.Validation(
-                                                            code: "Part.Cost.Required",
-                                                            description: "Cost is required."
+                                                            code: "Part.Cost.InValid",
+                                                            description: "Cost must be > 0."
                                                         );
 
         public static readonly Error NameRequiredError = Error.Validation(
@@ -20,8 +20,8 @@ namespace GOATY.Domain.Parts
                                                         );
 
         public static readonly Error QuantityRequiredError = Error.Validation(
-                                                                code: "Part.Quantity.Required",
-                                                                description: "Quantity is required."
+                                                                code: "Part.Quantity.InValid",
+                                                                description: "Quantity must be > 0."
                                                             );
     }
 }

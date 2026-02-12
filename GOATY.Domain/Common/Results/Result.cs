@@ -2,6 +2,13 @@
 
 namespace GOATY.Domain.Common.Results
 {
+    public class Result
+    {
+        public static Success Success => default;
+        public static Created Created => default;
+        public static Deleted Deleted => default;
+        public static Updated Updated => default;
+    }
     public class Result<T> : IResult<T>
     {
         public bool IsSuccess { get; }
@@ -34,3 +41,7 @@ namespace GOATY.Domain.Common.Results
             => IsSuccess ? OnValue(Value) : OnError(Errors!);
     }
 }
+public readonly record struct Success;
+public readonly record struct Created;
+public readonly record struct Deleted;
+public readonly record struct Updated;

@@ -1,7 +1,29 @@
 @baseUrl = https://localhost:7196
 
-@partId = 22222222-2222-2222-1111-222222222222
+@partId = 22222222-2222-2222-2222-222222222222
 GET {{baseUrl}}/api/parts
 
 ###
 GET {{baseUrl}}/api/parts/{{partId}}
+
+###
+POST {{baseUrl}}/api/parts
+Content-type: application/json
+
+{
+  "Name" : "MeroPart4",
+  "Quantity" : -1
+}
+
+###
+PUT {{baseUrl}}/api/parts/{{partId}}
+Content-type: application/json
+
+{
+  "Name" : "UpdatedPart",
+  "Cost" : 999.99,
+  "Quantity" : 0
+}
+
+###
+DELETE {{baseUrl}}/api/parts/{{partId}}

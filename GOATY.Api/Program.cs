@@ -1,3 +1,4 @@
+using FluentValidation;
 using GOATY.Application.Behaviours;
 using GOATY.Application.Common;
 using GOATY.Infrastructure.Data;
@@ -9,8 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddMediatR(config
-    => config.RegisterServicesFromAssemblies(typeof(GOATY.Application.AssemblyMarker).Assembly));
+builder.Services.AddMediatR(cfg =>
+cfg.RegisterServicesFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly));
+
+builder.Services.AddValidatorsFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly);
+
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -18,8 +23,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
-
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>) , typeof(ValidationBehaviour<,>));
 
 var app = builder.Build();
 

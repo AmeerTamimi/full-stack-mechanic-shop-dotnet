@@ -1,6 +1,12 @@
-﻿namespace GOATY.Application.Commands.PartsCommands.UpdatePartCommands
+﻿using GOATY.Domain.Common.Results;
+using MediatR;
+
+namespace GOATY.Application.Commands.PartsCommands.UpdatePartCommands
 {
-    internal class UpdatePartCommand
-    {
-    }
+    public sealed record class UpdatePartCommand(
+        Guid id,
+        string name,
+        decimal cost,
+        int quantity) 
+        : IRequest<Result<Updated>>;
 }

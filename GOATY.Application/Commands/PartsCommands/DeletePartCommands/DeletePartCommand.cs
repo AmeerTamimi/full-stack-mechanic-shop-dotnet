@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GOATY.Domain.Common.Results;
+using MediatR;
 
 namespace GOATY.Application.Commands.PartsCommands.DeletePartCommands
 {
-    internal class DeletePartCommand
-    {
-    }
+    public sealed record class DeletePartCommand(Guid id) : IRequest<Result<Guid>>;
 }

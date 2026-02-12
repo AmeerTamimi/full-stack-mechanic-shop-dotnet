@@ -10,19 +10,23 @@ namespace GOATY.Domain.Parts
         public int Quantity { get; set; }
 
 
-        public static Result<Part> Create(Guid id, string name, decimal cost, int quantity)
+        public static Result<Part> Create(Guid id,
+                                          string name,
+                                          decimal cost,
+                                          int quantity
+                                        )
         {
-            if(cost == 0)
+            if (cost <= 0)
             {
                 return PartErrors.CostRequiredError; // -> Result<Part>(error)
             }
 
-            if(name is null)
+            if (name is null)
             {
                 return PartErrors.NameRequiredError;
             }
 
-            if(quantity == 0)
+            if (quantity <= 0)
             {
                 return PartErrors.QuantityRequiredError;
             }
@@ -34,6 +38,34 @@ namespace GOATY.Domain.Parts
                 Name = name ,
                 Quantity = quantity
             };
+        }
+
+        public static Result<Part> Update(Part partToUpdate ,
+                                          string name ,
+                                          decimal cost ,
+                                          int quantity
+                                        )
+        {
+            if (cost == 0)
+            {
+                return PartErrors.CostRequiredError;
+            }
+
+            if (name is null)
+            {
+                return PartErrors.NameRequiredError;
+            }
+
+            if (quantity <= 0)
+            {
+                return PartErrors.QuantityRequiredError;
+            }
+
+            partToUpdate.Name = name;
+            partToUpdate.Cost = cost;
+            partToUpdate.Quantity = quantity;
+
+            return partToUpdate;
         }
     }
 }
