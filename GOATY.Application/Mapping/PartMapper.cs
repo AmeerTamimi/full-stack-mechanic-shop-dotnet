@@ -9,7 +9,6 @@ namespace GOATY.Application.Mapping
         {
             return new PartDto
             {
-                Id = model.Id,
                 Cost = model.Cost,
                 Name = model.Name,
                 Quantity = model.Quantity

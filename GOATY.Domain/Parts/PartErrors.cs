@@ -14,6 +14,11 @@ namespace GOATY.Domain.Parts
                                                             description: "Name is required."
                                                         );
 
+        public static readonly Error NameAlreadyExistsError = Error.Validation(
+                                                            code: "Part.Name.Exists",
+                                                            description: "Name already exists."
+                                                        );
+
         public static readonly Error QuantityRequiredError = Error.Validation(
                                                                 code: "Part.Quantity.Required",
                                                                 description: "Quantity is required."

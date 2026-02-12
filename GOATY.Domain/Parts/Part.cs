@@ -5,12 +5,12 @@ namespace GOATY.Domain.Parts
 {
     public sealed class Part : AuditableEntity
     {
-        public decimal Cost { get; set; }
         public string? Name { get; set; }
+        public decimal Cost { get; set; }
         public int Quantity { get; set; }
 
 
-        public Result<Part> Create(Guid id, decimal cost, string name, int quantity)
+        public static Result<Part> Create(Guid id, string name, decimal cost, int quantity)
         {
             if(cost == 0)
             {
@@ -29,6 +29,7 @@ namespace GOATY.Domain.Parts
 
             return new Part
             {
+                Id = id,
                 Cost = cost,
                 Name = name ,
                 Quantity = quantity
