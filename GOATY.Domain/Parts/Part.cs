@@ -16,19 +16,19 @@ namespace GOATY.Domain.Parts
                                           int quantity
                                         )
         {
-            if (cost <= 0)
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return PartErrors.CostRequiredError; // -> Result<Part>(error)
+                return PartErrors.NameInvalidError;
             }
 
-            if (name is null)
+            if (cost <= 0)
             {
-                return PartErrors.NameRequiredError;
+                return PartErrors.CostInvalidError; // -> Result<Part>(error)
             }
 
             if (quantity <= 0)
             {
-                return PartErrors.QuantityRequiredError;
+                return PartErrors.QuantityInvalidError;
             }
 
             return new Part
@@ -40,32 +40,32 @@ namespace GOATY.Domain.Parts
             };
         }
 
-        public static Result<Part> Update(Part partToUpdate ,
+        public static Result<Updated> Update(Part partToUpdate ,
                                           string name ,
                                           decimal cost ,
                                           int quantity
                                         )
         {
-            if (cost == 0)
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return PartErrors.CostRequiredError;
+                return PartErrors.NameInvalidError;
             }
 
-            if (name is null)
+            if (cost <= 0)
             {
-                return PartErrors.NameRequiredError;
+                return PartErrors.CostInvalidError;
             }
 
             if (quantity <= 0)
             {
-                return PartErrors.QuantityRequiredError;
+                return PartErrors.QuantityInvalidError;
             }
 
             partToUpdate.Name = name;
             partToUpdate.Cost = cost;
             partToUpdate.Quantity = quantity;
 
-            return partToUpdate;
+            return Result.Updated;
         }
     }
 }

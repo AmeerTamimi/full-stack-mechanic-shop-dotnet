@@ -6,8 +6,8 @@ namespace GOATY.Domain.UnitTests.Parts
     public sealed class PartTests
     {
         
-        [Fact]        //     Method      Scenario        Outcome
-        public void CreatePart_ForPartObject_ReturnsPartResult()
+        [Fact]   // Method    Scenario      Outcome
+        public void Create_WithValidData_ShouldSucceed()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -32,51 +32,123 @@ namespace GOATY.Domain.UnitTests.Parts
         }
 
         [Fact]
-        public void CreatePart_ForPartObjectWithDuplicatedName_ReturnsNameAlreadyExistsError()
+        public void Create_WithInvalidName_ShouldFail()
         {
             var id = Guid.NewGuid();
-            string name = "ReservedName";
+            string name = "";
             var cost = 1000m;
             var quantity = 10;
 
             var actual = Part.Create(id, name, cost, quantity);
 
-            var expected = PartErrors.NameRequiredError;
+            var expected = PartErrors.NameInvalidError;
 
             Assert.False(actual.IsSuccess);
             Assert.Equal(actual.Error, expected);
         }
 
         [Fact]
-        public void CreatePart_ForPartObjectWithEmptyName_ReturnsNameRequiredError11()
+        public void Create_WithInvalidCost_ShouldFail()
         {
             var id = Guid.NewGuid();
-            string name = null!;
-            var cost = 1000m;
+            string name = "Good Name";
+            var cost = 0;
             var quantity = 10;
 
             var actual = Part.Create(id, name, cost, quantity);
 
-            var expected = PartErrors.NameRequiredError;
+            var expected = PartErrors.CostInvalidError;
 
             Assert.False(actual.IsSuccess);
             Assert.Equal(actual.Error, expected);
         }
 
         [Fact]
-        public void CreatePart_ForPartObjectWithEmptyName_ReturnsNameRequiredError()
+        public void Create_WithInvalidQuantity_ShouldFail()
         {
             var id = Guid.NewGuid();
-            string name = null!;
-            var cost = 1000m;
-            var quantity = 10;
+            string name = "Good Name";
+            var cost = 100m;
+            var quantity = -1;
 
             var actual = Part.Create(id, name, cost, quantity);
 
-            var expected = PartErrors.NameRequiredError;
+            var expected = PartErrors.QuantityInvalidError;
 
             Assert.False(actual.IsSuccess);
             Assert.Equal(actual.Error, expected);
+        }
+
+        [Fact]
+        public void Update_WithValidData_ShouldSucced()
+        {
+            var part = new Part
+            {
+                Id = Guid.NewGuid(),
+                Name = "Old Name",
+                Cost = 100m,
+                Quantity = 10
+            };
+
+            var result = Part.Update(part, "New Name", 50, 5);
+
+            var expectedName = "New Name";
+            var expectedCost = 50;
+            var expectedQuantity = 5;
+
+            Assert.Equal(part.Name, expectedName);
+            Assert.Equal(part.Cost, expectedCost);
+            Assert.Equal(part.Quantity, expectedQuantity);
+
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public void Update_WithInvalidName_ShouldFail()
+        {
+            var part = new Part
+            {
+                Id = Guid.NewGuid(),
+                Name = "Old Name",
+                Cost = 100m,
+                Quantity = 10
+            };
+
+            var result = Part.Update(part, "", 50, 5);
+
+            Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void Update_WithInvalidCost_ShouldFail()
+        {
+            var part = new Part
+            {
+                Id = Guid.NewGuid(),
+                Name = "Old Name",
+                Cost = 100m,
+                Quantity = 10
+            };
+
+            var result = Part.Update(part, "New Name", -50, 5);
+
+            Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void Update_WithInvalidQuantity_ShouldFail()
+        {
+            var part = new Part
+            {
+                Id = Guid.NewGuid(),
+                Name = "Old Name",
+                Cost = 100m,
+                Quantity = 10
+            };
+
+            var result = Part.Update(part, "New Name", 50, -5);
+
+            Assert.False(result.IsSuccess);
         }
     }
 }

@@ -4,22 +4,17 @@ namespace GOATY.Domain.Parts
 {
     public static class PartErrors
     {
-        public static readonly Error CostRequiredError = Error.Validation(
+        public static readonly Error CostInvalidError = Error.Validation(
                                                             code: "Part.Cost.InValid",
                                                             description: "Cost must be > 0."
                                                         );
 
-        public static readonly Error NameRequiredError = Error.Validation(
-                                                            code: "Part.Name.Required",
-                                                            description: "Name is required."
+        public static readonly Error NameInvalidError = Error.Validation(
+                                                            code: "Part.Name.InValid",
+                                                            description: "Name must have Value."
                                                         );
 
-        public static readonly Error NameAlreadyExistsError = Error.Validation(
-                                                            code: "Part.Name.Exists",
-                                                            description: "Name already exists."
-                                                        );
-
-        public static readonly Error QuantityRequiredError = Error.Validation(
+        public static readonly Error QuantityInvalidError = Error.Validation(
                                                                 code: "Part.Quantity.InValid",
                                                                 description: "Quantity must be > 0."
                                                             );

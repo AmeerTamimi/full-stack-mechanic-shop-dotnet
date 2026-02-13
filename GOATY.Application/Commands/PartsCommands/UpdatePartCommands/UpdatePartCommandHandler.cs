@@ -29,6 +29,10 @@ namespace GOATY.Application.Commands.PartsCommands.UpdatePartCommands
                                            request.quantity
                                         );
 
+            if (!updateResult.IsSuccess)
+            {
+                return updateResult.Errors;
+            }
 
             await context.SaveChangesAsync(ct);
 
