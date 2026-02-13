@@ -21,7 +21,7 @@ namespace GOATY.Application.Commands.PartsCommands.CreatePartCommands
             if (nameExists)
             {
                 // warning log
-                return PartErrors.NameAlreadyExistsError;
+                return PartErrors.NameInvalidError;
             }
 
             var result = Part.Create(Guid.NewGuid(), name, cost, quantity);

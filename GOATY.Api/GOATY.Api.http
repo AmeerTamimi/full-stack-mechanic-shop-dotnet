@@ -23,7 +23,7 @@ Content-type: application/json
 {
   "Name" : "UpdatedPart",
   "Cost" : 999.99,
-  "Quantity" : 0
+  "Quantity" : 100
 }
 
 ###

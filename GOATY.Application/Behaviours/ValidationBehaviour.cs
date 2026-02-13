@@ -6,13 +6,13 @@ using System.Threading;
 namespace GOATY.Application.Behaviours
 {
     public sealed class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) :
-        IPipelineBehavior<TRequest, Result<TResponse>>
+        IPipelineBehavior<TRequest, TResponse>
         where TRequest : notnull
     {
 
-        public async Task<Result<TResponse>> Handle(
+        public async Task<TResponse> Handle(
             TRequest request,
-            RequestHandlerDelegate<Result<TResponse>> next,
+            RequestHandlerDelegate<TResponse> next,
             CancellationToken ct)
         {
             if (!validators.Any())
@@ -25,7 +25,7 @@ namespace GOATY.Application.Behaviours
             var failures = results.SelectMany(r => r.Errors).Where(e => e is not null).ToList();
 
             if (failures.Count != 0)
-                return Error.Validation(code:"Validation" , description:"Nigga");
+                return (dynamic) Error.Validation(code:"Validation" , description:"Nigga");
 
             return await next();
         }
