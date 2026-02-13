@@ -36,6 +36,7 @@ namespace GOATY.Domain.Common.Results
 
         public T Value => IsSuccess ? _value! : default!;
         public List<Error> Errors => !IsSuccess ? _errors! : [];
+        public Error Error => Errors.Count() > 0 ? Errors[0] : null!;
 
         public TNext Match<TNext>(Func<T, TNext> OnValue, Func<List<Error>, TNext> OnError)
             => IsSuccess ? OnValue(Value) : OnError(Errors!);

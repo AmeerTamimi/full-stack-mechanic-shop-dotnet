@@ -11,8 +11,9 @@ POST {{baseUrl}}/api/parts
 Content-type: application/json
 
 {
-  "Name" : "MeroPart4",
-  "Quantity" : -1
+  "Name" : "ReservedName",
+  "Cost" : 100,
+  "Quantity" : 10
 }
 
 ###
