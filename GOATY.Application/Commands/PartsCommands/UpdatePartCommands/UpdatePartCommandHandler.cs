@@ -10,7 +10,7 @@ namespace GOATY.Application.Commands.PartsCommands.UpdatePartCommands
     {
         public async Task<Result<Updated>> Handle(UpdatePartCommand request, CancellationToken ct)
         {
-            var id = request.id;
+            var id = request.Id;
             var partToUpdate = await context.Parts.SingleOrDefaultAsync(
                                                    p => p.Id == id,
                                                    ct);
@@ -24,9 +24,9 @@ namespace GOATY.Application.Commands.PartsCommands.UpdatePartCommands
             }
 
             var updateResult = Part.Update(partToUpdate,
-                                           request.name,
-                                           request.cost,
-                                           request.quantity
+                                           request.Name,
+                                           request.Cost,
+                                           request.Quantity
                                         );
 
             if (!updateResult.IsSuccess)

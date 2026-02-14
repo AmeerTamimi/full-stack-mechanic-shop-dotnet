@@ -1,6 +1,8 @@
 @baseUrl = https://localhost:7196
 
 @partId = 22222222-2222-2222-2222-222222222222
+
+// Part ===============================================
 GET {{baseUrl}}/api/parts
 
 ###
@@ -11,9 +13,9 @@ POST {{baseUrl}}/api/parts
 Content-type: application/json
 
 {
-  "Name" : "ReservedName",
+  "Name" : "ReservedName222",
   "Cost" : 100,
-  "Quantity" : 10
+  "Quantity" : -1
 }
 
 ###
@@ -28,3 +30,10 @@ Content-type: application/json
 
 ###
 DELETE {{baseUrl}}/api/parts/{{partId}}
+
+
+
+// Employee ===============================================
+@empId = 
+###
+GET {{baseUrl}}/api/employees

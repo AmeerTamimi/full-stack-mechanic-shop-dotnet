@@ -15,4 +15,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\EmployeeCommands\" />
+    <Folder Include="Queries\EmployeeQueries\GetEmployeeByIdQuery\" />
+  </ItemGroup>
+
 </Project>

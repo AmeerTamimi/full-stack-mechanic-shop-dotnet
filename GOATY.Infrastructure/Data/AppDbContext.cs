@@ -1,7 +1,7 @@
 ﻿using GOATY.Application.Common;
+using GOATY.Domain.Employees;
 using GOATY.Domain.Parts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace GOATY.Infrastructure.Data
 {
@@ -9,6 +9,7 @@ namespace GOATY.Infrastructure.Data
         : DbContext(options), IAppDbContext
     {
         public DbSet<Part> Parts { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

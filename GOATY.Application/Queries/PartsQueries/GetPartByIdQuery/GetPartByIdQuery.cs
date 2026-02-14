@@ -4,5 +4,5 @@ using MediatR;
 
 namespace GOATY.Application.Queries.PartsQueries.GetPartByIdQuery
 {
-    public sealed record GetPartByIdQuery(Guid id) : IRequest<Result<PartDto>>;
+    public sealed record GetPartByIdQuery(Guid Id) : IRequest<Result<PartDto>>;
 }

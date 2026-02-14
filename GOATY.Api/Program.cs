@@ -4,11 +4,16 @@ using GOATY.Application.Common;
 using GOATY.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters
+        .Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddMediatR(cfg =>
 cfg.RegisterServicesFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly));

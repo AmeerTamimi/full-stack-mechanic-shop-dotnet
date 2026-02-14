@@ -9,11 +9,11 @@ namespace GOATY.Application.Queries.PartsQueries.GetPartByIdQuery
 {
     public sealed class GetPartByIdHandler(IAppDbContext context) : IRequestHandler<GetPartByIdQuery, Result<PartDto>>
     {
-        public async Task<Result<PartDto>> Handle(GetPartByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PartDto>> Handle(GetPartByIdQuery request, CancellationToken ct)
         {
-            var id = request.id;
+            var id = request.Id;
 
-            var partModel = await context.Parts.SingleOrDefaultAsync(p => p.Id == id);
+            var partModel = await context.Parts.SingleOrDefaultAsync(p => p.Id == id , ct);
 
             if(partModel is null)
             {

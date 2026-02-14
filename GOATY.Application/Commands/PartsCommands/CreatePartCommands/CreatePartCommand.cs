@@ -5,8 +5,8 @@ using MediatR;
 namespace GOATY.Application.Commands.PartsCommands.CreatePartCommands
 {
     public sealed record class CreatePartCommand(
-        string name,
-        decimal cost,
-        int quantity)
+        string Name,
+        decimal Cost,
+        int Quantity)
         : IRequest<Result<PartDto>>;
 }

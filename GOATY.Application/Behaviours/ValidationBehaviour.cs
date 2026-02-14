@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using GOATY.Domain.Common.Results;
 using MediatR;
-using System.Threading;
 
 namespace GOATY.Application.Behaviours
 {
@@ -24,10 +23,15 @@ namespace GOATY.Application.Behaviours
 
             var failures = results.SelectMany(r => r.Errors).Where(e => e is not null).ToList();
 
+            List<Error> errors = [];
+
+            failures.ForEach(f => errors.Add(Error.Validation(f.ErrorCode, f.ErrorMessage)));
+
             if (failures.Count != 0)
-                return (dynamic) Error.Validation(code:"Validation" , description:"Nigga");
+                return (dynamic) errors;
 
             return await next();
+
         }
     }
 }

@@ -3,5 +3,5 @@ using MediatR;
 
 namespace GOATY.Application.Commands.PartsCommands.DeletePartCommands
 {
-    public sealed record class DeletePartCommand(Guid id) : IRequest<Result<Guid>>;
+    public sealed record class DeletePartCommand(Guid Id) : IRequest<Result<Guid>>;
 }

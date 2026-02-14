@@ -10,7 +10,7 @@ namespace GOATY.Application.Commands.PartsCommands.DeletePartCommands
     {
         public async Task<Result<Guid>> Handle(DeletePartCommand request, CancellationToken ct)
         {
-            var id = request.id;
+            var id = request.Id;
             var partToDelete = await context.Parts.SingleOrDefaultAsync(
                                                    p => p.Id == id,
                                                    ct);

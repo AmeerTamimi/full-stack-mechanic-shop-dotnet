@@ -12,16 +12,19 @@ namespace GOATY.Application.Commands.PartsCommands.CreatePartCommands
     {
         public async Task<Result<PartDto>> Handle(CreatePartCommand request, CancellationToken ct)
         {
-            var name = request.name;
-            var cost = request.cost;
-            var quantity = request.quantity;
+            var name = request.Name;
+            var cost = request.Cost;
+            var quantity = request.Quantity;
 
             var nameExists = await context.Parts.AnyAsync(p => p.Name == name , ct);
 
             if (nameExists)
             {
                 // warning log
-                return PartErrors.NameInvalidError;
+                return Error.Conflict(
+                                code: "Part.Name.Conflict",
+                                description: $"The Part Name {name} Already Exists."
+                            );
             }
 
             var result = Part.Create(Guid.NewGuid(), name, cost, quantity);
