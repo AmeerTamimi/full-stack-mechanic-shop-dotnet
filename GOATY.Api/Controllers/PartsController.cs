@@ -1,11 +1,9 @@
-﻿using GOATY.Application.Commands.PartsCommands.CreatePartCommands;
-using GOATY.Application.Commands.PartsCommands.DeletePartCommands;
-using GOATY.Application.Commands.PartsCommands.UpdatePartCommands;
-using GOATY.Application.DTOs;
-using GOATY.Application.Queries.PartsQueries.GetPartByIdQuery;
-using GOATY.Application.Queries.PartsQueries.GetPartsQuery;
+﻿using GOATY.Application.Features.Commands.PartsCommands.CreatePartCommands;
+using GOATY.Application.Features.Commands.PartsCommands.DeletePartCommands;
+using GOATY.Application.Features.Commands.PartsCommands.UpdatePartCommands;
+using GOATY.Application.Features.Queries.PartsQueries.GetPartByIdQuery;
+using GOATY.Application.Features.Queries.PartsQueries.GetPartsQuery;
 using GOATY.Contracts.Requests;
-using GOATY.Domain.Parts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

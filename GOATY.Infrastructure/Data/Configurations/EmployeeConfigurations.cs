@@ -31,7 +31,6 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                 FirstName = "Ameer",
                 LastName = "Tamimi",
-                FullName = "Ameer Tamimi",
                 Role = Role.Manager,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
@@ -41,7 +40,6 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                 FirstName = "Sara",
                 LastName = "Nasser",
-                FullName = "Sara Nasser",
                 Role = Role.Labor,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
@@ -51,7 +49,6 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                 FirstName = "Omar",
                 LastName = "Saleh",
-                FullName = "Omar Saleh",
                 Role = Role.Labor,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
@@ -61,7 +58,6 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 FirstName = "Lina",
                 LastName = "Khalil",
-                FullName = "Lina Khalil",
                 Role = Role.Labor,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
@@ -71,7 +67,6 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
                 FirstName = "Yousef",
                 LastName = "Amir",
-                FullName = "Yousef Amir",
                 Role = Role.Labor,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)

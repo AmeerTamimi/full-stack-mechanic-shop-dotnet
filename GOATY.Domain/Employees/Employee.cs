@@ -8,12 +8,12 @@ namespace GOATY.Domain.Employees
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string? FullName { get; set; }
+        public string? FullName { get; set; } = $"";
         public Role Role { get; set; }
 
-        public static Result<Employee> Create(string firstName,
+        public static Result<Employee> Create(Guid id,
+                                              string firstName,
                                               string lastName,
-                                              string fullName,
                                               Role role
                                              )
         {
@@ -26,22 +26,16 @@ namespace GOATY.Domain.Employees
             {
                 return EmployeeErrors.InvalidLastName;
             }
-            if (string.IsNullOrWhiteSpace(fullName))
-            {
-                return EmployeeErrors.InvalidFullName;
-            }
             if (!Enum.IsDefined(typeof(Role), role))
             {
                 return EmployeeErrors.InvalidRole;
             }
 
-            Guid id = Guid.NewGuid();
             return new Employee
             {
                 Id = id,
                 FirstName = firstName,
                 LastName = lastName,
-                FullName = fullName,
                 Role = role
             };
         }
@@ -49,7 +43,6 @@ namespace GOATY.Domain.Employees
         public static Result<Updated> Update(Employee employee,
                                               string firstName,
                                               string lastName,
-                                              string fullName,
                                               Role role
                                              )
         {
@@ -61,10 +54,7 @@ namespace GOATY.Domain.Employees
             {
                 return EmployeeErrors.InvalidLastName;
             }
-            if (string.IsNullOrWhiteSpace(fullName))
-            {
-                return EmployeeErrors.InvalidFullName;
-            }
+
             if (!Enum.IsDefined(typeof(Role), role))
             {
                 return EmployeeErrors.InvalidRole;
@@ -72,7 +62,6 @@ namespace GOATY.Domain.Employees
 
             employee.FirstName = firstName;
             employee.LastName = lastName;
-            employee.FullName = fullName;
             employee.Role = role;
 
             return Result.Updated;

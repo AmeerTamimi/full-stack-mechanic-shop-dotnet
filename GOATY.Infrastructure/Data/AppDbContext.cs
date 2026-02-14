@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Common;
+﻿using GOATY.Application.Features.Common;
 using GOATY.Domain.Employees;
 using GOATY.Domain.Parts;
 using Microsoft.EntityFrameworkCore;

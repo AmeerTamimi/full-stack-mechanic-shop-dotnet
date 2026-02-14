@@ -1,6 +1,6 @@
 using FluentValidation;
 using GOATY.Application.Behaviours;
-using GOATY.Application.Common;
+using GOATY.Application.Features.Common;
 using GOATY.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

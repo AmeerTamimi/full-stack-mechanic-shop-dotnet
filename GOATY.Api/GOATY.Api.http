@@ -1,6 +1,7 @@
 @baseUrl = https://localhost:7196
 
 @partId = 22222222-2222-2222-2222-222222222222
+@empId = 4d488fd3-b34c-44fe-a6fc-4fa65d9774ae
 
 // Part ===============================================
 GET {{baseUrl}}/api/parts
@@ -34,6 +35,32 @@ DELETE {{baseUrl}}/api/parts/{{partId}}
 
 
 // Employee ===============================================
-@empId = 
 ###
 GET {{baseUrl}}/api/employees
+
+###
+GET {{baseUrl}}/api/employees/{{empId}}
+
+###
+POST {{baseUrl}}/api/employees
+Content-type: application/json
+
+{
+  "firstName": "Ameer2",
+  "lastName": "TamimTamiTamimi2Tamimi2mi2Tamimi2Tamimi2Tamimi2Tamimi2Tamimi2Tamimi2Tamimi2Tamimi2Tamimi2i2",
+  "role": "Manager"
+}
+
+###
+PUT {{baseUrl}}/api/employees/{{empId}}
+Content-type: application/json
+
+{
+    "firstName": "aa",
+    "lastName": "bbbb",
+    "fullName": "Yousef Amir",
+    "role": "Labor2"
+}
+
+###
+DELETE {{baseUrl}}/api/employees/{{empId}}
