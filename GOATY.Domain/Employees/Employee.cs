@@ -1,6 +1,7 @@
 ﻿using GOATY.Domain.Common;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees.Enums;
+using System;
 
 namespace GOATY.Domain.Employees
 {
@@ -17,7 +18,10 @@ namespace GOATY.Domain.Employees
                                               Role role
                                              )
         {
-
+            if(id == Guid.Empty)
+            {
+                return EmployeeErrors.InvalidId;
+            }
             if (string.IsNullOrWhiteSpace(firstName))
             {
                 return EmployeeErrors.InvalidFirstName;

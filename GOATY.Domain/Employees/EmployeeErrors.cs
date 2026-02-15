@@ -4,6 +4,11 @@ namespace GOATY.Domain.Employees
 {
     public sealed class EmployeeErrors
     {
+        public static Error InvalidId = Error.Validation(
+                                                        code: "Employee.Id.Empty",
+                                                        description: "Employee's Id Is Empty"
+                                                    );
+
         public static Error InvalidFirstName = Error.Validation(
                                                         code: "Employee.FirstName.Invalid",
                                                         description: "Employee's First Name Is Invalid"
