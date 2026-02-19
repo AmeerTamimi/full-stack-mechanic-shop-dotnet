@@ -19,11 +19,7 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(e => e.FullName)
-            .IsRequired()
-            .HasMaxLength(200);
-
-        builder.HasIndex(e => e.FullName);
+        builder.HasIndex(e => e.FirstName);
 
         builder.HasData(
             new Employee

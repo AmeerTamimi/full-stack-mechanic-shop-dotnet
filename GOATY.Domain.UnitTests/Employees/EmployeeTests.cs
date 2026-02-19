@@ -116,7 +116,7 @@ namespace GOATY.Domain.UnitTests.Employees
 
             var result = Employee.Update(employee, newFirstName, newLastName, newRole);
 
-            var actual = result.Value;
+            var actual = employee;
             var expected = new Employee
             {
                 Id = id,
