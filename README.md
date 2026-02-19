@@ -1,6 +1,13 @@
 # GOATY Mechanic Shop (WIP)
 
-A starter **Mechanic Shop / Workshop Management System** built on **.NET 9** with a **Clean Architecture** structure and **CQRS** (via MediatR).  
+A starter **Mechanic Shop / Workshop Management System** built on **.NET 9** with **Clean Architecture** and **CQRS** (via MediatR).
+
+---
+
+## Docs
+
+- **PRD (Product Requirements Document):** `docs/PRD.md`
+- **Use Case Diagram :** `docs/use-case-diagram.png`
 
 ---
 
@@ -11,18 +18,16 @@ A starter **Mechanic Shop / Workshop Management System** built on **.NET 9** wit
 - **GOATY.Domain** : Core business rules (Entities, Domain Events, Result/Error pattern)
 - **GOATY.Application** : CQRS (Commands/Queries + handlers)
 - **GOATY.Infrastructure** : DB / persistence / external services
-- **GOATY.Contracts** : Shared DTOs/contracts between API & Client 
+- **GOATY.Contracts** : Shared DTOs/contracts between API & Client
 
 ---
 
 ## Architecture (Clean Architecture)
 
-The idea is simple:
-
 - **Domain** stays pure: business logic only.
-- **Application** orchestrates use-cases using **CQRS** (Commands/Queries) and MediatR.
+- **Application** orchestrates use-cases using **CQRS** + MediatR.
 - **Infrastructure** plugs in implementations (DB, files, integrations).
-- **API/Client** are just entry points (HTTP/UI) — they call the Application layer.
+- **API/Client** are entry points (HTTP/UI) — they call the Application layer.
 
 ---
 
