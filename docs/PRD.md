@@ -308,4 +308,4 @@ Many repair shops still rely on paper notes or human memory to manage daily oper
 - **Document Version:** 1  
 - **Last Updated:** 19/02/2026  
 - **Document Owner:** Ameer Tamimi  
-- **Stakeholders:** Only me for now — hopefully real customers in the future  
+- **Stakeholders:** Only me for now .. hopefully real customers in the future :( 
