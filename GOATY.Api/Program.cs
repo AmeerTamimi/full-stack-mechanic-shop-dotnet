@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using static System.Net.Mime.MediaTypeNames;
 
-var builder = WebApplication.CreateBuilder(args);
+   var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -15,7 +15,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
         .Add(new JsonStringEnumConverter());
 });
 
-builder.Services.AddMediatR(cfg =>
+builder.Services.AddMediatR(cfg =>    
 cfg.RegisterServicesFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly));
 
 builder.Services.AddValidatorsFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly);

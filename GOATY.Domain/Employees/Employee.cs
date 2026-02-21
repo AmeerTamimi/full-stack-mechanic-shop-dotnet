@@ -1,7 +1,6 @@
 ﻿using GOATY.Domain.Common;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees.Enums;
-using System;
 
 namespace GOATY.Domain.Employees
 {
@@ -10,6 +9,8 @@ namespace GOATY.Domain.Employees
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? FullName { get; set; } = $"";
+        public string? Email { get; set; }
+        public string? PasswordHash { get; set; }
         public Role Role { get; set; }
 
         public static Result<Employee> Create(Guid id,

@@ -2,7 +2,7 @@
 {
     public enum Role
     {
-        Labor = 1,
-        Manager = 2
+        Manager = 1,
+        Technician = 2
     }
 }
