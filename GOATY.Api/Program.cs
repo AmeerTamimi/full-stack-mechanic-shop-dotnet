@@ -1,19 +1,24 @@
 using FluentValidation;
+using GOATY.Application.Features;
 using GOATY.Application.Behaviours;
-using GOATY.Application.Features.Common;
 using GOATY.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using static System.Net.Mime.MediaTypeNames;
+using GOATY.Application.Features.Configurations;
+using GOATY.Application.Features.Common.Interfaces;
 
-   var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters
         .Add(new JsonStringEnumConverter());
 });
+
+builder.Services.AddOptions<JwtConfigurations>()
+    .Bind(builder.Configuration.GetSection(JwtConfigurations.JwtSettings));
 
 builder.Services.AddMediatR(cfg =>    
 cfg.RegisterServicesFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly));

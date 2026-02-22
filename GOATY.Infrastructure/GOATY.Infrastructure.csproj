@@ -18,8 +18,4 @@
     <ProjectReference Include="..\GOATY.Application\GOATY.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Identity\" />
-  </ItemGroup>
-
 </Project>

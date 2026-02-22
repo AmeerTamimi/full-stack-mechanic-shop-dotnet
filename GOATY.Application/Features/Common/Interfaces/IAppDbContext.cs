@@ -2,7 +2,7 @@
 using GOATY.Domain.Parts;
 using Microsoft.EntityFrameworkCore;
 
-namespace GOATY.Application.Features.Common
+namespace GOATY.Application.Features.Common.Interfaces
 {
     public interface IAppDbContext
     {

@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common;
+﻿using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees;
 using MediatR;
@@ -24,7 +24,7 @@ namespace GOATY.Application.Features.Commands.EmployeeCommands.DeleteEmployeeCom
                             );
             }
 
-            context.Employees.Remove(employee);
+            context.Employees.Remove(employee); // might make it soft delete here
             await context.SaveChangesAsync(ct);
 
             return Result.Deleted;

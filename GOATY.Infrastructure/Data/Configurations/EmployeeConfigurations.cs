@@ -36,7 +36,7 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                 FirstName = "Sara",
                 LastName = "Nasser",
-                Role = Role.Labor,
+                Role = Role.Technician,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
             },
@@ -45,7 +45,7 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                 FirstName = "Omar",
                 LastName = "Saleh",
-                Role = Role.Labor,
+                Role = Role.Technician,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
             },
@@ -54,7 +54,7 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                 FirstName = "Lina",
                 LastName = "Khalil",
-                Role = Role.Labor,
+                Role = Role.Technician,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
             },
@@ -63,7 +63,7 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
                 Id = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
                 FirstName = "Yousef",
                 LastName = "Amir",
-                Role = Role.Labor,
+                Role = Role.Technician,
                 CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
             }
