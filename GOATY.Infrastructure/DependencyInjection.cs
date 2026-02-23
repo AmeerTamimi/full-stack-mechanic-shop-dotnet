@@ -48,11 +48,17 @@ namespace GOATY.Infrastructure
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<AppDbContext>();
 
+            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddScoped<ITokenProvider, TokenProvider>();
+            services.AddScoped<IdentityInitilizer>();
+
             return services;
         }
 
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services)
         {
+            services.ConfigureOptions<JwtBearerConfigurations>();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

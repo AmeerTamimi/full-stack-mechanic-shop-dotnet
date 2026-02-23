@@ -1,11 +1,10 @@
-﻿using GOATY.Application.Features.Commands.EmployeeCommands.CreateEmployeeCommand;
-using GOATY.Application.Features.Commands.EmployeeCommands.DeleteEmployeeCommand;
-using GOATY.Application.Features.Commands.EmployeeCommands.UpdateEmployeeCommand;
-using GOATY.Application.Features.Queries.EmployeeQueries.GetEmployeeByIdQuery;
-using GOATY.Application.Features.Queries.EmployeeQueries.GetEmployeesQuery;
+﻿using GOATY.Application.Features.Employees.EmployeeCommands.CreateEmployeeCommand;
+using GOATY.Application.Features.Employees.EmployeeCommands.DeleteEmployeeCommand;
+using GOATY.Application.Features.Employees.EmployeeCommands.UpdateEmployeeCommand;
+using GOATY.Application.Features.Employees.EmployeeQueries.GetEmployeeByIdQuery;
+using GOATY.Application.Features.Employees.EmployeeQueries.GetEmployeesQuery;
 using GOATY.Contracts.Requests;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers

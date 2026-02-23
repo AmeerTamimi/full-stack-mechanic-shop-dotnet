@@ -21,7 +21,7 @@ namespace GOATY.Infrastructure.Identity
 
         public void Configure(string? name, JwtBearerOptions options)
         {
-            if (name != JwtBearerDefaults.AuthenticationScheme) // Which is "Bearer" (So we Only Fuck w Bearer)
+            if (name != JwtBearerDefaults.AuthenticationScheme) // Which is "Bearer" (So we Only Fk w Bearer)
                 return;
 
             var settings = _jwtConfigurations.Value; // getting the object (JwtSettings)
@@ -39,11 +39,6 @@ namespace GOATY.Infrastructure.Identity
             )
             };
         }
-        public void Configure(string? name, JwtBearerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Configure(JwtBearerOptions options)
         {
             Configure("Bearer", options);

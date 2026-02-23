@@ -1,8 +1,8 @@
 ﻿using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Application.Features.Identity.DTOs;
-using GOATY.Application.Jwt;
 using GOATY.Domain.Common.Results;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace GOATY.Infrastructure.Identity
 {
@@ -15,7 +15,7 @@ namespace GOATY.Infrastructure.Identity
         }
         public async Task<Result<AppUserDto>> AuthenticateAsync(string email, string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == email);
 
             if(user is null)
             {

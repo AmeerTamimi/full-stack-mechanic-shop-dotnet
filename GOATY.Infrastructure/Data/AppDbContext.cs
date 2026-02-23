@@ -1,12 +1,15 @@
 ﻿using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Domain.Employees;
 using GOATY.Domain.Parts;
+using GOATY.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GOATY.Infrastructure.Data
 {
     public class AppDbContext(DbContextOptions<AppDbContext> options)
-        : DbContext(options), IAppDbContext
+        : IdentityDbContext<AppUser>(options),
+        IAppDbContext
     {
         public DbSet<Part> Parts { get; set; }
         public DbSet<Employee> Employees { get; set; }

@@ -13,7 +13,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var id = Guid.NewGuid();
             var firstName = "First Name";
             var lastName = "Last Name";
-            var role = Role.Labor;
+            var role = Role.Technician;
 
             var result = Employee.Create(id, firstName, lastName, role);
 
@@ -36,7 +36,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var id = Guid.Empty; // Empty id
             var firstName = "First Name";
             var lastName = "Last Name";
-            var role = Role.Labor;
+            var role = Role.Technician;
 
             var result = Employee.Create(id, firstName, lastName, role);
 
@@ -53,7 +53,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var id = Guid.NewGuid();
             var firstName = "";
             string lastName = "Last Name";
-            var role = Role.Labor;
+            var role = Role.Technician;
 
             var result = Employee.Create(id, firstName, lastName, role);
 
@@ -70,7 +70,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var id = Guid.NewGuid();
             var firstName = "First Name";
             string lastName = null!;
-            var role = Role.Labor;
+            var role = Role.Technician;
 
             var result = Employee.Create(id, firstName, lastName, role);
 
@@ -107,7 +107,7 @@ namespace GOATY.Domain.UnitTests.Employees
                 Id = id,
                 FirstName = "First Name",
                 LastName = "Last Name",
-                Role = Role.Labor
+                Role = Role.Technician
             };
 
             var newFirstName = "New First Name";
@@ -138,7 +138,7 @@ namespace GOATY.Domain.UnitTests.Employees
                 Id = id,
                 FirstName = "First Name",
                 LastName = "Last Name",
-                Role = Role.Labor
+                Role = Role.Technician
             };
 
             var newFirstName = "";
@@ -163,7 +163,7 @@ namespace GOATY.Domain.UnitTests.Employees
                 Id = id,
                 FirstName = "First Name",
                 LastName = "Last Name",
-                Role = Role.Labor
+                Role = Role.Technician
             };
 
             var newFirstName = "New First Name";
@@ -188,7 +188,7 @@ namespace GOATY.Domain.UnitTests.Employees
                 Id = id,
                 FirstName = "First Name",
                 LastName = "Last Name",
-                Role = Role.Labor
+                Role = Role.Technician
             };
 
             var newFirstName = "New First Name";

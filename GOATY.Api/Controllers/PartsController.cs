@@ -1,10 +1,12 @@
-﻿using GOATY.Application.Features.Commands.PartsCommands.CreatePartCommands;
-using GOATY.Application.Features.Commands.PartsCommands.DeletePartCommands;
-using GOATY.Application.Features.Commands.PartsCommands.UpdatePartCommands;
-using GOATY.Application.Features.Queries.PartsQueries.GetPartByIdQuery;
-using GOATY.Application.Features.Queries.PartsQueries.GetPartsQuery;
+﻿using GOATY.Application.Features.Parts.PartsCommands.CreatePartCommands;
+using GOATY.Application.Features.Parts.PartsCommands.DeletePartCommands;
+using GOATY.Application.Features.Parts.PartsCommands.UpdatePartCommands;
+using GOATY.Application.Features.Parts.PartsQueries.GetPartByIdQuery;
+using GOATY.Application.Features.Parts.PartsQueries.GetPartsQuery;
 using GOATY.Contracts.Requests;
+using GOATY.Domain.Employees.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers
@@ -13,6 +15,7 @@ namespace GOATY.Api.Controllers
     [ApiController]
     public class PartsController(IMediator mediator) : ApiController
     {
+        [Authorize(Roles = nameof(Role.Manager))]
         [HttpGet]
         public async Task<IActionResult> GetParts()
         {

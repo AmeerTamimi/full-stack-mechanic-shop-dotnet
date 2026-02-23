@@ -1,7 +1,6 @@
 ﻿using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Application.Features.Employees.DTOs;
 using GOATY.Application.Features.Employees.Mapping;
-using GOATY.Application.Features.Mapping;
 using GOATY.Domain.Common.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

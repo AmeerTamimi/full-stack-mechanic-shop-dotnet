@@ -5,6 +5,7 @@
 
 // Part ===============================================
 GET {{baseUrl}}/api/parts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMTExMTExMSIsImVtYWlsIjoidDFAZ21haWwuY29tIiwicm9sZSI6IlRlY2huaWNpYW4iLCJuYmYiOjE3NzE4NzAyMjUsImV4cCI6MTc3MTg3MjAyNSwiaWF0IjoxNzcxODcwMjI1LCJpc3MiOiJsb2NhbGhvc3QiLCJhdWQiOiJsb2NhbGhvc3QifQ.USj01tLrtMZz6OhKctdGuyl413d-EWFOxqU4maENpkc
 
 ###
 GET {{baseUrl}}/api/parts/{{partId}}
@@ -64,3 +65,24 @@ Content-type: application/json
 
 ###
 DELETE {{baseUrl}}/api/employees/{{empId}}
+
+
+// Identity ===============================================
+
+###
+POST {{baseUrl}}/api/identity
+Content-type: application/json
+
+{
+  "Email" : "a@gmail.com",
+  "Password" : "a@gmail.com"
+}
+
+###
+POST {{baseUrl}}/api/identity
+Content-type: application/json
+
+{
+  "Email" : "t1@gmail.com",
+  "Password" : "t1@gmail.com"
+}

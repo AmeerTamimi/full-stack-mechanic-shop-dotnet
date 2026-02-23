@@ -21,6 +21,7 @@ namespace GOATY.Application
         {
             services.AddOptions<JwtConfigurations>()
                     .Bind(config.GetSection(JwtConfigurations.JwtSettings));
+
             return services;
         }
 

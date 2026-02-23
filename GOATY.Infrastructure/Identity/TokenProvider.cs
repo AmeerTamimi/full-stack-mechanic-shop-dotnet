@@ -3,6 +3,7 @@ using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,15 +13,19 @@ namespace GOATY.Infrastructure.Identity
 {
     public sealed class TokenProvider : ITokenProvider
     {
-        private readonly JwtConfigurations _jwtConfigurations;
-        public TokenProvider(JwtConfigurations jwtConfigurations)
+        private readonly IOptions<JwtConfigurations> _jwtConfigurations;
+        public TokenProvider(IOptions<JwtConfigurations> jwtConfigurations)
         {
             _jwtConfigurations = jwtConfigurations;
         }
 
         public Result<TokenResponse> GenerateToken(AppUserDto user)
         {
-            var expires = DateTime.UtcNow.AddMinutes(_jwtConfigurations.ExpirationInMinutes);
+            var settings = _jwtConfigurations.Value;
+
+            var minutes = settings.TokenExpirationInMinutes;
+            var expires = DateTimeOffset.Now.AddMinutes(minutes);
+            var expiresUtc = expires.AddMinutes(minutes).UtcDateTime;
 
             var claims = new List<Claim>
                 {
@@ -36,11 +41,11 @@ namespace GOATY.Infrastructure.Identity
             var descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = expires,
-                Issuer = _jwtConfigurations.Issuer,
-                Audience = _jwtConfigurations.Audience,
+                Expires = expiresUtc,
+                Issuer = settings.Issuer,
+                Audience = settings.Audience,
                 SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations.SecretKey!)),
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SecretKey!)),
                     SecurityAlgorithms.HmacSha256Signature),
             };
 
