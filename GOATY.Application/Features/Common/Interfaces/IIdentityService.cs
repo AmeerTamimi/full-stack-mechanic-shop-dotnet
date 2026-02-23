@@ -6,5 +6,6 @@ namespace GOATY.Application.Features.Common.Interfaces
     public interface IIdentityService
     {
         Task<Result<AppUserDto>> AuthenticateAsync(string email, string password);
+        Task<Result<AppUserDto>> GetByEmailAsync(string email);
     }
 }

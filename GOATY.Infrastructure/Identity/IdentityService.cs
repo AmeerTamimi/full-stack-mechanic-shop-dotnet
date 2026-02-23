@@ -48,5 +48,25 @@ namespace GOATY.Infrastructure.Identity
                     await _userManager.GetClaimsAsync(user)
                 );  
         }
+
+        public async Task<Result<AppUserDto>> GetByEmailAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if(user is null)
+            {
+                return Error.NotFound(
+                    code: "User.Not.Found",
+                    description: $"User With Email {UtilityService.MaskEmail(email)} Was Not Found"
+                );
+            }
+
+            return new AppUserDto(
+                     user.Id,
+                     user.Email!,
+                     await _userManager.GetRolesAsync(user),
+                     await _userManager.GetClaimsAsync(user)
+                 );
+        }
     }
 }

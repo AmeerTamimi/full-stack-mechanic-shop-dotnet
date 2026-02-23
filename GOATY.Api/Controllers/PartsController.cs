@@ -11,11 +11,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers
 {
+    [Authorize(Roles = nameof(Role.Manager))]
     [Route("api/parts")]
     [ApiController]
     public class PartsController(IMediator mediator) : ApiController
     {
-        [Authorize(Roles = nameof(Role.Manager))]
         [HttpGet]
         public async Task<IActionResult> GetParts()
         {

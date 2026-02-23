@@ -1,12 +1,12 @@
 ﻿using GOATY.Domain.Employees.Enums;
-using GOATY.Infrastructure.Identity;
+using GOATY.Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace GOATY.Infrastructure.Data
+namespace GOATY.Infrastructure.Identity
 {
     public sealed class IdentityInitilizer
     {
@@ -44,14 +44,14 @@ namespace GOATY.Infrastructure.Data
         {
             var managerRole = new IdentityRole(nameof(Role.Manager));
 
-            if(!(await _roleManager.Roles.AnyAsync(r => r.Name == managerRole.Name))) // runs first time only
+            if(!await _roleManager.Roles.AnyAsync(r => r.Name == managerRole.Name)) // runs first time only
             {
                 await _roleManager.CreateAsync(managerRole);
             }
 
             var technicianRole = new IdentityRole(nameof(Role.Technician));
 
-            if(!(await _roleManager.Roles.AnyAsync(r => r.Name == technicianRole.Name)))
+            if(!await _roleManager.Roles.AnyAsync(r => r.Name == technicianRole.Name))
             {
                 await _roleManager.CreateAsync(technicianRole);
             }
@@ -65,7 +65,7 @@ namespace GOATY.Infrastructure.Data
                 EmailConfirmed = true
             };
 
-            if(!(await _userManager.Users.AnyAsync(u => u.Email == manager.Email)))
+            if(!await _userManager.Users.AnyAsync(u => u.Email == manager.Email))
             {
                 var createdRes = await _userManager.CreateAsync(manager , manager.Email); // email as a password :)
                 
@@ -95,7 +95,7 @@ namespace GOATY.Infrastructure.Data
                 EmailConfirmed = true
             };
 
-            if(!await(_userManager.Users.AnyAsync(u => u.Email == tech1.Email)))
+            if(!(await _userManager.Users.AnyAsync(u => u.Email == tech1.Email)))
             {
                 var createdRes = await _userManager.CreateAsync(tech1, tech1.Email);
 

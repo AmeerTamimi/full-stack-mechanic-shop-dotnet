@@ -19,7 +19,7 @@ namespace GOATY.Application.Features.Identity.GenerateTokenQueries
                 return result.Errors;
             }
 
-            var token = tokenProvider.GenerateToken(result.Value);
+            var token = await tokenProvider.GenerateToken(result.Value);
             
             return token.Value;
         }

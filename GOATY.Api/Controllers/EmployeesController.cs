@@ -4,11 +4,14 @@ using GOATY.Application.Features.Employees.EmployeeCommands.UpdateEmployeeComman
 using GOATY.Application.Features.Employees.EmployeeQueries.GetEmployeeByIdQuery;
 using GOATY.Application.Features.Employees.EmployeeQueries.GetEmployeesQuery;
 using GOATY.Contracts.Requests;
+using GOATY.Domain.Employees.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers
 {
+    [Authorize(Roles = nameof(Role.Manager))]
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeesController(IMediator mediator) : ApiController

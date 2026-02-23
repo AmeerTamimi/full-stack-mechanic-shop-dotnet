@@ -1,6 +1,7 @@
 ﻿using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Domain.Employees;
 using GOATY.Domain.Parts;
+using GOATY.Domain.RefreshTokens;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace GOATY.Infrastructure.Data
     {
         public DbSet<Part> Parts { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

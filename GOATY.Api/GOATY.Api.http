@@ -5,7 +5,7 @@
 
 // Part ===============================================
 GET {{baseUrl}}/api/parts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMTExMTExMSIsImVtYWlsIjoidDFAZ21haWwuY29tIiwicm9sZSI6IlRlY2huaWNpYW4iLCJuYmYiOjE3NzE4NzAyMjUsImV4cCI6MTc3MTg3MjAyNSwiaWF0IjoxNzcxODcwMjI1LCJpc3MiOiJsb2NhbGhvc3QiLCJhdWQiOiJsb2NhbGhvc3QifQ.USj01tLrtMZz6OhKctdGuyl413d-EWFOxqU4maENpkc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3OCIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJyb2xlIjoiTWFuYWdlciIsIm5iZiI6MTc3MTg4OTE5NiwiZXhwIjoxNzcxODkwOTk2LCJpYXQiOjE3NzE4ODkxOTYsImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.yLqFNG2jEa_ECVMRogN9P_AsqwA1JzSqzBGjKhUM7qo
 
 ###
 GET {{baseUrl}}/api/parts/{{partId}}
@@ -79,10 +79,5 @@ Content-type: application/json
 }
 
 ###
-POST {{baseUrl}}/api/identity
+POST {{baseUrl}}/api/identity/a****a@gmail.com
 Content-type: application/json
-
-{
-  "Email" : "t1@gmail.com",
-  "Password" : "t1@gmail.com"
-}
