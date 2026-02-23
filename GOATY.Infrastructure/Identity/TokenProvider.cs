@@ -1,7 +1,6 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
-using GOATY.Application.Features.Configurations;
-using GOATY.Application.Features.DTOs;
-using GOATY.Application.Jwt;
+﻿using GOATY.Application.Features.Common.Configurations;
+using GOATY.Application.Features.Common.Interfaces;
+using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

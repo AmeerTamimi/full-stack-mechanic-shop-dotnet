@@ -1,0 +1,14 @@
+﻿using GOATY.Domain.Employees.Enums;
+
+namespace GOATY.Application.Features.Employees.DTOs
+{
+    public sealed class EmployeeDto
+    {
+        public Guid Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? FullName => $"{FirstName} {LastName}";
+        public string? Email { get; set; }
+        public Role Role { get; set; }
+    }
+}

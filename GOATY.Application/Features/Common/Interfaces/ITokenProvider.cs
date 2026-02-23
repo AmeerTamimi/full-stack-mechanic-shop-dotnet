@@ -1,5 +1,4 @@
-﻿using GOATY.Application.Features.DTOs;
-using GOATY.Application.Jwt;
+﻿using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
 
 namespace GOATY.Application.Features.Common.Interfaces

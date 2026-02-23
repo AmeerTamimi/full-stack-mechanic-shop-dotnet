@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.DTOs;
+﻿using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Application.Jwt;
 using GOATY.Domain.Common.Results;
 
