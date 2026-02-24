@@ -20,7 +20,11 @@ namespace GOATY.Application.Features.Identity.GenerateTokenQueries
             }
 
             var token = await tokenProvider.GenerateToken(result.Value);
-            
+
+            if (!token.IsSuccess)
+            {
+                return token.Errors;
+            }
             return token.Value;
         }
     }

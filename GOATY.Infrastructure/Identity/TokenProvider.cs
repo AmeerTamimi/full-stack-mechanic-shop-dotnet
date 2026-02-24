@@ -2,15 +2,14 @@
 using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.RefreshTokens;
+using GOATY.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GOATY.Infrastructure.Identity
 {
@@ -36,28 +35,50 @@ namespace GOATY.Infrastructure.Identity
             var expires = DateTimeOffset.Now.AddMinutes(minutes);
 
             var accessToken = MakeAccessToken(user);
-            var refreshToken = await MakeRefreshToken(user.Email);
+            var refreshToken = await MakeRefreshToken(user.UserId);
+
+            if (!refreshToken.IsSuccess)
+            {
+                return refreshToken.Errors;
+            }
 
             return new TokenResponse
             {
                 AccessToken = accessToken,
                 Expiry = expires,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken.Value
             };
         }
-
-        public async Task<Result<TokenResponse>> GenerateFromRefreshToken(RefreshToken refreshToken)
+        private async Task<Result<string>> MakeRefreshToken(string userId , CancellationToken ct = default)
         {
-            var user = await _identityService.GetByEmailAsync(refreshToken.Email!);
+            var refreshToken = await _context.RefreshTokens.SingleOrDefaultAsync(
+                                                           r => r.UserId == userId);
 
-            if (!user.IsSuccess)
+            var expiration = DateTimeOffset.Now.AddMinutes(300);
+            var token = GenerateRefreshToken();
+            if (refreshToken is not null)
             {
-                return user.Error;
+                refreshToken.Token = token;
+                refreshToken.Expiration = expiration;
+            }
+            else
+            {
+                
+                var tokenId = Guid.NewGuid();
+                var refreshTokenResult = RefreshToken.Create(tokenId, userId, token, expiration);
+
+                if (!refreshTokenResult.IsSuccess)
+                {
+                    return refreshTokenResult.Errors;
+                }
+
+                refreshToken = refreshTokenResult.Value;
+                await _context.RefreshTokens.AddAsync(refreshToken);
             }
 
-            return await GenerateToken(user.Value);
+            await _context.SaveChangesAsync(ct);
+            return refreshToken.Token!;
         }
-
         private string MakeAccessToken(AppUserDto user)
         {
             var settings = _jwtConfigurations.Value;
@@ -94,28 +115,9 @@ namespace GOATY.Infrastructure.Identity
 
             return tokenHandler.WriteToken(securityToken);
         }
-        private async Task<string> MakeRefreshToken(string email)
+        private static string GenerateRefreshToken()
         {
-            var maskedEmail = UtilityService.MaskEmail(email);
-            var r = await _context.RefreshTokens.SingleOrDefaultAsync(r => r.Id == maskedEmail);
-            if(r is not null)
-            {
-                r.Expiration = DateTimeOffset.Now.AddMinutes(300);
-            }
-            else 
-            {
-                var refreshToken = new RefreshToken
-                {
-                    Id = UtilityService.MaskEmail(email),
-                    Email = email,
-                    Expiration = DateTimeOffset.Now.AddMinutes(300)
-                };
-                await _context.RefreshTokens.AddAsync(refreshToken);
-            }
-
-            await _context.SaveChangesAsync();
-
-            return maskedEmail;
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         }
     }
 }

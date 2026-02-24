@@ -1,5 +1,5 @@
 ﻿using Azure.Core;
-using GOATY.Application.Features.Identity.GenerateFromRefreshTokenQueries;
+using GOATY.Application.Features.Identity.GenerateByRefreshTokenQueries;
 using GOATY.Application.Features.Identity.GenerateTokenQueries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,10 +23,10 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpPost("{refreshToken}")]
-        public async Task<IActionResult> GenerateTokenFromRefreshToken(string refreshToken)
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> GenerateTokenFromRefreshToken(GenerateByRefreshTokenQuery request)
         {
-            var result = await mediator.Send(new GenerateFromRefreshTokenQuery(refreshToken));
+            var result = await mediator.Send(new GenerateByRefreshTokenQuery(request.Token));
 
             return result.Match(
                 response => Ok(response),

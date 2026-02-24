@@ -49,15 +49,15 @@ namespace GOATY.Infrastructure.Identity
                 );  
         }
 
-        public async Task<Result<AppUserDto>> GetByEmailAsync(string email)
+        public async Task<Result<AppUserDto>> GetByIdAsync(string userId)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByIdAsync(userId);
 
             if(user is null)
             {
                 return Error.NotFound(
                     code: "User.Not.Found",
-                    description: $"User With Email {UtilityService.MaskEmail(email)} Was Not Found"
+                    description: $"User With Id {userId} Was Not Found"
                 );
             }
 

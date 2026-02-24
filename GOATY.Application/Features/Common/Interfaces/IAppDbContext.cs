@@ -1,6 +1,6 @@
 ﻿using GOATY.Domain.Employees;
+using GOATY.Domain.Identity;
 using GOATY.Domain.Parts;
-using GOATY.Domain.RefreshTokens;
 using Microsoft.EntityFrameworkCore;
 
 namespace GOATY.Application.Features.Common.Interfaces
@@ -11,6 +11,6 @@ namespace GOATY.Application.Features.Common.Interfaces
         public DbSet<Employee> Employees { get; }
         public DbSet<RefreshToken> RefreshTokens { get; }
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
