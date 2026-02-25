@@ -6,6 +6,6 @@
         public string? Description { get; set; }
         public decimal TimeEstimated { get; set; }
         public decimal CostEstimated { get; set; }
-        public List<RepairTaskDetailsRequest> RepairtTaskDetails { get; set; } = [];
+        public List<PartRequirementsRequest> Parts { get; set; } = [];
     }
 }

@@ -24,9 +24,9 @@ namespace GOATY.Domain.RepairTasks
                                                         description: "RepairTask must contain at least one detail."
                                                     );
 
-        public static readonly Error InvalidCostEstimated = Error.Validation(
+        public static Error InvalidCostEstimated(decimal totalCost) => Error.Validation(
                                                         code: "RepairTask.Cost.Invalid",
-                                                        description: "Estimated cost cannot be less than the sum of details cost."
+                                                        description: $"Estimated cost cannot be less than {totalCost}."
                                                     );
 
         public static readonly Error InvalidTimeEstimated = Error.Validation(

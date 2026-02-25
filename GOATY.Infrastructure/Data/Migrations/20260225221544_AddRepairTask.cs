@@ -81,6 +81,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TimeEstimated = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CostEstimated = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModifiedUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),

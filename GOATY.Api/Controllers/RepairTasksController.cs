@@ -1,4 +1,6 @@
-﻿using GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateReapairTaskCommands;
+﻿using GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands;
+using GOATY.Application.Features.RepairTasks.RepairTaskCommands.DeleteRepairTaskCommands;
+using GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepairTaskCommands;
 using GOATY.Application.Features.RepairTasks.RepairTaskQueries.GetRepairTaskById;
 using GOATY.Application.Features.RepairTasks.RepairTaskQueries.GetRepairTasksQuery;
 using GOATY.Contracts.Requests;
@@ -38,17 +40,47 @@ namespace GOATY.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRepairTask(RepairTaskRequest request)
         {
-            return null; 
-            //    var result = await mediator.Send(new CreateRepairTaskCommand(request.Name!,
-            //                                                                 request.Description!,
-            //                                                                 request.TimeEstimated,
-            //                                                                 request.CostEstimated,
-            //                                                                 request.RepairtTaskDetails));
+           var result = await mediator.Send(new CreateRepairTaskCommand(request.Name!,
+                                                                        request.Description!,
+                                                                        request.TimeEstimated,
+                                                                        request.CostEstimated,
+                                                                        request.Parts
+                                                                               .Select(p => new PartRequirements(p.PartId,p.Quantity))
+                                                                               .ToList()));
 
-            //    return result.Match(
-            //        response => Ok(response),
-            //        Problem
-            //    );
+            return result.Match(
+                response => Ok(response),
+                Problem
+            );
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateRepairTask(Guid id , RepairTaskRequest request)
+        {
+            var result = await mediator.Send(new UpdateRepairTaskCommand(id,
+                                                                         request.Name!,
+                                                                         request.Description!,
+                                                                         request.TimeEstimated,
+                                                                         request.CostEstimated,
+                                                                         request.Parts
+                                                                                .Select(p => new PartRequirements(p.PartId, p.Quantity))
+                                                                                .ToList()));
+
+            return result.Match(
+                response => Ok(response),
+                Problem
+            );
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteRepairTask(Guid id)
+        {
+            var result = await mediator.Send(new DeleteRepairTaskCommand(id));
+
+            return result.Match(
+                response => Ok(response),
+                Problem
+            );
         }
     }
 }

@@ -13,6 +13,8 @@ namespace GOATY.Domain.RepairTasks
         public decimal CostEstimated { get; set; }
         public List<RepairTaskDetails> RepairTaskDetails { get; set; } = [];
 
+        public bool IsDeleted { get; set; }
+
         private RepairTask() { }
         private RepairTask(
             Guid id,
@@ -58,7 +60,7 @@ namespace GOATY.Domain.RepairTasks
             var totalCost = CalculateTotalCost(repairTaskDetails);
             if (cost < totalCost)
             {
-                return RepairTaskErrors.InvalidCostEstimated;
+                return RepairTaskErrors.InvalidCostEstimated(totalCost);
             }
 
             if (time < 10)
@@ -67,6 +69,43 @@ namespace GOATY.Domain.RepairTasks
             }
 
             return new RepairTask(id, name, desc, time, cost, repairTaskDetails);
+        }
+        public static Result<Updated> Update(RepairTask repairTask,
+                                        string name,
+                                        string desc,
+                                        decimal time,
+                                        decimal cost,
+                                        List<RepairTaskDetails> repairTaskDetails)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return RepairTaskErrors.InvalidName;
+            }
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                return RepairTaskErrors.InvalidDescription;
+            }
+            if (repairTaskDetails is null || repairTaskDetails.Count() <= 0)
+            {
+                return RepairTaskErrors.InvalidRepairTask;
+            }
+
+            var totalCost = CalculateTotalCost(repairTaskDetails);
+            if (cost < totalCost)
+            {
+                return RepairTaskErrors.InvalidCostEstimated(totalCost);
+            }
+
+            if (time < 10)
+            {
+                return RepairTaskErrors.InvalidTimeEstimated;
+            }
+            repairTask.Name = name;
+            repairTask.Description = desc;
+            repairTask.TimeEstimated = time;
+            repairTask.CostEstimated = cost;
+            repairTask.RepairTaskDetails = repairTaskDetails;
+            return Result.Updated;
         }
 
         private static decimal CalculateTotalCost(List<RepairTaskDetails> repairTaskDetails)
