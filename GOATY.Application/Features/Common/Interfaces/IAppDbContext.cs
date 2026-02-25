@@ -1,15 +1,17 @@
 ﻿using GOATY.Domain.Employees;
 using GOATY.Domain.Identity;
-using GOATY.Domain.Parts;
+using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.RepairTasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace GOATY.Application.Features.Common.Interfaces
 {
     public interface IAppDbContext
     {
-        public DbSet<Part> Parts { get; }
-        public DbSet<Employee> Employees { get; }
-        public DbSet<RefreshToken> RefreshTokens { get; }
+        DbSet<Part> Parts { get; }
+        DbSet<Employee> Employees { get; }
+        DbSet<RefreshToken> RefreshTokens { get; }
+        DbSet<RepairTask> RepairTasks { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

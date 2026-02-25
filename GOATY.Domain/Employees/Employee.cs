@@ -13,6 +13,14 @@ namespace GOATY.Domain.Employees
         public string? PasswordHash { get; set; }
         public Role Role { get; set; }
 
+        private Employee() { }
+        private Employee(
+            Guid id,
+            string firstName,
+            string lastName,
+            Role role)
+            : base(id)
+        { }
         public static Result<Employee> Create(Guid id,
                                               string firstName,
                                               string lastName,
@@ -36,13 +44,8 @@ namespace GOATY.Domain.Employees
                 return EmployeeErrors.InvalidRole;
             }
 
-            return new Employee
-            {
-                Id = id,
-                FirstName = firstName,
-                LastName = lastName,
-                Role = role
-            };
+            return new Employee(id , firstName , lastName , role);
+
         }
 
         public static Result<Updated> Update(Employee employee,

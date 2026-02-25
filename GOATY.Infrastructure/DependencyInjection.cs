@@ -50,7 +50,7 @@ namespace GOATY.Infrastructure
 
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<IdentityInitilizer>();
+            services.AddScoped<ApplicationDataInitilizer>();
 
             return services;
         }

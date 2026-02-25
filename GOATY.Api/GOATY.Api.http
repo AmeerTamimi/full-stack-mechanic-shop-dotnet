@@ -81,3 +81,7 @@ Content-type: application/json
 ###
 POST {{baseUrl}}/api/identity/refresh-token
 Content-type: application/json
+
+{
+  "Token" : "0K1rEJtrqeZpiCdAKPk5kQ7pop8PldpYXvOVkQWUNLI="
+}

@@ -18,22 +18,18 @@ namespace GOATY.Domain.UnitTests.Employees
             var result = Employee.Create(id, firstName, lastName, role);
 
             var actual = result.Value;
-            var expected = new Employee
-            {
-                Id = id,
-                FirstName = firstName,
-                LastName = lastName,
-                Role = role
-            };
 
             Assert.True(result.IsSuccess);
-            Assert.Equivalent(actual, expected);
+            Assert.Equal(id, actual.Id);
+            Assert.Equal(firstName, actual.FirstName);
+            Assert.Equal(lastName, actual.LastName);
+            Assert.Equal(role, actual.Role);
         }
 
         [Fact]
         public void Create_WithInvalidId_ShouldFail()
         {
-            var id = Guid.Empty; // Empty id
+            var id = Guid.Empty;
             var firstName = "First Name";
             var lastName = "Last Name";
             var role = Role.Technician;
@@ -44,7 +40,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var expected = EmployeeErrors.InvalidId;
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(actual , expected);
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -87,7 +83,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var id = Guid.NewGuid();
             var firstName = "First Name";
             var lastName = "Last Name";
-            var role = (Role)5; // invalid Role
+            var role = (Role)5;
 
             var result = Employee.Create(id, firstName, lastName, role);
 
@@ -102,13 +98,7 @@ namespace GOATY.Domain.UnitTests.Employees
         public void Update_WithValidData_ShouldSucceed()
         {
             var id = Guid.NewGuid();
-            var employee = new Employee
-            {
-                Id = id,
-                FirstName = "First Name",
-                LastName = "Last Name",
-                Role = Role.Technician
-            };
+            var employee = Employee.Create(id, "First Name", "Last Name", Role.Technician).Value;
 
             var newFirstName = "New First Name";
             var newLastName = "New Last Name";
@@ -117,29 +107,19 @@ namespace GOATY.Domain.UnitTests.Employees
             var result = Employee.Update(employee, newFirstName, newLastName, newRole);
 
             var actual = employee;
-            var expected = new Employee
-            {
-                Id = id,
-                FirstName = "New First Name",
-                LastName = "New Last Name",
-                Role = Role.Manager
-            };
 
             Assert.True(result.IsSuccess);
-            Assert.Equivalent(actual, expected);
+            Assert.Equal(id, actual.Id);
+            Assert.Equal("New First Name", actual.FirstName);
+            Assert.Equal("New Last Name", actual.LastName);
+            Assert.Equal(Role.Manager, actual.Role);
         }
 
         [Fact]
         public void Update_WithInvalidFirstName_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var employee = new Employee
-            {
-                Id = id,
-                FirstName = "First Name",
-                LastName = "Last Name",
-                Role = Role.Technician
-            };
+            var employee = Employee.Create(id, "First Name", "Last Name", Role.Technician).Value;
 
             var newFirstName = "";
             var newLastName = "New Last Name";
@@ -158,13 +138,7 @@ namespace GOATY.Domain.UnitTests.Employees
         public void Update_WithInvalidLastName_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var employee = new Employee
-            {
-                Id = id,
-                FirstName = "First Name",
-                LastName = "Last Name",
-                Role = Role.Technician
-            };
+            var employee = Employee.Create(id, "First Name", "Last Name", Role.Technician).Value;
 
             var newFirstName = "New First Name";
             string newLastName = null!;
@@ -183,17 +157,11 @@ namespace GOATY.Domain.UnitTests.Employees
         public void Update_WithInvalidRole_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var employee = new Employee
-            {
-                Id = id,
-                FirstName = "First Name",
-                LastName = "Last Name",
-                Role = Role.Technician
-            };
+            var employee = Employee.Create(id, "First Name", "Last Name", Role.Technician).Value;
 
             var newFirstName = "New First Name";
             var newLastName = "New Last Name";
-            var newRole = (Role) 5;
+            var newRole = (Role)5;
 
             var result = Employee.Update(employee, newFirstName, newLastName, newRole);
 

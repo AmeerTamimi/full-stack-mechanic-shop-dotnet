@@ -2,7 +2,7 @@ using GOATY.Api;
 using GOATY.Application;
 using GOATY.Application.Features.Common.Configurations;
 using GOATY.Infrastructure;
-using GOATY.Infrastructure.Identity;
+using GOATY.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

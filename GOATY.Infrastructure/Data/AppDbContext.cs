@@ -1,7 +1,8 @@
 ﻿using GOATY.Application.Features.Common.Interfaces;
 using GOATY.Domain.Employees;
 using GOATY.Domain.Identity;
-using GOATY.Domain.Parts;
+using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.RepairTasks;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace GOATY.Infrastructure.Data
         IAppDbContext
     {
         public DbSet<Part> Parts { get; set; }
+        public DbSet<RepairTask> RepairTasks { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 

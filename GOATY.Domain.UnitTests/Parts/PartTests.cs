@@ -1,11 +1,10 @@
 ﻿using GOATY.Domain.Common.Results;
-using GOATY.Domain.Parts;
+using GOATY.Domain.RepairsTask.Parts;
 
 namespace GOATY.Domain.UnitTests.Parts
 {
     public sealed class PartTests
     {
-        
         [Fact]   // Method    Scenario      Outcome
         public void Create_WithValidData_ShouldSucceed()
         {
@@ -16,19 +15,14 @@ namespace GOATY.Domain.UnitTests.Parts
             var quantity = 10;
 
             // Act
-            var actual = Part.Create(id, name, cost ,quantity);
-
-            var expected = new Part
-            {
-                Id = id,
-                Name = name,
-                Cost = cost,
-                Quantity = quantity
-            };
+            var actual = Part.Create(id, name, cost, quantity);
 
             // Assert
             Assert.True(actual.IsSuccess);
-            Assert.Equivalent(actual.Value, expected);
+            Assert.Equal(id, actual.Value.Id);
+            Assert.Equal(name, actual.Value.Name);
+            Assert.Equal(cost, actual.Value.Cost);
+            Assert.Equal(quantity, actual.Value.Quantity);
         }
 
         [Fact]
@@ -44,7 +38,7 @@ namespace GOATY.Domain.UnitTests.Parts
             var expected = PartErrors.NameInvalidError;
 
             Assert.False(actual.IsSuccess);
-            Assert.Equal(actual.Error, expected);
+            Assert.Equal(expected, actual.Error);
         }
 
         [Fact]
@@ -60,7 +54,7 @@ namespace GOATY.Domain.UnitTests.Parts
             var expected = PartErrors.CostInvalidError;
 
             Assert.False(actual.IsSuccess);
-            Assert.Equal(actual.Error, expected);
+            Assert.Equal(expected, actual.Error);
         }
 
         [Fact]
@@ -76,45 +70,32 @@ namespace GOATY.Domain.UnitTests.Parts
             var expected = PartErrors.QuantityInvalidError;
 
             Assert.False(actual.IsSuccess);
-            Assert.Equal(actual.Error, expected);
+            Assert.Equal(expected, actual.Error);
         }
 
         [Fact]
         public void Update_WithValidData_ShouldSucced()
         {
-            var part = new Part
-            {
-                Id = Guid.NewGuid(),
-                Name = "Old Name",
-                Cost = 100m,
-                Quantity = 10
-            };
+            var id = Guid.NewGuid();
+            var created = Part.Create(id, "Old Name", 100m, 10);
+            var part = created.Value;
 
-            var result = Part.Update(part, "New Name", 50, 5);
-
-            var expectedName = "New Name";
-            var expectedCost = 50;
-            var expectedQuantity = 5;
-
-            Assert.Equal(part.Name, expectedName);
-            Assert.Equal(part.Cost, expectedCost);
-            Assert.Equal(part.Quantity, expectedQuantity);
+            var result = Part.Update(part, "New Name", 50m, 5);
 
             Assert.True(result.IsSuccess);
+            Assert.Equal("New Name", part.Name);
+            Assert.Equal(50m, part.Cost);
+            Assert.Equal(5, part.Quantity);
         }
 
         [Fact]
         public void Update_WithInvalidName_ShouldFail()
         {
-            var part = new Part
-            {
-                Id = Guid.NewGuid(),
-                Name = "Old Name",
-                Cost = 100m,
-                Quantity = 10
-            };
+            var id = Guid.NewGuid();
+            var created = Part.Create(id, "Old Name", 100m, 10);
+            var part = created.Value;
 
-            var result = Part.Update(part, "", 50, 5);
+            var result = Part.Update(part, "", 50m, 5);
 
             Assert.False(result.IsSuccess);
         }
@@ -122,15 +103,11 @@ namespace GOATY.Domain.UnitTests.Parts
         [Fact]
         public void Update_WithInvalidCost_ShouldFail()
         {
-            var part = new Part
-            {
-                Id = Guid.NewGuid(),
-                Name = "Old Name",
-                Cost = 100m,
-                Quantity = 10
-            };
+            var id = Guid.NewGuid();
+            var created = Part.Create(id, "Old Name", 100m, 10);
+            var part = created.Value;
 
-            var result = Part.Update(part, "New Name", -50, 5);
+            var result = Part.Update(part, "New Name", -50m, 5);
 
             Assert.False(result.IsSuccess);
         }
@@ -138,15 +115,11 @@ namespace GOATY.Domain.UnitTests.Parts
         [Fact]
         public void Update_WithInvalidQuantity_ShouldFail()
         {
-            var part = new Part
-            {
-                Id = Guid.NewGuid(),
-                Name = "Old Name",
-                Cost = 100m,
-                Quantity = 10
-            };
+            var id = Guid.NewGuid();
+            var created = Part.Create(id, "Old Name", 100m, 10);
+            var part = created.Value;
 
-            var result = Part.Update(part, "New Name", 50, -5);
+            var result = Part.Update(part, "New Name", 50m, -5);
 
             Assert.False(result.IsSuccess);
         }

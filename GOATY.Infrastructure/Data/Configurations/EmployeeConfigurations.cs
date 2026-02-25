@@ -20,53 +20,5 @@ public sealed class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
             .HasMaxLength(100);
 
         builder.HasIndex(e => e.FirstName);
-
-        builder.HasData(
-            new Employee
-            {
-                Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                FirstName = "Ameer",
-                LastName = "Tamimi",
-                Role = Role.Manager,
-                CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
-            },
-            new Employee
-            {
-                Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                FirstName = "Sara",
-                LastName = "Nasser",
-                Role = Role.Technician,
-                CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
-            },
-            new Employee
-            {
-                Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                FirstName = "Omar",
-                LastName = "Saleh",
-                Role = Role.Technician,
-                CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
-            },
-            new Employee
-            {
-                Id = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd"),
-                FirstName = "Lina",
-                LastName = "Khalil",
-                Role = Role.Technician,
-                CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
-            },
-            new Employee
-            {
-                Id = Guid.Parse("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
-                FirstName = "Yousef",
-                LastName = "Amir",
-                Role = Role.Technician,
-                CreatedAtUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                LastModifiedUtc = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero)
-            }
-        );
     }
 }

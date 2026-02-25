@@ -5,8 +5,8 @@ namespace GOATY.Domain.Common.Constans
     {
         public static decimal TaxRate = 0.15m;
 
-        public static string SystemUser = "System";
+        public static decimal TechnicianBase = 50.0m;
 
-        public static string MERO = "merooooooooo";
+        public static string SystemUser = "System";
     }
 }
