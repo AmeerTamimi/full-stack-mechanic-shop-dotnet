@@ -9,8 +9,5 @@ public sealed class PartConfiguration : IEntityTypeConfiguration<Part>
         builder.HasKey(p => p.Id);
 
         builder.HasIndex(p => p.Name);
-
-        builder.HasMany(p => p.RepairTaskDetails)
-               .WithOne(r => r.Part);
     }
 }

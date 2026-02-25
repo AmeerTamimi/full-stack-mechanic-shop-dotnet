@@ -14,10 +14,24 @@ namespace GOATY.Application.Features.RepairTasks.Mapping
                 Description = model.Description,
                 TimeEstimated = model.TimeEstimated,
                 CostEstimated = model.CostEstimated,
+                RepairTasksDetailsDto = model.RepairTaskDetails.ToDtos()
             };
         }
-
         public static List<RepairTaskDto> ToDtos(this List<RepairTask> models)
+        {
+            return models.ConvertAll(m => m.ToDto());
+        }
+        public static RepairTaskDetailsDto ToDto(this RepairTaskDetails model)
+        {
+            return new RepairTaskDetailsDto
+            {
+                RepairTaskId = model.RepairTaskId,
+                PartId = model.PartId,
+                Quantity = model.Quantity,
+                UnitPrice = model.UnitPrice
+            };
+        }
+        public static List<RepairTaskDetailsDto> ToDtos(this List<RepairTaskDetails> models)
         {
             return models.ConvertAll(m => m.ToDto());
         }

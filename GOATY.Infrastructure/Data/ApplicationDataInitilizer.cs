@@ -203,6 +203,8 @@ namespace GOATY.Infrastructure.Data
 
             if(! await _context.RepairTasks.AnyAsync())
             {
+                var partId = (await _context.Parts.FirstAsync()).Id;
+
                 await _context.AddRangeAsync([
                         RepairTask.Create(
                             id: Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
@@ -211,7 +213,7 @@ namespace GOATY.Infrastructure.Data
                             time : 40,
                             cost: 300,
                             repairTaskDetails: new List<RepairTaskDetails>{
-                                new RepairTaskDetails(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),Guid.Parse("11111111-1111-1111-1111-111111111111"),2 , 30)
+                                new RepairTaskDetails(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),partId ,2 , 30)
                             }
                         ).Value
                     ]);

@@ -2,13 +2,15 @@
 
 @partId = 22222222-2222-2222-2222-222222222222
 @empId = 4d488fd3-b34c-44fe-a6fc-4fa65d9774ae
+@repairTaskId = aaaaaaaa-aaaa-aaaaa-aaaa-aaaaaaaaaaaa
 
 // Part ===============================================
 GET {{baseUrl}}/api/parts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3OCIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJyb2xlIjoiTWFuYWdlciIsIm5iZiI6MTc3MTk1MjAwMSwiZXhwIjoxNzcxOTUzODAxLCJpYXQiOjE3NzE5NTIwMDEsImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.tEjMu0gQuk3TLju4KQL8hVSLmx1WMNHqhuTgBwVU9tc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3OCIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJyb2xlIjoiTWFuYWdlciIsIm5iZiI6MTc3MjA1MjMyMCwiZXhwIjoxNzcyMDU0MTIwLCJpYXQiOjE3NzIwNTIzMjAsImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.qmxNkVTVpPvtQBCC79kQ7KSVL93N83asnNXK2dOa_Vs
 
 ###
 GET {{baseUrl}}/api/parts/{{partId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3OCIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJyb2xlIjoiTWFuYWdlciIsIm5iZiI6MTc3MjA1MjMyMCwiZXhwIjoxNzcyMDU0MTIwLCJpYXQiOjE3NzIwNTIzMjAsImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.qmxNkVTVpPvtQBCC79kQ7KSVL93N83asnNXK2dOa_Vs
 
 ###
 POST {{baseUrl}}/api/parts
@@ -85,3 +87,10 @@ Content-type: application/json
 {
   "Token" : "0K1rEJtrqeZpiCdAKPk5kQ7pop8PldpYXvOVkQWUNLI="
 }
+
+======================== Repair Tasks
+###
+GET {{baseUrl}}/api/repairTasks
+
+###
+GET {{baseUrl}}/api/repairTasks/{{repairTaskId}}

@@ -13,9 +13,6 @@ namespace GOATY.Infrastructure.Data.Configurations
             builder.HasKey(p => p.Id);
 
             builder.HasIndex(p => p.Name);
-
-            builder.HasMany(p => p.RepairTaskDetails)
-                   .WithOne(r => r.RepairTask);
         }
     }
 }

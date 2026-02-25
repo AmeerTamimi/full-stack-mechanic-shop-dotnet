@@ -4,7 +4,6 @@ namespace GOATY.Domain.RepairTasks
 {
     public sealed class RepairTaskDetails
     {
-        public Guid Id { get; set; }
         public Guid RepairTaskId { get; set; }
         public Guid PartId { get; set; }
         public int Quantity { get; set; }
@@ -13,13 +12,11 @@ namespace GOATY.Domain.RepairTasks
         public Part Part { get; set; } = null!;
 
         public RepairTaskDetails(
-            Guid id,
             Guid repairTaskId,
             Guid partId,
             int quantity,
             decimal unitPrice)
         {
-            Id = id;
             RepairTaskId = repairTaskId;
             PartId = partId;
             Quantity = quantity;

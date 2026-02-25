@@ -4,6 +4,11 @@ namespace GOATY.Domain.RepairsTask.Parts
 {
     public static class PartErrors
     {
+        public static readonly Error IdInvalidError = Error.Validation(
+                                                            code: "Part.Id.InValid",
+                                                            description: "Part Id Is Invalid"
+                                                        );
+
         public static readonly Error CostInvalidError = Error.Validation(
                                                             code: "Part.Cost.InValid",
                                                             description: "Cost must be > 0."
