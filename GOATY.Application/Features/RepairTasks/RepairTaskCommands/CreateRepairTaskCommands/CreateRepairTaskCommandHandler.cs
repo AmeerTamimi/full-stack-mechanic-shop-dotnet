@@ -29,12 +29,15 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
 
             var repairTaskDetailsList = new List<RepairTaskDetails>();
 
+            var partsInDb = await context.Parts.ToListAsync(); // ..avoid n+1 :))))))
+
             var parts = request.Parts;
 
             foreach(var part in parts)
             {
                 var partId = part.Id;
-                var partModel = await context.Parts.SingleOrDefaultAsync(p => p.Id == partId);
+
+                var partModel = partsInDb.SingleOrDefault(p => p.Id == partId);
 
                 if (partModel is null)
                 {
