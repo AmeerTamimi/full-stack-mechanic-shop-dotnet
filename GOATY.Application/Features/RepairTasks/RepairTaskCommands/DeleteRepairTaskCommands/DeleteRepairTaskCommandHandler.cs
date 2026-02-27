@@ -16,8 +16,12 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.DeleteRepair
 
         public async Task<Result<RepairTaskDto>> Handle(DeleteRepairTaskCommand request, CancellationToken ct)
         {
-            var repairTask = await context.RepairTasks.SingleOrDefaultAsync(r => r.Id == request.Id,
-                                                                            ct);
+            var repairTask = await context.RepairTasks
+                                          .Include(r => r.RepairTaskDetails)
+                                          .SingleOrDefaultAsync(
+                                            r => r.IsDeleted == false &&
+                                            r.Id == request.Id,
+                                            ct);
 
             if (repairTask is null)
             {

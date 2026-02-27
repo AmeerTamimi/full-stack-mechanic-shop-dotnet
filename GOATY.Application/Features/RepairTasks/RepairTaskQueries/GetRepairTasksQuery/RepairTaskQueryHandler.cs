@@ -15,6 +15,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskQueries.GetRepairTask
             var repairTasks = await context.RepairTasks
                                            .AsNoTracking()
                                            .Include(r => r.RepairTaskDetails)
+                                           .Where(r => r.IsDeleted == false)
                                            .ToListAsync(ct);
 
             return repairTasks.ToDtos();

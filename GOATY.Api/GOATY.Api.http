@@ -99,7 +99,7 @@ POST {{baseUrl}}/api/repairTasks
 Content-type: application/json
 
 {
-  "name": "Cooler",
+  "name": "Window Fix",
   "description": "We wont ruin it this time :)",
   "timeEstimated": 45,
   "costEstimated": 600,
@@ -116,22 +116,25 @@ Content-type: application/json
 }
 
 ###
-PUT {{baseUrl}}/api/repairTasks/c4e8361a-9673-4fe6-b6a2-644a3239914b
+PUT {{baseUrl}}/api/repairTasks/{{repairTaskId}}
 Content-type: application/json
 
 {
-  "name": "Cooler",
+  "name": "Battery Repair2",
   "description": "We wont ruin it this time :)",
   "timeEstimated": 45,
-  "costEstimated": 700,
+  "costEstimated": 900,
   "parts": [
     {
       "partId": "b7c47513-1018-42c6-a559-0619e7deb0a5",
-      "quantity": 3
+      "quantity": 2
     },
     {
-      "partId": "57bdd1fb-8345-4282-aa37-3c9b046aeb47",
-      "quantity": 1
+      "partId": "7d7c1cc2-ff4c-4301-9e7b-493e1519e22d",
+      "quantity" : 5
     }
   ]
 }
+
+###
+DELETE {{baseUrl}}/api/repairTasks/3cd81fd3-774c-4615-baa8-a0bcae55bb18

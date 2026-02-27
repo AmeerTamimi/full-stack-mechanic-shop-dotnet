@@ -13,6 +13,22 @@ namespace GOATY.Infrastructure.Data.Configurations
             builder.HasKey(p => p.Id);
 
             builder.HasIndex(p => p.Name);
+
+            builder.Property(rt => rt.Name)
+               .IsRequired()
+               .HasMaxLength(100);
+
+            builder.Property(rt => rt.Description)
+               .IsRequired()
+               .HasMaxLength(1000);
+
+            builder.Property(rt => rt.TimeEstimated)
+           .IsRequired()
+           .HasColumnType("decimal(18,2)");
+
+            builder.Property(rt => rt.CostEstimated)
+                   .IsRequired()
+                   .HasColumnType("decimal(18,2)");
         }
     }
 }

@@ -18,7 +18,8 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
 
         public async Task<Result<RepairTaskDto>> Handle(CreateRepairTaskCommand request, CancellationToken ct)
         {
-            if(await context.RepairTasks.AnyAsync(r => r.Name == request.Name))
+            if(await context.RepairTasks.AnyAsync(r => r.IsDeleted == false &&
+                                                  r.Name == request.Name))
             {
                 return Error.Conflict(code: "RepairTask.Name.Conflict",
                                       description: $"The Repair Task Name {request.Name} Already Exists.");

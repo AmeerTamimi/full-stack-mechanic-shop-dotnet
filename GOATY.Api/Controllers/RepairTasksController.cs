@@ -67,7 +67,7 @@ namespace GOATY.Api.Controllers
                                                                                 .ToList()));
 
             return result.Match(
-                response => Ok(response),
+                response => NoContent(),
                 Problem
             );
         }

@@ -24,8 +24,8 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
                 .NotNull().WithMessage("Parts is required.")
                 .NotEmpty().WithMessage("Parts must contain at least one item.");
 
-            //RuleForEach(x => x.Parts)
-            //    .SetValidator(new PartsValidator());
+            RuleForEach(x => x.Parts)
+                .SetValidator(new PartsValidator());
 
             RuleFor(x => x.Parts)
                 .Must(parts => parts.Select(p => p.Id).Distinct().Count() == parts.Count)

@@ -19,6 +19,9 @@ namespace GOATY.Infrastructure.Data.Configurations
             builder.HasOne(rd => rd.Part)
                    .WithMany(p => p.RepairTaskDetails)
                    .HasForeignKey(rd => rd.PartId);
+
+            builder.Property(p => p.Quantity)
+                   .IsRequired();
         }
     }
 }
