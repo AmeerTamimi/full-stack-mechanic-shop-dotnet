@@ -46,11 +46,18 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
                         description: $"Part With Id {partId} was Not Found"
                     );
                 }
+                
+                var repairTaskDetails = RepairTaskDetails.Create(repairTaskId,
+                                                                 partId,
+                                                                 part.Quantity,
+                                                                 partModel.Cost);
 
-                repairTaskDetailsList.Add(new RepairTaskDetails(repairTaskId,
-                                                             partId,
-                                                             part.Quantity,
-                                                             partModel.Cost));
+                if (!repairTaskDetails.IsSuccess)
+                {
+                    return repairTaskDetails.Errors;
+                }
+
+                repairTaskDetailsList.Add(repairTaskDetails.Value);
             }
 
             var repairTaskResult = RepairTask.Create(repairTaskId,

@@ -2,6 +2,7 @@
 using GOATY.Contracts.Requests;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks;
+using GOATY.Domain.RepairTasks.Enums;
 using MediatR;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands
@@ -10,7 +11,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
     public record class CreateRepairTaskCommand(
         string Name,
         string Description,
-        decimal TimeEstimated,
+        TimeEstimations TimeEstimated,
         decimal CostEstimated,
         IReadOnlyList<PartRequirements> Parts)
         : IRequest<Result<RepairTaskDto>>;

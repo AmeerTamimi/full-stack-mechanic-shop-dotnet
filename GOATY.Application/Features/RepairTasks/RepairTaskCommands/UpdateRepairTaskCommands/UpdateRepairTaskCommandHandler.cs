@@ -56,10 +56,17 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
                     );
                 }
 
-                repairTaskDetailsList.Add(new RepairTaskDetails(repairTask.Id,
-                                                             partId,
-                                                             part.Quantity,
-                                                             partModel.Cost));
+                var repairTaskDetails = RepairTaskDetails.Create(repairTask.Id,
+                                                                 partId,
+                                                                 part.Quantity,
+                                                                 partModel.Cost);
+
+                if (!repairTaskDetails.IsSuccess)
+                {
+                    return repairTaskDetails.Errors;
+                }
+
+                repairTaskDetailsList.Add(repairTaskDetails.Value);
             }
 
             var repairTaskResult = RepairTask.Update(repairTask,

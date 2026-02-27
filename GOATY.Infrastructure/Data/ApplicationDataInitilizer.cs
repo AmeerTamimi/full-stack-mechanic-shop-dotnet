@@ -2,6 +2,7 @@
 using GOATY.Domain.Employees.Enums;
 using GOATY.Domain.RepairsTask.Parts;
 using GOATY.Domain.RepairTasks;
+using GOATY.Domain.RepairTasks.Enums;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -210,7 +211,7 @@ namespace GOATY.Infrastructure.Data
                             id: Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             name: "Battery Repair",
                             desc: "We will ruin the battery lowkey :)",
-                            time : 40,
+                            time : TimeEstimations.Min45,
                             cost: 300,
                             repairTaskDetails: new List<RepairTaskDetails>{
                                 new RepairTaskDetails(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),partId ,2 , 30)

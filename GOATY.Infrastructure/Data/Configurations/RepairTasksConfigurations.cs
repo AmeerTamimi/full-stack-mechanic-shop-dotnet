@@ -22,9 +22,9 @@ namespace GOATY.Infrastructure.Data.Configurations
                .IsRequired()
                .HasMaxLength(1000);
 
-            builder.Property(rt => rt.TimeEstimated)
-           .IsRequired()
-           .HasColumnType("decimal(18,2)");
+            builder.Property(p => p.TimeEstimated)
+                   .HasConversion<string>()
+                   .IsRequired();
 
             builder.Property(rt => rt.CostEstimated)
                    .IsRequired()

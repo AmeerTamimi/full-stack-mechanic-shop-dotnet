@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers
 {
-    [Authorize(Roles = nameof(Role.Manager))]
+    //[Authorize(Roles = nameof(Role.Manager))]
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeesController(IMediator mediator) : ApiController

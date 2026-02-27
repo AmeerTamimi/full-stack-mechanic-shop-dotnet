@@ -1,4 +1,7 @@
-﻿using GOATY.Domain.RepairsTask.Parts;
+﻿using GOATY.Domain.Common.Results;
+using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.RepairTasks.Enums;
+using System.Xml.Linq;
 
 namespace GOATY.Domain.RepairTasks
 {
@@ -11,7 +14,8 @@ namespace GOATY.Domain.RepairTasks
         public RepairTask RepairTask { get; set; } = null!;
         public Part Part { get; set; } = null!;
 
-        public RepairTaskDetails(
+        private RepairTaskDetails() { }
+        private RepairTaskDetails(
             Guid repairTaskId,
             Guid partId,
             int quantity,
@@ -21,6 +25,32 @@ namespace GOATY.Domain.RepairTasks
             PartId = partId;
             Quantity = quantity;
             UnitPrice = unitPrice;
+        }
+
+        public static Result<RepairTaskDetails> Create(Guid repairTaskId,
+                                                       Guid partId,
+                                                       int quantity,
+                                                       decimal unitPrice)
+        {
+            if (Guid.Empty == repairTaskId)
+            {
+                return RepairTaskErrors.InvalidId;
+            }
+            if (Guid.Empty == partId)
+            {
+                return RepairTaskErrors.InvalidPartId;
+            }
+
+            if (quantity <= 0)
+            {
+                return RepairTaskErrors.InvalidQuantity;
+            }
+            if (unitPrice <= 0)
+            {
+                return RepairTaskErrors.InvalidUnitPrice;
+            }
+
+            return new RepairTaskDetails(repairTaskId, partId, quantity, unitPrice);
         }
     }
 }

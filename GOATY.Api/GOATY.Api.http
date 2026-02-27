@@ -99,9 +99,9 @@ POST {{baseUrl}}/api/repairTasks
 Content-type: application/json
 
 {
-  "name": "Window Fix",
+  "name": "Window Fix2",
   "description": "We wont ruin it this time :)",
-  "timeEstimated": 45,
+  "timeEstimated": 46,
   "costEstimated": 600,
   "parts": [
     {

@@ -31,7 +31,22 @@ namespace GOATY.Domain.RepairTasks
 
         public static readonly Error InvalidTimeEstimated = Error.Validation(
                                                         code: "RepairTask.Time.Invalid",
-                                                        description: "Estimated time must be at least 10."
+                                                        description: "Invalid repair duration."
+                                                    );
+
+        public static readonly Error InvalidPartId = Error.Validation(
+                                                        code: "RepairTask.Details.PartId.Invalid",
+                                                        description: "Invalid RepairTaskDetails : PartId Is Invalid."
+                                                    );
+
+        public static readonly Error InvalidQuantity = Error.Validation(
+                                                        code: "RepairTask.Details.Quantity.Invalid",
+                                                        description: "Invalid RepairTaskDetails : Quantity Is Invalid."
+                                                    );
+
+        public static readonly Error InvalidUnitPrice = Error.Validation(
+                                                        code: "RepairTask.Details.UnitPrice.Invalid",
+                                                        description: "Invalid RepairTaskDetails : UnitPrice Is Invalid."
                                                     );
     }
 }

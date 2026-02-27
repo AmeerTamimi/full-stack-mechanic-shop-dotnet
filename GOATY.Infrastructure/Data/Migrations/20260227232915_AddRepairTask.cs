@@ -66,8 +66,10 @@ namespace GOATY.Infrastructure.Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Parts",
-                type: "nvarchar(450)",
-                nullable: true,
+                type: "nvarchar(100)",
+                maxLength: 100,
+                nullable: false,
+                defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
                 oldNullable: true);
@@ -77,9 +79,9 @@ namespace GOATY.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TimeEstimated = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    TimeEstimated = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CostEstimated = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -153,8 +155,8 @@ namespace GOATY.Infrastructure.Data.Migrations
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(450)",
-                oldNullable: true);
+                oldType: "nvarchar(100)",
+                oldMaxLength: 100);
 
             migrationBuilder.InsertData(
                 table: "Employees",

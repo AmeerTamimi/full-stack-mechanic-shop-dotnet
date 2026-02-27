@@ -18,7 +18,12 @@ namespace GOATY.Domain.RepairsTask.Parts
             decimal cost,
             int quantity) 
             : base(id)
-        { }
+        {
+            Id = id;
+            Name = name;
+            Cost = cost;
+            Quantity = quantity;
+        }
         public static Result<Part> Create(Guid id,
                                           string name,
                                           decimal cost,

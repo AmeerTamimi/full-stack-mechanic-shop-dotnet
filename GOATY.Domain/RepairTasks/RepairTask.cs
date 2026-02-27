@@ -2,6 +2,7 @@
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Common.Constans;
 using System.Security.Cryptography;
+using GOATY.Domain.RepairTasks.Enums;
 
 namespace GOATY.Domain.RepairTasks
 {
@@ -9,7 +10,7 @@ namespace GOATY.Domain.RepairTasks
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public decimal TimeEstimated { get; set; }
+        public TimeEstimations TimeEstimated { get; set; }
         public decimal CostEstimated { get; set; }
         public List<RepairTaskDetails> RepairTaskDetails { get; set; } = [];
 
@@ -20,7 +21,7 @@ namespace GOATY.Domain.RepairTasks
             Guid id,
             string name,
             string desc,
-            decimal time,
+            TimeEstimations time,
             decimal cost,
             List<RepairTaskDetails> repairTaskDetails)
             : base(id)
@@ -36,7 +37,7 @@ namespace GOATY.Domain.RepairTasks
         public static Result<RepairTask> Create(Guid id,
                                         string name,
                                         string desc,
-                                        decimal time,
+                                        TimeEstimations time,
                                         decimal cost,
                                         List<RepairTaskDetails> repairTaskDetails)
         {
@@ -63,7 +64,7 @@ namespace GOATY.Domain.RepairTasks
                 return RepairTaskErrors.InvalidCostEstimated(totalCost);
             }
 
-            if (time < 10)
+            if (!Enum.IsDefined(typeof(TimeEstimations) , time))
             {
                 return RepairTaskErrors.InvalidTimeEstimated;
             }
@@ -73,7 +74,7 @@ namespace GOATY.Domain.RepairTasks
         public static Result<Updated> Update(RepairTask repairTask,
                                         string name,
                                         string desc,
-                                        decimal time,
+                                        TimeEstimations time,
                                         decimal cost,
                                         List<RepairTaskDetails> repairTaskDetails)
         {
@@ -96,7 +97,7 @@ namespace GOATY.Domain.RepairTasks
                 return RepairTaskErrors.InvalidCostEstimated(totalCost);
             }
 
-            if (time < 10)
+            if (!Enum.IsDefined(typeof(TimeEstimations) , time))
             {
                 return RepairTaskErrors.InvalidTimeEstimated;
             }

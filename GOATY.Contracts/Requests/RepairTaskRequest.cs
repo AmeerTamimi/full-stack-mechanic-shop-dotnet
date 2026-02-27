@@ -1,10 +1,12 @@
-﻿namespace GOATY.Contracts.Requests
+﻿using GOATY.Domain.RepairTasks.Enums;
+
+namespace GOATY.Contracts.Requests
 {
     public sealed class RepairTaskRequest
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public decimal TimeEstimated { get; set; }
+        public TimeEstimations TimeEstimated { get; set; }
         public decimal CostEstimated { get; set; }
         public List<PartRequirementsRequest> Parts { get; set; } = [];
     }

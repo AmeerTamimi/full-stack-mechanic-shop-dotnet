@@ -20,7 +20,12 @@ namespace GOATY.Domain.Employees
             string lastName,
             Role role)
             : base(id)
-        { }
+        {
+            Id = id;
+            FirstName = firstName;
+            LastName = lastName;
+            Role = role;
+        }
         public static Result<Employee> Create(Guid id,
                                               string firstName,
                                               string lastName,

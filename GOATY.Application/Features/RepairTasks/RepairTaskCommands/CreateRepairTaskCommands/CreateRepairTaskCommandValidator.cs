@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using GOATY.Domain.RepairTasks.Enums;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands
 {
@@ -15,7 +16,8 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
                 .MaximumLength(1000).WithMessage("Description must be 1000 characters or less.");
 
             RuleFor(x => x.TimeEstimated)
-                .GreaterThan(10).WithMessage("TimeEstimated must be greater or equal 10.");
+                .NotEmpty().WithMessage("Time Estimated Is Required.")
+                .IsInEnum().WithMessage("Invalid Time Duration.");
 
             RuleFor(x => x.CostEstimated)
                 .GreaterThanOrEqualTo(50).WithMessage("CostEstimated must be 50 or more.");

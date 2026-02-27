@@ -169,7 +169,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var expected = EmployeeErrors.InvalidRole;
 
             Assert.False(result.IsSuccess);
-            Assert.Equal(actual, expected);
+            Assert.Equivalent(actual, expected);
         }
     }
 }
