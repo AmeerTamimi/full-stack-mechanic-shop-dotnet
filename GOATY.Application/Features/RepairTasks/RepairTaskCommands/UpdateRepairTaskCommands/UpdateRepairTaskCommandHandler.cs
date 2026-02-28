@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks;
 using MediatR;
@@ -15,8 +15,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
         public async Task<Result<Updated>> Handle(UpdateRepairTaskCommand request, CancellationToken ct)
         {
             var repairTask = await context.RepairTasks
-                                          .Include(r => r.RepairTaskDetails)
-                                          //.ThenInclude(rd => rd.Part)
+                                          //.Include(r => r.RepairTaskDetails)
                                           .SingleOrDefaultAsync(
                                            r => r.IsDeleted == false &&
                                            r.Id == request.Id,

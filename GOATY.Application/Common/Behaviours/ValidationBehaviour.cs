@@ -1,0 +1,37 @@
+﻿using FluentValidation;
+using GOATY.Domain.Common.Results;
+using MediatR;
+
+namespace GOATY.Application.Common.Behaviours
+{
+    public sealed class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) :
+        IPipelineBehavior<TRequest, TResponse>
+        where TRequest : notnull
+    {
+
+        public async Task<TResponse> Handle(
+            TRequest request,
+            RequestHandlerDelegate<TResponse> next,
+            CancellationToken ct)
+        {
+            if (!validators.Any())
+                return await next();
+
+            var context = new ValidationContext<TRequest>(request);
+
+            var results = await Task.WhenAll(validators.Select(v => v.ValidateAsync(context, ct)));
+
+            var failures = results.SelectMany(r => r.Errors).Where(e => e is not null).ToList();
+
+            List<Error> errors = [];
+
+            failures.ForEach(f => errors.Add(Error.Validation(f.ErrorCode, f.ErrorMessage)));
+
+            if (failures.Count != 0)
+                return (dynamic)errors;
+
+            return await next();
+
+        }
+    }
+}

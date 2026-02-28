@@ -214,7 +214,7 @@ namespace GOATY.Infrastructure.Data
                             time : TimeEstimations.Min45,
                             cost: 300,
                             repairTaskDetails: new List<RepairTaskDetails>{
-                                new RepairTaskDetails(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),partId ,2 , 30)
+                                RepairTaskDetails.Create(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),partId ,2 , 30).Value
                             }
                         ).Value
                     ]);

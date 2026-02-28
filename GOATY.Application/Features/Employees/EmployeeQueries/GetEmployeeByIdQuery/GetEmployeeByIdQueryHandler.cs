@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Application.Features.Employees.DTOs;
 using GOATY.Application.Features.Employees.Mapping;
 using GOATY.Domain.Common.Results;

@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Domain.Employees;
 using GOATY.Domain.Identity;
 using GOATY.Domain.RepairsTask.Parts;

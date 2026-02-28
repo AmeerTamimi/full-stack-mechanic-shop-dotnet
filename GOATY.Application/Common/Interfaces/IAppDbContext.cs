@@ -4,7 +4,7 @@ using GOATY.Domain.RepairsTask.Parts;
 using GOATY.Domain.RepairTasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace GOATY.Application.Features.Common.Interfaces
+namespace GOATY.Application.Common.Interfaces
 {
     public interface IAppDbContext
     {

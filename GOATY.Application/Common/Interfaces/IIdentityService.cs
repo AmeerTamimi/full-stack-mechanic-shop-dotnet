@@ -1,7 +1,7 @@
 ﻿using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
 
-namespace GOATY.Application.Features.Common.Interfaces
+namespace GOATY.Application.Common.Interfaces
 {
     public interface IIdentityService
     {

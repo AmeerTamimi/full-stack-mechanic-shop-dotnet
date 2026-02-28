@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Infrastructure.Data;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

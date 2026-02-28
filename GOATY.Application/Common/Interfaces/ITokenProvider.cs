@@ -2,7 +2,7 @@
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Identity;
 
-namespace GOATY.Application.Features.Common.Interfaces
+namespace GOATY.Application.Common.Interfaces
 {
     public interface ITokenProvider
     {

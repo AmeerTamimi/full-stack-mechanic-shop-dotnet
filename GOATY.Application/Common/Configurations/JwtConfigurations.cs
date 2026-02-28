@@ -1,4 +1,4 @@
-﻿namespace GOATY.Application.Features.Common.Configurations
+﻿namespace GOATY.Application.Common.Configurations
 {
     public class JwtConfigurations
     {

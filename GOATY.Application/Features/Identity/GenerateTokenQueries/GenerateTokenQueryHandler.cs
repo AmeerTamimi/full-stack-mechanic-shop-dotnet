@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
 using MediatR;

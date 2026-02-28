@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
-using GOATY.Application.Behaviours;
-using GOATY.Application.Features.Common.Configurations;
+using GOATY.Application.Common.Behaviours;
+using GOATY.Application.Common.Configurations;
 using MediatR;
+using MediatR.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +34,9 @@ namespace GOATY.Application
             services.AddValidatorsFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly);
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceoptionBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+            services.AddTransient(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
 
             return services;
         }

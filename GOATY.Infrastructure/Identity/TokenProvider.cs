@@ -1,5 +1,5 @@
-﻿using GOATY.Application.Features.Common.Configurations;
-using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Configurations;
+using GOATY.Application.Common.Interfaces;
 using GOATY.Application.Features.Identity.DTOs;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Identity;

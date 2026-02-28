@@ -1,4 +1,4 @@
-﻿namespace GOATY.Application.Features.Common.Interfaces
+﻿namespace GOATY.Application.Common.Interfaces
 {
     public static class UtilityService
     {

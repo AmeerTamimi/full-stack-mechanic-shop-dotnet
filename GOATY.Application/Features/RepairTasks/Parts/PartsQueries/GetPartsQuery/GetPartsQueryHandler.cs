@@ -1,4 +1,4 @@
-﻿using GOATY.Application.Features.Common.Interfaces;
+﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Application.Features.RepairTasks.DTOs;
 using GOATY.Application.Features.RepairTasks.Mapping;
 using GOATY.Domain.Common.Results;
@@ -10,9 +10,8 @@ namespace GOATY.Application.Features.RepairTasks.Parts.PartsQueries.GetPartsQuer
 {
     public sealed class GetPartsQueryHandler(
         IAppDbContext context,
-        ILogger<GetPartsQueryHandler> logger
-
-        ) : IRequestHandler<GetPartsQuery, Result<List<PartDto>>>
+        ILogger<GetPartsQueryHandler> logger)
+        : IRequestHandler<GetPartsQuery, Result<List<PartDto>>>
     {
         public async Task<Result<List<PartDto>>> Handle(GetPartsQuery request, CancellationToken ct)
         {
@@ -24,7 +23,7 @@ namespace GOATY.Application.Features.RepairTasks.Parts.PartsQueries.GetPartsQuer
 
             logger.LogInformation("Handled {Query}. Returned {PartsCount} Parts",
                                                    nameof(GetPartsQuery),
-                                                   partModels.Count());
+                                                   partModels.Count);
 
             return partModels.ToDtos();
         }
