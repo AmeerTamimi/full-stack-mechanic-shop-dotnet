@@ -33,6 +33,11 @@ namespace GOATY.Domain.RepairTasks
                                                         code: "RepairTask.Time.Invalid",
                                                         description: "Invalid repair duration."
                                                     );
+        
+        public static readonly Error InvalidRepairTaskDetails = Error.Validation(
+                                                        code: "RepairTask.RepairTaskDetails.Invalid",
+                                                        description: "Invalid RepairTaskDetails List."
+                                                    );
 
         public static readonly Error InvalidPartId = Error.Validation(
                                                         code: "RepairTask.Details.PartId.Invalid",

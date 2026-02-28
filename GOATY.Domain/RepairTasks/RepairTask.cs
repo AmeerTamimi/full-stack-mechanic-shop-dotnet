@@ -69,6 +69,11 @@ namespace GOATY.Domain.RepairTasks
                 return RepairTaskErrors.InvalidTimeEstimated;
             }
 
+            if(repairTaskDetails is null)
+            {
+                return RepairTaskErrors.InvalidRepairTaskDetails;
+
+            }
             return new RepairTask(id, name, desc, time, cost, repairTaskDetails);
         }
         public static Result<Updated> Update(RepairTask repairTask,
@@ -78,6 +83,7 @@ namespace GOATY.Domain.RepairTasks
                                         decimal cost,
                                         List<RepairTaskDetails> repairTaskDetails)
         {
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 return RepairTaskErrors.InvalidName;
