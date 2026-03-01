@@ -3,10 +3,11 @@ using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace GOATY.Application.Features.Employees.EmployeeCommands.DeleteEmployeeCommand
 {
-    public sealed class DeleteEmployeeCommandHandler(IAppDbContext context) : IRequestHandler<DeleteEmployeeCommand, Result<Deleted>>
+    public sealed class DeleteEmployeeCommandHandler(IAppDbContext context , HybridCache cache) : IRequestHandler<DeleteEmployeeCommand, Result<Deleted>>
     {
         public async Task<Result<Deleted>> Handle(DeleteEmployeeCommand request, CancellationToken ct)
         {
@@ -26,6 +27,8 @@ namespace GOATY.Application.Features.Employees.EmployeeCommands.DeleteEmployeeCo
 
             context.Employees.Remove(employee); // might make it soft delete here
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("employees");
 
             return Result.Deleted;
         }

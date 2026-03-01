@@ -20,7 +20,9 @@ namespace GOATY.Application.Common.Behaviours
 
             var elapsedMilliseconds = timer.ElapsedMilliseconds;
 
-            if(elapsedMilliseconds > 500)
+            logger.LogInformation("time : {time}" , elapsedMilliseconds);
+
+            if (elapsedMilliseconds > 500)
             {
                 var requestName = typeof(TRequest).Name;
 

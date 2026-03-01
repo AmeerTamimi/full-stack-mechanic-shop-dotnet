@@ -1,4 +1,4 @@
-﻿namespace GOATY.Application.Features.RepairTasks.DTOs
+﻿namespace GOATY.Application.Features.Parts.DTOs
 {
     public class PartDto
     {

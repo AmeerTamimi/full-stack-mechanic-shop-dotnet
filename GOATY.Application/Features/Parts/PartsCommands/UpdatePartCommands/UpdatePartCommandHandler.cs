@@ -3,10 +3,11 @@ using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairsTask.Parts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 
-namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.UpdatePartCommands
+namespace GOATY.Application.Features.Parts.PartsCommands.UpdatePartCommands
 {
-    public sealed class UpdatePartCommandHandler(IAppDbContext context) : IRequestHandler<UpdatePartCommand, Result<Updated>>
+    public sealed class UpdatePartCommandHandler(IAppDbContext context , HybridCache cache) : IRequestHandler<UpdatePartCommand, Result<Updated>>
     {
         public async Task<Result<Updated>> Handle(UpdatePartCommand request, CancellationToken ct)
         {
@@ -35,6 +36,8 @@ namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.UpdatePartC
             }
 
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("parts", ct);
 
             return Result.Updated;
         }

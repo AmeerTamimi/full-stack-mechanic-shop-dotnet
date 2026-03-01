@@ -1,12 +1,10 @@
-﻿using GOATY.Application.Features.RepairTasks.Parts.PartsCommands.CreatePartCommands;
-using GOATY.Application.Features.RepairTasks.Parts.PartsCommands.DeletePartCommands;
-using GOATY.Application.Features.RepairTasks.Parts.PartsCommands.UpdatePartCommands;
-using GOATY.Application.Features.RepairTasks.Parts.PartsQueries.GetPartByIdQuery;
-using GOATY.Application.Features.RepairTasks.Parts.PartsQueries.GetPartsQuery;
+﻿using GOATY.Application.Features.Parts.PartsCommands.CreatePartCommands;
+using GOATY.Application.Features.Parts.PartsCommands.DeletePartCommands;
+using GOATY.Application.Features.Parts.PartsCommands.UpdatePartCommands;
+using GOATY.Application.Features.Parts.PartsQueries.GetPartByIdQuery;
+using GOATY.Application.Features.Parts.PartsQueries.GetPartsQuery;
 using GOATY.Contracts.Requests;
-using GOATY.Domain.Employees.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers

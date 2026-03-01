@@ -1,7 +1,7 @@
-﻿using GOATY.Application.Features.RepairTasks.DTOs;
+﻿using GOATY.Application.Features.Parts.DTOs;
 using GOATY.Domain.RepairsTask.Parts;
 
-namespace GOATY.Application.Features.RepairTasks.Mapping
+namespace GOATY.Application.Features.Parts.Mapping
 {
     public static class PartMapper
     {

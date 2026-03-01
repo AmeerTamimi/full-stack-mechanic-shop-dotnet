@@ -12,7 +12,8 @@ namespace GOATY.Application.Common.Behaviours
             try
             {
                 return await next(ct);
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 var requestName = typeof(TRequest).Name;
 

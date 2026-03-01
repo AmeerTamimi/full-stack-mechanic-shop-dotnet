@@ -12,10 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-	  <PackageReference Include="FluentValidation" Version="12.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
+	    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+	    <PackageReference Include="FluentValidation" Version="12.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
+	    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
   </ItemGroup>
 
 </Project>

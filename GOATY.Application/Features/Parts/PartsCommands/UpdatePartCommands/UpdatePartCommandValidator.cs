@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.UpdatePartCommands
+namespace GOATY.Application.Features.Parts.PartsCommands.UpdatePartCommands
 {
     public sealed class UpdatePartCommandValidator : AbstractValidator<UpdatePartCommand>
     {

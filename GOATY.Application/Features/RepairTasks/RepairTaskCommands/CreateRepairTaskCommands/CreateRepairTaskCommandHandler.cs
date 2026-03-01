@@ -6,13 +6,15 @@ using GOATY.Domain.RepairsTask.Parts;
 using GOATY.Domain.RepairTasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands
 {
     public sealed class CreateRepairTaskCommandHandler(
         IAppDbContext context,
-        ILogger<CreateRepairTaskCommandHandler> logger)
+        ILogger<CreateRepairTaskCommandHandler> logger,
+        HybridCache cache)
         : IRequestHandler<CreateRepairTaskCommand, Result<RepairTaskDto>>
     {
 
@@ -75,6 +77,8 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
 
             await context.RepairTasks.AddAsync(repairTask, ct);
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("repair-tasks");
 
             return repairTask.ToDto();
         }

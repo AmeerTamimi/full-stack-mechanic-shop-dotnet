@@ -3,13 +3,15 @@ using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepairTaskCommands
 {
     public sealed class UpdateRepairTaskCommandHandler(
         IAppDbContext context,
-        ILogger<UpdateRepairTaskCommandHandler> logger)
+        ILogger<UpdateRepairTaskCommandHandler> logger,
+        HybridCache cache)
         : IRequestHandler<UpdateRepairTaskCommand, Result<Updated>>
     {
         public async Task<Result<Updated>> Handle(UpdateRepairTaskCommand request, CancellationToken ct)
@@ -81,6 +83,8 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
             }
 
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("repair-tasks");
 
             return Result.Updated;
         }

@@ -1,14 +1,16 @@
 ﻿using GOATY.Application.Common.Interfaces;
-using GOATY.Application.Features.RepairTasks.DTOs;
+using GOATY.Application.Features.Parts.DTOs;
+using GOATY.Application.Features.Parts.Mapping;
 using GOATY.Application.Features.RepairTasks.Mapping;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairsTask.Parts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 
-namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.CreatePartCommands
+namespace GOATY.Application.Features.Parts.PartsCommands.CreatePartCommands
 {
-    public sealed class CreatePartCommandHandler(IAppDbContext context) : IRequestHandler<CreatePartCommand, Result<PartDto>>
+    public sealed class CreatePartCommandHandler(IAppDbContext context , HybridCache cache) : IRequestHandler<CreatePartCommand, Result<PartDto>>
     {
         public async Task<Result<PartDto>> Handle(CreatePartCommand request, CancellationToken ct)
         {
@@ -35,6 +37,8 @@ namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.CreatePartC
 
             await context.Parts.AddAsync(newPart);
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("parts", ct);
 
             return newPart.ToDto();
         }

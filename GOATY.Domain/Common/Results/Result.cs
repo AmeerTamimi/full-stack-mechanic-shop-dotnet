@@ -1,4 +1,6 @@
 ﻿using GOATY.Domain.Common.Results.Abstractions;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace GOATY.Domain.Common.Results
 {
@@ -11,6 +13,29 @@ namespace GOATY.Domain.Common.Results
     }
     public class Result<T> : IResult<T>
     {
+        [JsonConstructor]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("For serializer only.", true)]
+        public Result(T? value, List<Error>? errors, bool isSuccess)
+        {
+            if (isSuccess)
+            {
+                _value = value ?? throw new ArgumentNullException(nameof(value));
+                _errors = [];
+                IsSuccess = true;
+            }
+            else
+            {
+                if (errors == null || errors.Count == 0)
+                {
+                    throw new ArgumentException("Provide at least one error.", nameof(errors));
+                }
+
+                _errors = errors;
+                _value = default!;
+                IsSuccess = false;
+            }
+        }
         public bool IsSuccess { get; }
         private readonly List<Error>? _errors = null;
         private readonly T? _value = default;

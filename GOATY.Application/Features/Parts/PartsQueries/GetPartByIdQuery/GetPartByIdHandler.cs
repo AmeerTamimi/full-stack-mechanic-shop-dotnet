@@ -1,11 +1,12 @@
 ﻿using GOATY.Application.Common.Interfaces;
-using GOATY.Application.Features.RepairTasks.DTOs;
+using GOATY.Application.Features.Parts.DTOs;
+using GOATY.Application.Features.Parts.Mapping;
 using GOATY.Application.Features.RepairTasks.Mapping;
 using GOATY.Domain.Common.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GOATY.Application.Features.RepairTasks.Parts.PartsQueries.GetPartByIdQuery
+namespace GOATY.Application.Features.Parts.PartsQueries.GetPartByIdQuery
 {
     public sealed class GetPartByIdHandler(IAppDbContext context) : IRequestHandler<GetPartByIdQuery, Result<PartDto>>
     {

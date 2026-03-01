@@ -2,10 +2,11 @@
 using GOATY.Domain.Common.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 
-namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.DeletePartCommands
+namespace GOATY.Application.Features.Parts.PartsCommands.DeletePartCommands
 {
-    public sealed class DeletePartCommandHandler(IAppDbContext context) : IRequestHandler<DeletePartCommand, Result<Guid>>
+    public sealed class DeletePartCommandHandler(IAppDbContext context , HybridCache cache) : IRequestHandler<DeletePartCommand, Result<Guid>>
     {
         public async Task<Result<Guid>> Handle(DeletePartCommand request, CancellationToken ct)
         {
@@ -26,6 +27,8 @@ namespace GOATY.Application.Features.RepairTasks.Parts.PartsCommands.DeletePartC
             context.Parts.Remove(partToDelete);
 
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("parts", ct);
 
             return id;
         }

@@ -3,10 +3,11 @@ using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace GOATY.Application.Features.Employees.EmployeeCommands.UpdateEmployeeCommand
 {
-    public sealed class UpdateEmployeeCommandHandler(IAppDbContext context) : IRequestHandler<UpdateEmployeeCommand, Result<Updated>>
+    public sealed class UpdateEmployeeCommandHandler(IAppDbContext context , HybridCache cache) : IRequestHandler<UpdateEmployeeCommand, Result<Updated>>
     {
         public async Task<Result<Updated>> Handle(UpdateEmployeeCommand request, CancellationToken ct)
         {
@@ -37,6 +38,8 @@ namespace GOATY.Application.Features.Employees.EmployeeCommands.UpdateEmployeeCo
             }
 
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("employees");
 
             return Result.Updated;
         }

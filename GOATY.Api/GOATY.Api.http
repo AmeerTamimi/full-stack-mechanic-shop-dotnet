@@ -16,9 +16,9 @@ POST {{baseUrl}}/api/parts
 Content-type: application/json
 
 {
-  "Name" : "ReservedName222",
+  "Name" : "merdfggdfgdfgdfgo",
   "Cost" : 100,
-  "Quantity" : -1
+  "Quantity" : 10
 }
 
 ###
