@@ -6,12 +6,12 @@ namespace GOATY.Domain.Employees
 {
     public sealed class Employee : AuditableEntity
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? FullName { get; set; } = $"";
-        public string? Email { get; set; }
-        public string? PasswordHash { get; set; }
-        public Role Role { get; set; }
+        public string? FirstName { get; private set; }
+        public string? LastName { get; private set; }
+        public string? FullName { get; private set; } = $"";
+        public string? Email { get; private set; }
+        public string? PasswordHash { get; private set; }
+        public Role Role { get; private set; }
 
         private Employee() { }
         private Employee(

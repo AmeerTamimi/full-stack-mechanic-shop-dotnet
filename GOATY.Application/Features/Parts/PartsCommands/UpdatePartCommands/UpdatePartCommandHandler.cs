@@ -1,6 +1,6 @@
 ﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.Parts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;

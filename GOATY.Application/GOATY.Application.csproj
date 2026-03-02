@@ -19,4 +19,9 @@
 	    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Customers\CustomerCommands\DeleteCustomer\" />
+    <Folder Include="Features\Customers\CustomerCommands\UpdateCustomer\" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 ﻿using GOATY.Domain.Common.Constans;
+using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks;
 using GOATY.Domain.RepairTasks.Enums;
 
@@ -214,17 +215,28 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
             var newCost = 999999m;
 
-            var result = RepairTask.Update(repairTask, newName, newDesc, newTime, newCost, newDetails);
+            var updateResult = RepairTask.Update(repairTask, name: newName, desc: newDesc, newTime, cost: newCost);
+            var updateActual = updateResult.Value;
+            var updateExpected = Result.Updated;
 
-            var actual = repairTask;
+            Assert.True(updateResult.IsSuccess);
+            Assert.Equal(updateActual, updateExpected);
 
-            Assert.True(result.IsSuccess);
-            Assert.Equal(id, actual.Id);
-            Assert.Equal(newName, actual.Name);
-            Assert.Equal(newDesc, actual.Description);
-            Assert.Equal(newTime, actual.TimeEstimated);
-            Assert.Equal(newCost, actual.CostEstimated);
-            Assert.Equal(newDetails, actual.RepairTaskDetails);
+            var upsertResult = repairTask.UpsertRepairTaskDetails(newDetails);
+            var upsertActual = upsertResult.Value;
+            var upsertExpected = Result.Updated;
+
+            Assert.True(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
+
+            var actualRepairTask = repairTask;
+
+            Assert.Equal(id, actualRepairTask.Id);
+            Assert.Equal(newName, actualRepairTask.Name);
+            Assert.Equal(newDesc, actualRepairTask.Description);
+            Assert.Equal(newTime, actualRepairTask.TimeEstimated);
+            Assert.Equal(newCost, actualRepairTask.CostEstimated);
+            Assert.Equivalent(newDetails, actualRepairTask.RepairTaskDetails);
         }
 
         [Fact]
@@ -236,15 +248,22 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
+
             var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
 
-            var result = RepairTask.Update(repairTask, name: "", desc: "New Desc", time, cost: 999999m, details);
+            var updateResult = RepairTask.Update(repairTask, name: "", desc: "New Desc", time, cost: -1);
+            var updateActual = updateResult.Error;
+            var updateExpected = RepairTaskErrors.InvalidName;
 
-            var actual = result.Error;
-            var expected = RepairTaskErrors.InvalidName;
+            Assert.False(updateResult.IsSuccess);
+            Assert.Equal(updateActual, updateExpected);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(actual, expected);
+            var upsertResult = repairTask.UpsertRepairTaskDetails(details);
+            var upsertActual = upsertResult.Value;
+            var upsertExpected = Result.Updated;
+
+            Assert.True(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
         }
 
         [Fact]
@@ -258,13 +277,19 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
             var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
 
-            var result = RepairTask.Update(repairTask, name: "New Name", desc: "   ", time, cost: 999999m, details);
+            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: null!, time, cost: -1);
+            var updateActual = updateResult.Error;
+            var updateExpected = RepairTaskErrors.InvalidDescription;
 
-            var actual = result.Error;
-            var expected = RepairTaskErrors.InvalidDescription;
+            Assert.False(updateResult.IsSuccess);
+            Assert.Equal(updateActual, updateExpected);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(actual, expected);
+            var upsertResult = repairTask.UpsertRepairTaskDetails(details);
+            var upsertActual = upsertResult.Value;
+            var upsertExpected = Result.Updated;
+
+            Assert.True(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
         }
 
         [Fact]
@@ -278,13 +303,19 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
             var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
 
-            var result = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", time, cost: 999999m, repairTaskDetails: null!);
+            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", time, cost: 999999m);
+            var updateActual = updateResult.Value;
+            var updateExpected = Result.Updated;
 
-            var actual = result.Error;
-            var expected = RepairTaskErrors.InvalidRepairTask;
+            Assert.True(updateResult.IsSuccess);
+            Assert.Equal(updateActual, updateExpected);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(actual, expected);
+            var upsertResult = repairTask.UpsertRepairTaskDetails(null!);
+            var upsertActual = upsertResult.Error;
+            var upsertExpected = RepairTaskErrors.InvalidRepairTask;
+
+            Assert.False(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
         }
 
         [Fact]
@@ -301,13 +332,19 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var subtotal = details.Sum(d => d.Quantity * d.UnitPrice);
             var totalCost = subtotal + (subtotal * GOATYConstans.TaxRate) + GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", time, cost: totalCost - 10m, details);
+            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", time, cost: -1);
+            var updateActual = updateResult.Value;
+            var updateExpected = Result.Updated;
 
-            var actual = result.Error;
-            var expected = RepairTaskErrors.InvalidCostEstimated(totalCost);
+            Assert.True(updateResult.IsSuccess);
+            Assert.Equal(updateActual, updateExpected);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equivalent(actual, expected);
+            var upsertResult = repairTask.UpsertRepairTaskDetails(details);
+            var upsertActual = upsertResult.Error;
+            var upsertExpected = RepairTaskErrors.InvalidCostEstimated(totalCost);
+
+            Assert.False(upsertResult.IsSuccess);
+            Assert.Equivalent(upsertActual, upsertExpected);
         }
 
         [Fact]
@@ -323,13 +360,19 @@ namespace GOATY.Domain.UnitTests.RepairTasks
 
             var invalidTime = (TimeEstimations)999;
 
-            var result = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", invalidTime, cost: 999999m, details);
+            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", invalidTime, cost: 999999m);
+            var updateActual = updateResult.Error;
+            var updateExpected = RepairTaskErrors.InvalidTimeEstimated;
 
-            var actual = result.Error;
-            var expected = RepairTaskErrors.InvalidTimeEstimated;
+            Assert.False(updateResult.IsSuccess);
+            Assert.Equal(updateActual, updateExpected);
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(actual, expected);
+            var upsertResult = repairTask.UpsertRepairTaskDetails(details);
+            var upsertActual = upsertResult.Value;
+            var upsertExpected = Result.Updated;
+
+            Assert.True(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
         }
     }
 }

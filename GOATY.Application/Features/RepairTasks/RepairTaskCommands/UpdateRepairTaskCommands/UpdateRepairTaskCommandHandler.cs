@@ -17,7 +17,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
         public async Task<Result<Updated>> Handle(UpdateRepairTaskCommand request, CancellationToken ct)
         {
             var repairTask = await context.RepairTasks
-                                          //.Include(r => r.RepairTaskDetails)
+                                          .Include(r => r.RepairTaskDetails)
                                           .SingleOrDefaultAsync(
                                            r => r.IsDeleted == false &&
                                            r.Id == request.Id,
@@ -31,7 +31,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
                 );
             }
 
-            if (await context.RepairTasks.AnyAsync(r => (r.Name == request.Name && r.Id != request.Id)))
+            if (await context.RepairTasks.AnyAsync(r => (r.Name == request.Name && r.Id != request.Id) , ct))
             {
                 return Error.Conflict(code: "RepairTask.Name.Conflict",
                                       description: $"The Repair Task Name {request.Name} Already Exists.");
@@ -39,7 +39,11 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
 
             var repairTaskDetailsList = new List<RepairTaskDetails>();
 
-            var partsInDb = await context.Parts.ToListAsync();
+            var partIds = request.Parts.Select(p => p.Id);
+
+            var partsInDb = await context.Parts
+                                         .Where(p => partIds.Contains(p.Id))
+                                         .ToListAsync(ct);
 
             var parts = request.Parts;
 
@@ -70,21 +74,27 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
                 repairTaskDetailsList.Add(repairTaskDetails.Value);
             }
 
-            var repairTaskResult = RepairTask.Update(repairTask,
+            var repairTaskUpdateResult = RepairTask.Update(repairTask,
                                                      request.Name,
                                                      request.Description,
                                                      request.TimeEstimated,
-                                                     request.CostEstimated,
-                                                     repairTaskDetailsList);
+                                                     request.CostEstimated);
 
-            if (!repairTaskResult.IsSuccess)
+            if (!repairTaskUpdateResult.IsSuccess)
             {
-                return repairTaskResult.Errors;
+                return repairTaskUpdateResult.Errors;
+            }
+
+            var repairTaskDetailsUpsertResult = repairTask.UpsertRepairTaskDetails(repairTaskDetailsList);
+
+            if (!repairTaskDetailsUpsertResult.IsSuccess)
+            {
+                return repairTaskDetailsUpsertResult.Errors;
             }
 
             await context.SaveChangesAsync(ct);
 
-            await cache.RemoveByTagAsync("repair-tasks");
+            await cache.RemoveByTagAsync("repair-tasks" , ct);
 
             return Result.Updated;
         }

@@ -1,6 +1,6 @@
 ﻿using GOATY.Domain.Employees;
 using GOATY.Domain.Employees.Enums;
-using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using GOATY.Domain.RepairTasks.Enums;
 using GOATY.Infrastructure.Identity;

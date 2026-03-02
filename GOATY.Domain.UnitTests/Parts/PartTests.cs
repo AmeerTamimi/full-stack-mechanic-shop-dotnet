@@ -1,5 +1,5 @@
 ﻿using GOATY.Domain.Common.Results;
-using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.Parts;
 
 namespace GOATY.Domain.UnitTests.Parts
 {

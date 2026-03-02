@@ -2,7 +2,7 @@
 using GOATY.Application.Features.RepairTasks.DTOs;
 using GOATY.Application.Features.RepairTasks.Mapping;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +31,10 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
 
             var repairTaskDetailsList = new List<RepairTaskDetails>();
 
-            var partsInDb = await context.Parts.ToListAsync(); // ..avoid n+1 :))))))
+            var partIds = request.Parts.Select(p => p.Id);
+
+            var partsInDb = await context.Parts.Where(p => partIds.Contains(p.Id))
+                                               .ToListAsync(ct); 
 
             var parts = request.Parts;
 

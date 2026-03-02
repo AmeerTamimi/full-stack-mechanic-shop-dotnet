@@ -1,6 +1,8 @@
-﻿using GOATY.Domain.Employees;
+﻿using GOATY.Domain.Customers;
+using GOATY.Domain.Customers.Vehicles;
+using GOATY.Domain.Employees;
 using GOATY.Domain.Identity;
-using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,8 @@ namespace GOATY.Application.Common.Interfaces
         DbSet<Employee> Employees { get; }
         DbSet<RefreshToken> RefreshTokens { get; }
         DbSet<RepairTask> RepairTasks { get; }
+        public DbSet<Customer> Customers { get; }
+        public DbSet<Vehicle> Vehicles { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

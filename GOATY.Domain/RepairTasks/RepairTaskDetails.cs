@@ -1,18 +1,16 @@
 ﻿using GOATY.Domain.Common.Results;
-using GOATY.Domain.RepairsTask.Parts;
-using GOATY.Domain.RepairTasks.Enums;
-using System.Xml.Linq;
+using GOATY.Domain.Parts;
 
 namespace GOATY.Domain.RepairTasks
 {
     public sealed class RepairTaskDetails
     {
-        public Guid RepairTaskId { get; set; }
-        public Guid PartId { get; set; }
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public RepairTask RepairTask { get; set; } = null!;
-        public Part Part { get; set; } = null!;
+        public Guid RepairTaskId { get; private set; }
+        public Guid PartId { get; private set; }
+        public int Quantity { get; private set; }
+        public decimal UnitPrice { get; private set; }
+        public RepairTask RepairTask { get; private set; } = null!;
+        public Part Part { get; private set; } = null!;
 
         private RepairTaskDetails() { }
         private RepairTaskDetails(
@@ -51,6 +49,24 @@ namespace GOATY.Domain.RepairTasks
             }
 
             return new RepairTaskDetails(repairTaskId, partId, quantity, unitPrice);
+        }
+
+        public Result<Updated> Update(int quantity,
+                                      decimal unitPrice)
+        {
+            if (quantity <= 0)
+            {
+                return RepairTaskErrors.InvalidQuantity;
+            }
+            if (unitPrice <= 0)
+            {
+                return RepairTaskErrors.InvalidUnitPrice;
+            }
+
+            Quantity = quantity;
+            UnitPrice = unitPrice;
+
+            return Result.Updated;
         }
     }
 }

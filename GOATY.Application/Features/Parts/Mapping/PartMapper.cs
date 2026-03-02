@@ -1,5 +1,5 @@
 ﻿using GOATY.Application.Features.Parts.DTOs;
-using GOATY.Domain.RepairsTask.Parts;
+using GOATY.Domain.Parts;
 
 namespace GOATY.Application.Features.Parts.Mapping
 {

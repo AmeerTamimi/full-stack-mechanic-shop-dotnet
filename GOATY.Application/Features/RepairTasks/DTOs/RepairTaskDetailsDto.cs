@@ -1,4 +1,4 @@
-﻿using GOATY.Domain.RepairsTask.Parts;
+﻿using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 
 namespace GOATY.Application.Features.RepairTasks.DTOs

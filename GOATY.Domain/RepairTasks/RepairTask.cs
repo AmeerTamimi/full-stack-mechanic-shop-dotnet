@@ -1,18 +1,18 @@
 ﻿using GOATY.Domain.Common;
-using GOATY.Domain.Common.Results;
 using GOATY.Domain.Common.Constans;
-using System.Security.Cryptography;
+using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks.Enums;
+using System.Text;
 
 namespace GOATY.Domain.RepairTasks
 {
     public sealed class RepairTask : AuditableEntity
     {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public TimeEstimations TimeEstimated { get; set; }
-        public decimal CostEstimated { get; set; }
-        public List<RepairTaskDetails> RepairTaskDetails { get; set; } = [];
+        public string? Name { get; private set; }
+        public string? Description { get; private set; }
+        public TimeEstimations TimeEstimated { get; private set; }
+        public decimal CostEstimated { get; private set; }
+        public List<RepairTaskDetails> RepairTaskDetails { get; private set; } = [];
 
         public bool IsDeleted { get; set; }
 
@@ -76,12 +76,12 @@ namespace GOATY.Domain.RepairTasks
             }
             return new RepairTask(id, name, desc, time, cost, repairTaskDetails);
         }
+
         public static Result<Updated> Update(RepairTask repairTask,
                                         string name,
                                         string desc,
                                         TimeEstimations time,
-                                        decimal cost,
-                                        List<RepairTaskDetails> repairTaskDetails)
+                                        decimal cost)
         {
 
             if (string.IsNullOrWhiteSpace(name))
@@ -92,26 +92,67 @@ namespace GOATY.Domain.RepairTasks
             {
                 return RepairTaskErrors.InvalidDescription;
             }
-            if (repairTaskDetails is null || repairTaskDetails.Count() <= 0)
-            {
-                return RepairTaskErrors.InvalidRepairTask;
-            }
-
-            var totalCost = CalculateTotalCost(repairTaskDetails);
-            if (cost < totalCost)
-            {
-                return RepairTaskErrors.InvalidCostEstimated(totalCost);
-            }
 
             if (!Enum.IsDefined(typeof(TimeEstimations) , time))
             {
                 return RepairTaskErrors.InvalidTimeEstimated;
             }
+
             repairTask.Name = name;
             repairTask.Description = desc;
             repairTask.TimeEstimated = time;
             repairTask.CostEstimated = cost;
-            repairTask.RepairTaskDetails = repairTaskDetails;
+
+            return Result.Updated;
+        }
+
+        public Result<Updated> UpsertRepairTaskDetails(List<RepairTaskDetails> incoming)
+        {
+            if (incoming is null || incoming.Count() <= 0)
+            {
+                return RepairTaskErrors.InvalidRepairTask;
+            }
+
+            RepairTaskDetails.RemoveAll(existing => 
+                !incoming.Any(rd => rd.RepairTaskId == Id &&
+                                    rd.PartId == existing.PartId));
+
+            foreach(var repairTaskDetail in incoming)
+            {
+                var existing = RepairTaskDetails.SingleOrDefault(rd => rd.RepairTaskId == Id &&
+                                                                       rd.PartId == repairTaskDetail.PartId);
+                
+                if (existing is null)
+                {
+                    var addResult = RepairTasks.RepairTaskDetails.Create(Id,
+                                                                         repairTaskDetail.PartId,
+                                                                         repairTaskDetail.Quantity,
+                                                                         repairTaskDetail.UnitPrice);
+
+                    if (!addResult.IsSuccess)
+                    {
+                        return addResult.Errors;
+                    }
+
+                    RepairTaskDetails.Add(addResult.Value);
+                }
+                else
+                {
+                    var updatedResult = existing.Update(repairTaskDetail.Quantity , repairTaskDetail.UnitPrice);
+
+                    if (!updatedResult.IsSuccess)
+                    {
+                        return updatedResult.Errors;
+                    }
+                }
+            }
+
+            var totalCost = CalculateTotalCost(incoming);
+            if (CostEstimated < totalCost)
+            {
+                return RepairTaskErrors.InvalidCostEstimated(totalCost);
+            }
+
             return Result.Updated;
         }
 
@@ -119,7 +160,7 @@ namespace GOATY.Domain.RepairTasks
         {
             decimal total = 0;
 
-            foreach(var r in repairTaskDetails)
+            foreach (var r in repairTaskDetails)
             {
                 total += r.Quantity * r.UnitPrice;
             }
@@ -129,5 +170,6 @@ namespace GOATY.Domain.RepairTasks
 
             return total + taxes + techBase;
         }
+
     }
 }

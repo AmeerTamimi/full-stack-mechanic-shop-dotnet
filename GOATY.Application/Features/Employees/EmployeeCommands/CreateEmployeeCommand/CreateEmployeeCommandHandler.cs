@@ -4,10 +4,11 @@ using GOATY.Application.Features.Employees.Mapping;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees;
 using MediatR;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace GOATY.Application.Features.Employees.EmployeeCommands.CreateEmployeeCommand
 {
-    public sealed class CreateEmployeeCommandHandler(IAppDbContext context) : IRequestHandler<CreateEmployeeCommand, Result<EmployeeDto>>
+    public sealed class CreateEmployeeCommandHandler(IAppDbContext context , HybridCache cache) : IRequestHandler<CreateEmployeeCommand, Result<EmployeeDto>>
     {
         public async Task<Result<EmployeeDto>> Handle(CreateEmployeeCommand request, CancellationToken ct)
         {
@@ -26,6 +27,8 @@ namespace GOATY.Application.Features.Employees.EmployeeCommands.CreateEmployeeCo
 
             await context.Employees.AddAsync(employee, ct);
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("employees");
 
             return employee.ToDto();
         }

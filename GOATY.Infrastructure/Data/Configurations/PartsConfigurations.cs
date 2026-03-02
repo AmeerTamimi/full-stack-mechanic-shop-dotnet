@@ -1,4 +1,4 @@
-﻿using GOATY.Domain.RepairsTask.Parts;
+﻿using GOATY.Domain.Parts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

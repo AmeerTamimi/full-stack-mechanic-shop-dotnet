@@ -4,13 +4,15 @@ using GOATY.Application.Features.RepairTasks.Mapping;
 using GOATY.Domain.Common.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.DeleteRepairTaskCommands
 {
     public sealed class DeleteRepairTaskCommandHandler(
         IAppDbContext context,
-        ILogger<DeleteRepairTaskCommandHandler> logger)
+        ILogger<DeleteRepairTaskCommandHandler> logger,
+        HybridCache cache)
         : IRequestHandler<DeleteRepairTaskCommand, Result<RepairTaskDto>>
     {
 
@@ -35,6 +37,8 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.DeleteRepair
             repairTask.IsDeleted = true;
 
             await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("repair-tasks");
 
             return repairTask.ToDto();
         }
