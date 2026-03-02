@@ -32,7 +32,7 @@ namespace GOATY.Application.Features.Customers.CustomerCommands.CreateCustomer
                 .NotEmpty().WithMessage("At least one vehicle is required.");
 
             RuleForEach(x => x.Vehicles)
-                .SetValidator(new VehicleValidator());
+                .SetValidator(new CreateVehicleCommandValidator());
         }
     }
 }

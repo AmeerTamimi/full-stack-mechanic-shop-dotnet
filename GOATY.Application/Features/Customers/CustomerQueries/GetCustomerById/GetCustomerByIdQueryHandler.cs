@@ -14,6 +14,7 @@ namespace GOATY.Application.Features.Customers.CustomerQueries.GetCustomerById
         {
             var customer = await context.Customers
                                         .Include(c => c.Vehicles)
+                                        .AsNoTracking()
                                         .SingleOrDefaultAsync(c => c.Id == request.Id , ct);
 
             if(customer is null)

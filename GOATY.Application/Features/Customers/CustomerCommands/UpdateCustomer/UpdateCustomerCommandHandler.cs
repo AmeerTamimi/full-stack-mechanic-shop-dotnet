@@ -42,8 +42,7 @@ namespace GOATY.Application.Features.Customers.CustomerCommands.UpdateCustomer
             }
 
             var duplicatedPlatesInDb = await context.Vehicles
-                                                    .Where(v => plates.Contains(v.LicensePlate.Trim().ToUpper()))
-                                                    .Where(v => v.CustomerId != customer.Id)
+                                                    .Where(v => v.CustomerId != request.Id && plates.Contains(v.LicensePlate.Trim().ToUpper()))
                                                     .Select(v => v.LicensePlate)
                                                     .ToListAsync(ct);
 
@@ -70,6 +69,8 @@ namespace GOATY.Application.Features.Customers.CustomerCommands.UpdateCustomer
                 {
                     return vehicleModel.Errors;
                 }
+
+                vehicleModel.Value.Id = vehicle.Id;
 
                 vehicles.Add(vehicleModel.Value);
             }

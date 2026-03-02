@@ -197,7 +197,7 @@ namespace GOATY.Infrastructure.Data.Migrations
 
                     b.HasIndex("Token");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("GOATY.Domain.Parts.Part", b =>
@@ -233,7 +233,7 @@ namespace GOATY.Infrastructure.Data.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Parts");
+                    b.ToTable("Parts", (string)null);
                 });
 
             modelBuilder.Entity("GOATY.Domain.RepairTasks.RepairTask", b =>

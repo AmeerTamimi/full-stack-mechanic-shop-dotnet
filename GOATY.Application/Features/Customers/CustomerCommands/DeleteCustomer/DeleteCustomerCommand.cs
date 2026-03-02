@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GOATY.Application.Features.Customers.DTOs;
+using GOATY.Domain.Common.Results;
+using MediatR;
 
 namespace GOATY.Application.Features.Customers.CustomerCommands.DeleteCustomer
 {
-    internal class DeleteCustomerCommand
-    {
-    }
+    public sealed record class DeleteCustomerCommand(Guid Id) : IRequest<Result<CustomerDto>>;
 }

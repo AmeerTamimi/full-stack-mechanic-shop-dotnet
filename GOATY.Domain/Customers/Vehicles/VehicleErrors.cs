@@ -24,7 +24,7 @@ namespace GOATY.Domain.Customers.Vehicles
             description: "Vehicle license plate is required."
         );
 
-        public static Error YearInvalid => Error.Validation(
+        public static Error YearInvalid = Error.Validation(
             code: "Vehicle.Year.Invalid",
             description: $"Vehicle year must be between {1900} and {DateTime.Now.Year}."
         );

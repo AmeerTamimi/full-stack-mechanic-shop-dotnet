@@ -1,14 +1,12 @@
 ﻿using FluentValidation;
+using GOATY.Application.Features.Customers.CustomerCommands.CreateCustomer;
 
 namespace GOATY.Application.Features.Customers.CustomerCommands
 {
-    public sealed class VehicleValidator : AbstractValidator<VehicleRequirements>
+    public sealed class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleCommand>
     {
-        public VehicleValidator()
+        public CreateVehicleCommandValidator()
         {
-            RuleFor(x => x.CustomerId)
-                .NotEmpty().WithMessage("CustomerId is required.");
-
             RuleFor(x => x.Brand)
                 .NotEmpty().WithMessage("Brand is required.")
                 .MaximumLength(50).WithMessage("Brand must be at most 50 characters.");

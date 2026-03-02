@@ -36,7 +36,7 @@ namespace GOATY.Domain.Customers
 
         public static readonly Error InvalidVehicles = Error.Validation(
             code: "Customer.Vehicles.Invalid",
-            description: "Vehicles list must not be null."
+            description: "Vehicles list must not be null or Empty."
         );
     }
 }

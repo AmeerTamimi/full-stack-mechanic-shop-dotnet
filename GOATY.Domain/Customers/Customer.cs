@@ -1,6 +1,7 @@
 ﻿using GOATY.Domain.Common;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Customers.Vehicles;
+using GOATY.Domain.RepairTasks;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
@@ -132,6 +133,11 @@ namespace GOATY.Domain.Customers
 
         public Result<Updated> UpsertVehicles(List<Vehicle> incoming)
         {
+            if (incoming is null || incoming.Count() <= 0)
+            {
+                return CustomerErrors.InvalidVehicles;
+            }
+
             _vehicles.RemoveAll(existing => !incoming.Any(v => v.Id == existing.Id));
 
             foreach(var incomingVehicle in incoming)

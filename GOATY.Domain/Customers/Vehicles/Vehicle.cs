@@ -99,5 +99,9 @@ namespace GOATY.Domain.Customers.Vehicles
 
             return Result.Updated;
         }
+        public override string ToString()
+        {
+            return $"Vehicle(Id={Id}, CustomerId={CustomerId}, Plate='{LicensePlate}', Brand='{Brand}', Model='{Model}', Year={Year})";
+        }
     }
 }

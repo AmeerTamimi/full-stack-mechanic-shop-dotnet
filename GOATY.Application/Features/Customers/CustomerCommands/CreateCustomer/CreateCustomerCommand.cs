@@ -1,4 +1,5 @@
-﻿using GOATY.Application.Features.Customers.DTOs;
+﻿using GOATY.Application.Features.Customers.CustomerCommands.UpdateCustomer;
+using GOATY.Application.Features.Customers.DTOs;
 using GOATY.Domain.Common.Results;
 using MediatR;
 
@@ -10,6 +11,6 @@ namespace GOATY.Application.Features.Customers.CustomerCommands.CreateCustomer
         string Phone,
         string Email,
         string Address,
-        IReadOnlyList<VehicleRequirements> Vehicles) 
+        IReadOnlyList<CreateVehicleCommand> Vehicles) 
         : IRequest<Result<CustomerDto>>;
 }

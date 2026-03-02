@@ -1,4 +1,6 @@
-﻿using GOATY.Domain.Employees;
+﻿using GOATY.Domain.Customers;
+using GOATY.Domain.Customers.Vehicles;
+using GOATY.Domain.Employees;
 using GOATY.Domain.Employees.Enums;
 using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
@@ -218,6 +220,42 @@ namespace GOATY.Infrastructure.Data
                             }
                         ).Value
                     ]);
+            }
+
+            if (!await _context.Customers.AnyAsync())
+            {
+                var c1Id = Guid.Parse("f1111111-1111-1111-1111-111111111111");
+                var c2Id = Guid.Parse("f2222222-2222-2222-2222-222222222222");
+
+                var customer1 = Customer.Create(
+                    id: c1Id,
+                    firstName: "Mohammad",
+                    lastName: "Hassan",
+                    phone: "0591234567",
+                    email: "mohammad.hassan@gmail.com",
+                    address: "Nablus - Rafidia",
+                    vehicles: new List<Vehicle>
+                    {
+                        Vehicle.Create(c1Id, "Toyota", "Corolla", 2018, "NAP-12345").Value,
+                        Vehicle.Create(c1Id, "Hyundai", "Elantra", 2020, "NAP-67890").Value,
+                    }
+                ).Value;
+
+                var customer2 = Customer.Create(
+                    id: c2Id,
+                    firstName: "Khaled",
+                    lastName: "Yousef",
+                    phone: "0569876543",
+                    email: "khaled.yousef@gmail.com",
+                    address: "Ramallah - Al-Masyoun",
+                    vehicles: new List<Vehicle>
+                    {
+                        Vehicle.Create(c2Id, "Kia", "Sportage", 2019, "RAM-24680").Value,
+                        Vehicle.Create(c2Id, "BMW", "X3", 2021, "RAM-13579").Value,
+                    }
+                ).Value;
+
+                _context.Customers.AddRange([customer1, customer2]);
             }
 
             await _context.SaveChangesAsync();

@@ -10,6 +10,6 @@ namespace GOATY.Application.Features.Customers.CustomerCommands.UpdateCustomer
         string Phone,
         string Email,
         string Address,
-        IReadOnlyList<VehicleRequirements> Vehicles) 
+        IReadOnlyList<UpdateVehicleCommand> Vehicles) 
         : IRequest<Result<Updated>>;
 }
