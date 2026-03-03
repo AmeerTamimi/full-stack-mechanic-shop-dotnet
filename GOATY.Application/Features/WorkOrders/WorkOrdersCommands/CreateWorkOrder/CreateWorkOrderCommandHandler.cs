@@ -128,6 +128,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                                              customer.Id,
                                              employee.Id,
                                              request.StartTime,
+                                             request.Bay,
                                              workOderRepairTasksModels);
 
             if (!workOrderResult.IsSuccess)
@@ -137,26 +138,36 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             var workOrder = workOrderResult.Value;
 
-            var conflictVehicle = await context.WorkOrders
-                .Where(wo => wo.VehicleId == vehicle.Id &&
-                      (wo.State == State.InProgress || wo.State == State.Scheduled))
-                .ToListAsync(ct);
 
-            if (conflictVehicle.Count > 0)
+            var isConflictVehicle = await context.WorkOrders
+                .AnyAsync(wo => wo.VehicleId == vehicle.Id &&
+                      (wo.State == State.InProgress || wo.State == State.Scheduled) , ct);
+
+            if (isConflictVehicle)
             {
                 return ApplicationErrors.VehicleHasWorkOrderConflict;
             }
 
             var isOverlappedEmployee = await context.WorkOrders
-                .Where(wo => wo.EmployeeId == employee.Id &&
+                .AnyAsync(wo => wo.EmployeeId == employee.Id &&
                                 wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
-                                wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime)
-                .ToListAsync(ct);
+                                wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime, ct);
 
-            if (isOverlappedEmployee.Count > 0)
+            if (isOverlappedEmployee)
             {
                 return ApplicationErrors.EmployeeHasWorkOrderOverlap;
             }
+
+            var isOverlappedBay = await context.WorkOrders
+                .AnyAsync(wo => wo.Bay == request.Bay &&
+                                wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
+                                wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime, ct);
+
+            if (isOverlappedBay)
+            {
+                return ApplicationErrors.BayHasWorkOrderOverlap;
+            }
+
             await context.WorkOrders.AddAsync(workOrder , ct);
             await context.SaveChangesAsync(ct);
 

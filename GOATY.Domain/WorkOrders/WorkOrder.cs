@@ -16,6 +16,7 @@ namespace GOATY.Domain.WorkOrders
         public decimal TotalCost { get; private set; }
         public DateTime StartTime { get; private set; }
         public DateTime EndTime => StartTime.AddMinutes(TotalTime);
+        public Bay Bay { get; private set; }
         public Guid VehicleId { get; private set; }
         public Guid CustomerId { get; private set; }
         public Guid EmployeeId { get; private set; }
@@ -31,6 +32,7 @@ namespace GOATY.Domain.WorkOrders
                           Guid vehicleId,
                           Guid customerId,
                           Guid employeeId,
+                          Bay bay,
                           int totalTime,
                           decimal totalCost,
                           DateTime startTime,
@@ -41,6 +43,7 @@ namespace GOATY.Domain.WorkOrders
             CustomerId = customerId;
             EmployeeId = employeeId;
             StartTime = startTime;
+            Bay = bay;
             State = State.Scheduled;
             TotalTime = totalTime;
             TotalCost = totalCost;
@@ -52,6 +55,7 @@ namespace GOATY.Domain.WorkOrders
                                                Guid customerId,
                                                Guid employeeId,
                                                DateTime startTime,
+                                               Bay bay,
                                                List<WorkOrderRepairTasks> repairTasks)
         {
             if (Guid.Empty == id)
@@ -82,7 +86,7 @@ namespace GOATY.Domain.WorkOrders
             var totalTime = CalculateTotalTime(repairTasks);
             var totalCost = CalculateTotalCost(repairTasks);
 
-            return new WorkOrder(id, vehicleId, customerId, employeeId, totalTime, totalCost, startTime, repairTasks);
+            return new WorkOrder(id, vehicleId, customerId, employeeId, bay, totalTime, totalCost, startTime, repairTasks);
         }
 
         private static int CalculateTotalTime(List<WorkOrderRepairTasks> repairTasks)

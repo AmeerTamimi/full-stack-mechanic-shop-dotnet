@@ -30,6 +30,7 @@ namespace GOATY.Api.Controllers
                                                                         request.CustomerId,
                                                                         request.EmployeeId,
                                                                         request.StartTime,
+                                                                        request.Bay,
                                                                         request.WorkOrderRepairTasks
                                                                         .Select(wr => new WorkOrderRepairTasksCommand(wr.RepairTaskId))
                                                                         .ToList()));

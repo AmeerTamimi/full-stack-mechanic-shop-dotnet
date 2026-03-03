@@ -13,6 +13,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             Guid CustomerId,
             Guid EmployeeId,
             DateTime StartTime,
+            Bay Bay,
             IReadOnlyList<WorkOrderRepairTasksCommand> WorkOrderRepairTasks)
             : IRequest<Result<WorkOrderDto>>;
 

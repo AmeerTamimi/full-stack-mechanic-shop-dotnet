@@ -20,6 +20,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                     TotalTime = table.Column<int>(type: "int", nullable: false),
                     TotalCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Bay = table.Column<int>(type: "int", nullable: false),
                     VehicleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),

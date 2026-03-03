@@ -8,6 +8,7 @@ namespace GOATY.Contracts.Requests
             Guid CustomerId,
             Guid EmployeeId,
             DateTime StartTime,
+            Bay Bay,
             IReadOnlyList<WorkOrderRepairTaskRequest> WorkOrderRepairTasks);
 
     public sealed record class WorkOrderRepairTaskRequest(Guid RepairTaskId);

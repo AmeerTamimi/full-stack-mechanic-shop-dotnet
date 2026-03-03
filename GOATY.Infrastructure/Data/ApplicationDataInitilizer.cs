@@ -6,6 +6,7 @@ using GOATY.Domain.Employees.Enums;
 using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using GOATY.Domain.WorkOrders;
+using GOATY.Domain.WorkOrders.Enums;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -296,6 +297,7 @@ namespace GOATY.Infrastructure.Data
                     customerId: vehicle1.CustomerId,
                     employeeId: tech1Id,
                     startTime: DateTime.Now.AddDays(1),
+                    bay: Bay.A,
                     repairTasks: wo1RepairTasks
                 ).Value;
 
@@ -317,6 +319,7 @@ namespace GOATY.Infrastructure.Data
                     customerId: vehicle2.CustomerId,
                     employeeId: tech2Id,
                     startTime: DateTime.Now.AddDays(2),
+                    bay: Bay.B,
                     repairTasks: wo2RepairTasks
                 ).Value;
 

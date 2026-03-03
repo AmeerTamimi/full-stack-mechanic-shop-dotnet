@@ -5,21 +5,27 @@ namespace GOATY.Application.Common
     public static class ApplicationErrors
     {
         public static Error VehicleHasWorkOrderConflict =
-            Error.Conflict(
-                code: "WorkOrder.Vehicle.Conflict",
-                description: $"Vehicle already has a Scheduled/inProgress Work order."
+                Error.Conflict(
+                    code: "WorkOrder.Vehicle.Conflict",
+                    description: $"Vehicle already has a Scheduled/inProgress Work order."
             );
 
         public static Error CustomerDoesNotOwnVehicle = 
-            Error.Conflict(
-                code: "Customer.Vehicle.NotOwned",
-                description: $"The Customer does not own The Vehicle."
+                Error.Conflict(
+                    code: "Customer.Vehicle.NotOwned",
+                    description: $"The Customer does not own The Vehicle."
             );
 
         public static readonly Error EmployeeHasWorkOrderOverlap =
-            Error.Conflict(
-                code: "WorkOrder.Employee.Overlap",
-                description: "Employee has another work order that overlaps with the requested time."
+                Error.Conflict(
+                    code: "WorkOrder.Employee.Overlap",
+                    description: "Employee has another work order that overlaps with the requested time."
+            );
+
+        public static readonly Error BayHasWorkOrderOverlap =
+                Error.Conflict(
+                    code: "WorkOrder.Bay.Overlap",
+                    description: "Bay has another work order that overlaps with the requested time."
             );
 
         public static readonly Error VehicleDoesNotExist = Error.NotFound(

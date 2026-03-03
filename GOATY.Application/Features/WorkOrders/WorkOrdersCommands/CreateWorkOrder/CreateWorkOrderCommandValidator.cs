@@ -19,6 +19,10 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             RuleFor(x => x.StartTime)
                 .NotEmpty().WithMessage("StartTime is required.");
 
+            RuleFor(x => x.Bay)
+                .NotEmpty().WithMessage("Bay is required")
+                .IsInEnum().WithMessage("Invalid Bay");
+
             RuleFor(x => x.WorkOrderRepairTasks)
                 .NotNull().WithMessage("WorkOrderRepairTasks is required.")
                 .NotEmpty().WithMessage("WorkOrderRepairTasks must contain at least one item.");

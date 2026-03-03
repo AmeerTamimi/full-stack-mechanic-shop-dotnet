@@ -10,6 +10,7 @@ namespace GOATY.Application.Features.WorkOrders.Mappers
         {
             return new WorkOrderDto
             {
+                Bay = model.Bay,
                 State = model.State,
                 TotalTime = model.TotalTime,
                 TotalCost = model.TotalCost,
