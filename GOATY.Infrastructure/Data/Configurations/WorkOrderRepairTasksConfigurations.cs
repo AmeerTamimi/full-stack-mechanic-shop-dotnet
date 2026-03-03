@@ -14,7 +14,8 @@ namespace GOATY.Infrastructure.Data.Configurations
 
             builder.HasOne(wr => wr.WorkOrder)
                    .WithMany(wo => wo.WorkOrderRepairTasks)
-                   .HasForeignKey(wr => wr.WorkOrderId);
+                   .HasForeignKey(wr => wr.WorkOrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(wr => wr.RepairTask)
                    .WithMany(r => r.WorkOrderRepairTasks)

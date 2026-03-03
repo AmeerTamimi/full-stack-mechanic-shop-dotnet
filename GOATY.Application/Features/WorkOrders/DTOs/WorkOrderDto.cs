@@ -6,6 +6,7 @@ namespace GOATY.Application.Features.WorkOrders.DTOs
 {
     public sealed class WorkOrderDto
     {
+        public Guid Id { get; set; }
         public State State { get; set; }
         public int TotalTime { get; set; }
         public decimal TotalCost { get; set; }

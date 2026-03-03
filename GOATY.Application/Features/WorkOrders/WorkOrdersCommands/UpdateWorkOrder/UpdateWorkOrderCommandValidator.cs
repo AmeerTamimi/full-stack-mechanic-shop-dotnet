@@ -1,13 +1,15 @@
 ﻿using FluentValidation;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.WorkOrderRepairTasksCommands;
 
-namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrder
+namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrder
 {
-    public sealed class CreateWorkOrderCommandValidator : AbstractValidator<CreateWorkOrderCommand>
+    public sealed class UpdateWorkOrderCommandValidator : AbstractValidator<UpdateWorkOrderCommand>
     {
-        public CreateWorkOrderCommandValidator()
+        public UpdateWorkOrderCommandValidator()
         {
-
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("WorkOrderId is required.");
+               
             RuleFor(x => x.VehicleId)
                 .NotEmpty().WithMessage("VehicleId is required.");
 
@@ -34,6 +36,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             RuleFor(x => x.WorkOrderRepairTasks)
                 .Must(list => list.Select(t => t.Id).Distinct().Count() == list.Count)
                 .WithMessage("WorkOrderRepairTasks contains duplicate RepairTaskId.");
+
         }
     }
 }

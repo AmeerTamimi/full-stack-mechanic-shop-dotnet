@@ -53,5 +53,11 @@ namespace GOATY.Domain.WorkOrders
             code: "WorkOrderRepairTask.InvalidCost",
             description: "Cost must be greater than 0."
         );
+
+        public static readonly Error InvalidWorkOrderStateTransition =
+            Error.Validation(
+                code: "WorkOrder.State.InvalidTransition",
+                description: "Invalid work order state transition. Valid transitions: Scheduled -> InProgress, InProgress -> Completed, Scheduled -> Cancelled, InProgress -> Cancelled."
+            );
     }
 }

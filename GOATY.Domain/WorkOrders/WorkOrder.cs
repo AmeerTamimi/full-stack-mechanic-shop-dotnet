@@ -24,8 +24,8 @@ namespace GOATY.Domain.WorkOrders
         public Customer? Customer { get; set; }
         public Employee? Employee { get; set; }
 
-        private readonly List<WorkOrderRepairTasks> _repairTasks = [];
-        public IEnumerable<WorkOrderRepairTasks> WorkOrderRepairTasks => _repairTasks;
+        private readonly List<WorkOrderRepairTasks> _workOrderRepairTasks = [];
+        public IEnumerable<WorkOrderRepairTasks> WorkOrderRepairTasks => _workOrderRepairTasks;
 
         private WorkOrder() { }
         private WorkOrder(Guid id,
@@ -47,7 +47,7 @@ namespace GOATY.Domain.WorkOrders
             State = State.Scheduled;
             TotalTime = totalTime;
             TotalCost = totalCost;
-            _repairTasks = repairTasks;
+            _workOrderRepairTasks = repairTasks;
         }
 
         public static Result<WorkOrder> Create(Guid id,
@@ -89,6 +89,91 @@ namespace GOATY.Domain.WorkOrders
             return new WorkOrder(id, vehicleId, customerId, employeeId, bay, totalTime, totalCost, startTime, repairTasks);
         }
 
+        public Result<Updated> Update(Guid vehicleId,
+                                      Guid customerId,
+                                      Guid employeeId,
+                                      DateTime startTime,
+                                      Bay bay,
+                                      List<WorkOrderRepairTasks> repairTasks)
+        {
+            if (Guid.Empty == vehicleId)
+            {
+                return WorkOrderErrors.InvalidVehicleId;
+            }
+            if (Guid.Empty == customerId)
+            {
+                return WorkOrderErrors.InvalidCustomerId;
+            }
+            if (Guid.Empty == employeeId)
+            {
+                return WorkOrderErrors.InvalidTechnicianId;
+            }
+            if (DateTime.Now > startTime)
+            {
+                return WorkOrderErrors.InvalidStartTime;
+            }
+            if (repairTasks is null || repairTasks.Count == 0)
+            {
+                return WorkOrderErrors.InvalidRepairTasks;
+            }
+
+            var totalTime = CalculateTotalTime(repairTasks);
+            var totalCost = CalculateTotalCost(repairTasks);
+
+            VehicleId = vehicleId;
+            CustomerId = customerId;
+            EmployeeId = employeeId;
+            StartTime = startTime;
+            Bay = bay;
+
+            return Result.Updated;
+        }
+
+        public Result<Updated> UpsertRepairTasks(List<WorkOrderRepairTasks> incomings)
+        {
+            _workOrderRepairTasks.RemoveAll(exists => !incomings.Contains(exists));
+
+            foreach(var incoming in incomings)
+            {
+                if (!_workOrderRepairTasks.Contains(incoming))
+                {
+                    var createResult = WorkOrders.WorkOrderRepairTasks.Create(Id,
+                                                                              incoming.RepairTaskId,
+                                                                              incoming.Time,
+                                                                              incoming.Cost);
+                    if (!createResult.IsSuccess)
+                    {
+                        return createResult.Errors;
+                    }
+                    _workOrderRepairTasks.Add(createResult.Value);
+                }
+                else
+                {
+                    var updateResult = incoming.Update(incoming.Time,incoming.Cost);
+                    
+                    if (!updateResult.IsSuccess)
+                    {
+                        return updateResult.Errors;
+                    }
+                }
+            }
+            return Result.Updated;
+        }
+
+        public Result<Updated> UpdateState(State newState)
+        {
+            if((State == State.Scheduled && newState == State.Completed) ||
+                (State == State.InProgress && newState == State.Scheduled) ||
+                State == State.Completed ||
+                State == State.Cancelled)
+            {
+                 return WorkOrderErrors.InvalidWorkOrderStateTransition;
+            }
+
+            State = newState;
+
+            return Result.Updated;
+        }
         private static int CalculateTotalTime(List<WorkOrderRepairTasks> repairTasks)
         {
             var totalTime = 0;

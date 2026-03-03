@@ -20,16 +20,6 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
     {
         public async Task<Result<WorkOrderDto>> Handle(CreateWorkOrderCommand request, CancellationToken ct)
         {
-            var vehicle = await context.Vehicles
-                                       .SingleOrDefaultAsync(v => v.Id == request.VehicleId, ct);
-
-            if (vehicle is null)
-            {
-                return Error.NotFound(
-                    code: "Vehicle_NotFound",
-                    description: $"Vehicle With Id {request.VehicleId} was Not Found"
-                );
-            }
 
             var customer = await context.Customers
                                         .SingleOrDefaultAsync(c => c.Id == request.CustomerId, ct);
@@ -42,10 +32,21 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                 );
             }
 
-            var isCustomerHasVehicle = await context.Customers
-                .Where(c => c.Id == request.CustomerId)
-                .SelectMany(c => c.Vehicles)
-                .AnyAsync(v => v.Id == request.VehicleId);
+            var vehicle = await context.Vehicles
+                                       .SingleOrDefaultAsync(v => v.Id == request.VehicleId, ct);
+
+            if (vehicle is null)
+            {
+                return Error.NotFound(
+                    code: "Vehicle_NotFound",
+                    description: $"Vehicle With Id {request.VehicleId} was Not Found"
+                );
+            }
+
+            var isCustomerHasVehicle = await context.Vehicles
+                .AnyAsync(v => v.CustomerId == customer.Id &&
+                               v.Id == vehicle.Id
+                               ,ct);
 
             if (!isCustomerHasVehicle)
             {
@@ -65,15 +66,15 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             var workOrderRepairTasks = request.WorkOrderRepairTasks;
 
-            var duplicatedRepairTaskOnRequest = workOrderRepairTasks
+            var duplictedRepairTaskInRequest = workOrderRepairTasks
                 .GroupBy(wr => wr.Id)
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToList();
 
-            if (duplicatedRepairTaskOnRequest.Count > 0)
+            if (duplictedRepairTaskInRequest.Count > 0)
             {
-                var repairTaskId = duplicatedRepairTaskOnRequest[0];
+                var repairTaskId = duplictedRepairTaskInRequest[0];
 
                 return Error.Conflict(
                     code: "WorkOrder.RepairTask.DuplicateInRequest",
@@ -85,8 +86,6 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             var repairTaskIds = workOrderRepairTasks.Select(wr => wr.Id).ToList();
 
-            
-
             var repairTasksModelsDb = await context.RepairTasks
                                                    .Where(r => repairTaskIds.Contains(r.Id))
                                                    .ToListAsync(ct);
@@ -95,9 +94,9 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             var workOderRepairTasksModels = new List<WorkOrderRepairTasks>();
 
-            foreach (var workOrderRepairTask in workOrderRepairTasks)
+            foreach (var repairTask in workOrderRepairTasks)
             {
-                var repairTaskId = workOrderRepairTask.Id;
+                var repairTaskId = repairTask.Id;
 
                 if (!repairTasksIdsDb.Contains(repairTaskId))
                 {
@@ -140,16 +139,28 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
 
             var isConflictVehicle = await context.WorkOrders
-                .AnyAsync(wo => wo.VehicleId == vehicle.Id &&
-                      (wo.State == State.InProgress || wo.State == State.Scheduled) , ct);
+                .AnyAsync(wo => wo.VehicleId == workOrder.VehicleId &&
+                                wo.State == State.InProgress , ct);
 
             if (isConflictVehicle)
             {
                 return ApplicationErrors.VehicleHasWorkOrderConflict;
             }
 
+            var isOverlappedVehicle = await context.WorkOrders
+                .AnyAsync(wo => wo.State == State.Scheduled &&
+                                wo.VehicleId == workOrder.VehicleId &&
+                                workOrder.EndTime > wo.StartTime &&
+                                workOrder.StartTime < wo.StartTime.AddMinutes(wo.TotalTime)
+                                ,ct);
+
+            if (isOverlappedVehicle)
+            {
+                return ApplicationErrors.VehicleHasWorkOrderOverlap;
+            }
+
             var isOverlappedEmployee = await context.WorkOrders
-                .AnyAsync(wo => wo.EmployeeId == employee.Id &&
+                .AnyAsync(wo => wo.EmployeeId == workOrder.EmployeeId &&
                                 wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
                                 wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime, ct);
 
@@ -159,7 +170,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             }
 
             var isOverlappedBay = await context.WorkOrders
-                .AnyAsync(wo => wo.Bay == request.Bay &&
+                .AnyAsync(wo => wo.Bay == workOrder.Bay &&
                                 wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
                                 wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime, ct);
 

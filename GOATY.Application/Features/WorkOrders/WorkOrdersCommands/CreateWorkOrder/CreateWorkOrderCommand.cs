@@ -1,6 +1,5 @@
-﻿using GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands;
-using GOATY.Application.Features.WorkOrders.DTOs;
-using GOATY.Domain.Common.Enums;
+﻿using GOATY.Application.Features.WorkOrders.DTOs;
+using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.WorkOrderRepairTasksCommands;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders.Enums;
 using MediatR;
