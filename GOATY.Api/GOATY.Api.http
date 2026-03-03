@@ -67,7 +67,7 @@ Content-type: application/json
 }
 
 ###
-DELETE {{baseUrl}}/api/employees/{{empId}}
+DELETE {{baseUrl}}/api/employees/4d488fd3-b34c-44fe-a6fc-4fa65d9774ae
 
 
 // Identity ===============================================
@@ -101,10 +101,10 @@ POST {{baseUrl}}/api/repairTasks
 Content-type: application/json
 
 {
-  "name": "Window Fix111111",
+  "name": "Window Fix1111111",
   "description": "We wont ruin it this time :)",
-  "timeEstimated": 45,
-  "costEstimated": 510,
+  "timeEstimated": 10,
+  "costEstimated": 4000,
   "parts": [
     {
       "partId": "b7c47513-1018-42c6-a559-0619e7deb0a5",
@@ -211,3 +211,25 @@ Content-type: application/json
 
 ###
 DELETE {{baseUrl}}/api/customers/8f605e85-440c-4f9e-9268-529d08b833fd
+
+
+// Work Orders ===================================================
+
+###
+GET {{baseUrl}}/api/workorders
+
+###
+POST {{baseUrl}}/api/workorders
+Content-type: application/json
+
+{
+    "vehicleId": "22ad247a-e053-4348-ba2e-9bb818681899",
+    "customerId": "f1111111-1111-1111-1111-111111111111",
+    "employeeId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "startTime": "2026-03-04T03:51:57.0776974",
+    "WorkOrderRepairTasks": [
+      {
+        "RepairTaskId": "c3e88507-9013-4b96-bad8-796f09434820"
+      }
+    ]
+ }

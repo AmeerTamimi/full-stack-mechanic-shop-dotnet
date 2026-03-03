@@ -10,6 +10,7 @@ namespace GOATY.Application.Features.WorkOrders.DTOs
         public int TotalTime { get; set; }
         public decimal TotalCost { get; set; }
         public DateTime StartTime { get; set; }
+        public DateTime EndTime => StartTime.AddMinutes(TotalTime);
         public Guid VehicleId { get; set; }
         public Guid CustomerId { get; set; }
         public Guid EmployeeId { get; set; }

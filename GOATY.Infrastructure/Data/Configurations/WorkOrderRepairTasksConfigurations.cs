@@ -13,7 +13,7 @@ namespace GOATY.Infrastructure.Data.Configurations
             builder.HasKey(wr => new { wr.WorkOrderId, wr.RepairTaskId });
 
             builder.HasOne(wr => wr.WorkOrder)
-                   .WithMany(wo => wo.RepairTasks)
+                   .WithMany(wo => wo.WorkOrderRepairTasks)
                    .HasForeignKey(wr => wr.WorkOrderId);
 
             builder.HasOne(wr => wr.RepairTask)

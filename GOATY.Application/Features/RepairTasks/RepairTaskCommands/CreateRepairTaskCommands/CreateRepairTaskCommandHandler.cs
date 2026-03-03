@@ -2,7 +2,6 @@
 using GOATY.Application.Features.RepairTasks.DTOs;
 using GOATY.Application.Features.RepairTasks.Mapping;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,6 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
         HybridCache cache)
         : IRequestHandler<CreateRepairTaskCommand, Result<RepairTaskDto>>
     {
-
         public async Task<Result<RepairTaskDto>> Handle(CreateRepairTaskCommand request, CancellationToken ct)
         {
             if(await context.RepairTasks.AnyAsync(r => r.IsDeleted == false &&

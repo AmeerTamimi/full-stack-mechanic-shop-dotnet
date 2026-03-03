@@ -1,16 +1,21 @@
 ﻿using GOATY.Application.Common;
 using GOATY.Application.Common.Interfaces;
 using GOATY.Application.Features.WorkOrders.DTOs;
+using GOATY.Application.Features.WorkOrders.Mappers;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders;
 using GOATY.Domain.WorkOrders.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
 namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrder
 {
-    public sealed class CreateWorkOderCommandHandler(IAppDbContext context, ILogger<CreateWorkOderCommandHandler> logger)
+    public sealed class CreateWorkOrderCommandHandler(
+        IAppDbContext context,
+        ILogger<CreateWorkOrderCommandHandler> logger,
+        HybridCache cache)
         : IRequestHandler<CreateWorkOrderCommand, Result<WorkOrderDto>>
     {
         public async Task<Result<WorkOrderDto>> Handle(CreateWorkOrderCommand request, CancellationToken ct)
@@ -37,10 +42,15 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                 );
             }
 
-            //var isCustomerHasVehicle = await context.Customers
-            //    .Where(c => c.Id == request.CustomerId)
-            //    .Select(c => c.Vehicles)
-            //    //.Where(v )
+            var isCustomerHasVehicle = await context.Customers
+                .Where(c => c.Id == request.CustomerId)
+                .SelectMany(c => c.Vehicles)
+                .AnyAsync(v => v.Id == request.VehicleId);
+
+            if (!isCustomerHasVehicle)
+            {
+                return ApplicationErrors.CustomerDoesNotOwnVehicle;
+            }
 
             var employee = await context.Employees
                                         .SingleOrDefaultAsync(e => e.Id == request.EmployeeId, ct);
@@ -75,10 +85,13 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             var repairTaskIds = workOrderRepairTasks.Select(wr => wr.Id).ToList();
 
-            var repairTasksIdsDb = await context.RepairTasks
-                                                .Where(r => repairTaskIds.Contains(r.Id))
-                                                .Select(r => r.Id)
-                                                .ToListAsync(ct);
+            
+
+            var repairTasksModelsDb = await context.RepairTasks
+                                                   .Where(r => repairTaskIds.Contains(r.Id))
+                                                   .ToListAsync(ct);
+
+            var repairTasksIdsDb = repairTasksModelsDb.Select(r => r.Id).ToList();
 
             var workOderRepairTasksModels = new List<WorkOrderRepairTasks>();
 
@@ -93,11 +106,14 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                         description: $"RepairTask With Id {repairTaskId} was Not Found"
                     );
                 }
+            }
 
+            foreach(var repairTask in repairTasksModelsDb) 
+            {
                 var workOrderRepairTaskModel = WorkOrderRepairTasks.Create(WorkOderId,
-                                                                           repairTaskId,
-                                                                           workOrderRepairTask.Time,
-                                                                           workOrderRepairTask.Cost);
+                                                                           repairTask.Id,
+                                                                           repairTask.TimeEstimated,
+                                                                           repairTask.CostEstimated);
 
                 if (!workOrderRepairTaskModel.IsSuccess)
                 {
@@ -107,30 +123,46 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                 workOderRepairTasksModels.Add(workOrderRepairTaskModel.Value);
             }
 
-            var workOrder = WorkOrder.Create(WorkOderId,
+            var workOrderResult = WorkOrder.Create(WorkOderId,
                                              vehicle.Id,
                                              customer.Id,
                                              employee.Id,
                                              request.StartTime,
                                              workOderRepairTasksModels);
 
-            if (!workOrder.IsSuccess)
+            if (!workOrderResult.IsSuccess)
             {
-                return workOrder.Errors;
+                return workOrderResult.Errors;
             }
 
-            var conflictVehicle = await context.Vehicles
-                .Select(v => v.WorkOrders
-                .Where(wo => wo.VehicleId == vehicle.Id && (wo.State == State.InProgress || wo.State == State.Scheduled)))
-                .ToListAsync();
+            var workOrder = workOrderResult.Value;
+
+            var conflictVehicle = await context.WorkOrders
+                .Where(wo => wo.VehicleId == vehicle.Id &&
+                      (wo.State == State.InProgress || wo.State == State.Scheduled))
+                .ToListAsync(ct);
 
             if (conflictVehicle.Count > 0)
             {
                 return ApplicationErrors.VehicleHasWorkOrderConflict;
             }
 
+            var isOverlappedEmployee = await context.WorkOrders
+                .Where(wo => wo.EmployeeId == employee.Id &&
+                                wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
+                                wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime)
+                .ToListAsync(ct);
 
-            return null!;
+            if (isOverlappedEmployee.Count > 0)
+            {
+                return ApplicationErrors.EmployeeHasWorkOrderOverlap;
+            }
+            await context.WorkOrders.AddAsync(workOrder , ct);
+            await context.SaveChangesAsync(ct);
+
+            await cache.RemoveByTagAsync("work-orders");
+
+            return workOrder.ToDto();
         }
     }
 }

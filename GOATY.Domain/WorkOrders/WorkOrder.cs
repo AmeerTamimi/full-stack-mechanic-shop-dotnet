@@ -15,6 +15,7 @@ namespace GOATY.Domain.WorkOrders
         public int TotalTime { get; private set; }
         public decimal TotalCost { get; private set; }
         public DateTime StartTime { get; private set; }
+        public DateTime EndTime => StartTime.AddMinutes(TotalTime);
         public Guid VehicleId { get; private set; }
         public Guid CustomerId { get; private set; }
         public Guid EmployeeId { get; private set; }

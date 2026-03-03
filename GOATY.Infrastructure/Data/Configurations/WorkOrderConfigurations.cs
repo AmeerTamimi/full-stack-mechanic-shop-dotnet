@@ -27,7 +27,7 @@ namespace GOATY.Infrastructure.Data.Configurations
                    .HasForeignKey(wo => wo.EmployeeId)
                    .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(wo => wo.RepairTasks)
+            builder.HasMany(wo => wo.WorkOrderRepairTasks)
                    .WithOne(r => r.WorkOrder)
                    .HasForeignKey(r => r.WorkOrderId)
                    .OnDelete(DeleteBehavior.NoAction);

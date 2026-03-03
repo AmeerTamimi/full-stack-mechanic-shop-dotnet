@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GOATY.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260302225209_AddWorkOrder")]
+    [Migration("20260303032621_AddWorkOrder")]
     partial class AddWorkOrder
     {
         /// <inheritdoc />
@@ -640,7 +640,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("GOATY.Domain.WorkOrders.WorkOrder", "WorkOrder")
-                        .WithMany("RepairTasks")
+                        .WithMany("WorkOrderRepairTasks")
                         .HasForeignKey("WorkOrderId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -732,7 +732,7 @@ namespace GOATY.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("GOATY.Domain.WorkOrders.WorkOrder", b =>
                 {
-                    b.Navigation("RepairTasks");
+                    b.Navigation("WorkOrderRepairTasks");
                 });
 #pragma warning restore 612, 618
         }
