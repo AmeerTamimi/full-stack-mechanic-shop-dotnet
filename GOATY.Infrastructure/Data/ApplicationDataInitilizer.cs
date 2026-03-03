@@ -1,10 +1,11 @@
-﻿using GOATY.Domain.Customers;
+﻿using GOATY.Domain.Common.Enums;
+using GOATY.Domain.Customers;
 using GOATY.Domain.Customers.Vehicles;
 using GOATY.Domain.Employees;
 using GOATY.Domain.Employees.Enums;
 using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
-using GOATY.Domain.RepairTasks.Enums;
+using GOATY.Domain.WorkOrders;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -213,7 +214,7 @@ namespace GOATY.Infrastructure.Data
                             id: Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             name: "Battery Repair",
                             desc: "We will ruin the battery lowkey :)",
-                            time : TimeEstimations.Min45,
+                            time : TimeStamps.Min45,
                             cost: 300,
                             repairTaskDetails: new List<RepairTaskDetails>{
                                 RepairTaskDetails.Create(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),partId ,2 , 30).Value
@@ -256,6 +257,70 @@ namespace GOATY.Infrastructure.Data
                 ).Value;
 
                 _context.Customers.AddRange([customer1, customer2]);
+            }
+
+            if (!await _context.WorkOrders.AnyAsync())
+            {
+                var batteryRepairTaskId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+
+                var batteryRepairTask =
+                    _context.RepairTasks.Local.FirstOrDefault(r => r.Id == batteryRepairTaskId)
+                    ?? await _context.RepairTasks.SingleAsync(r => r.Id == batteryRepairTaskId);
+
+                var vehicle1 =
+                    _context.Vehicles.Local.FirstOrDefault(v => v.LicensePlate == "NAP-12345")
+                    ?? await _context.Vehicles.SingleAsync(v => v.LicensePlate == "NAP-12345");
+
+                var vehicle2 =
+                    _context.Vehicles.Local.FirstOrDefault(v => v.LicensePlate == "RAM-13579")
+                    ?? await _context.Vehicles.SingleAsync(v => v.LicensePlate == "RAM-13579");
+
+                var tech1Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+                var tech2Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+
+                var wo1Id = Guid.Parse("99999999-9999-9999-9999-999999999991");
+
+                var wo1RepairTasks = new List<WorkOrderRepairTasks>
+                    {
+                        WorkOrderRepairTasks.Create(
+                            workOrderId: wo1Id,
+                            repairTaskId: batteryRepairTask.Id,
+                            time: batteryRepairTask.TimeEstimated,
+                            cost: batteryRepairTask.CostEstimated
+                        ).Value
+                    };
+
+                var workOrder1 = WorkOrder.Create(
+                    id: wo1Id,
+                    vehicleId: vehicle1.Id,
+                    customerId: vehicle1.CustomerId,
+                    employeeId: tech1Id,
+                    startTime: DateTime.Now.AddDays(1),
+                    repairTasks: wo1RepairTasks
+                ).Value;
+
+                var wo2Id = Guid.Parse("99999999-9999-9999-9999-999999999992");
+
+                var wo2RepairTasks = new List<WorkOrderRepairTasks>
+                    {
+                        WorkOrderRepairTasks.Create(
+                            workOrderId: wo2Id,
+                            repairTaskId: batteryRepairTask.Id,
+                            time: batteryRepairTask.TimeEstimated,
+                            cost: batteryRepairTask.CostEstimated
+                        ).Value
+                    };
+
+                var workOrder2 = WorkOrder.Create(
+                    id: wo2Id,
+                    vehicleId: vehicle2.Id,
+                    customerId: vehicle2.CustomerId,
+                    employeeId: tech2Id,
+                    startTime: DateTime.Now.AddDays(2),
+                    repairTasks: wo2RepairTasks
+                ).Value;
+
+                _context.WorkOrders.AddRange([workOrder1, workOrder2]);
             }
 
             await _context.SaveChangesAsync();

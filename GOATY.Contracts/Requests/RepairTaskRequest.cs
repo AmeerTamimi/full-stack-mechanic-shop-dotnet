@@ -1,4 +1,4 @@
-﻿using GOATY.Domain.RepairTasks.Enums;
+﻿using GOATY.Domain.Common.Enums;
 
 namespace GOATY.Contracts.Requests
 {
@@ -6,7 +6,7 @@ namespace GOATY.Contracts.Requests
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public TimeEstimations TimeEstimated { get; set; }
+        public TimeStamps TimeEstimated { get; set; }
         public decimal CostEstimated { get; set; }
         public List<PartRequirementsRequest> Parts { get; set; } = [];
     }

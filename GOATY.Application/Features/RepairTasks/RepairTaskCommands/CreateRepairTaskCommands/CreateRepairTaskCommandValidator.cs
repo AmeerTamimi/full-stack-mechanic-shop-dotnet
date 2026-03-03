@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using GOATY.Domain.RepairTasks.Enums;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands
 {

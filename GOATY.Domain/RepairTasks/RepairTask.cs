@@ -1,8 +1,8 @@
 ﻿using GOATY.Domain.Common;
 using GOATY.Domain.Common.Constans;
+using GOATY.Domain.Common.Enums;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.RepairTasks.Enums;
-using System.Text;
+using GOATY.Domain.WorkOrders;
 
 namespace GOATY.Domain.RepairTasks
 {
@@ -10,9 +10,11 @@ namespace GOATY.Domain.RepairTasks
     {
         public string? Name { get; private set; }
         public string? Description { get; private set; }
-        public TimeEstimations TimeEstimated { get; private set; }
+        public TimeStamps TimeEstimated { get; private set; }
         public decimal CostEstimated { get; private set; }
         public List<RepairTaskDetails> RepairTaskDetails { get; private set; } = [];
+        public List<WorkOrderRepairTasks> WorkOrderRepairTasks { get; private set; } = [];
+
 
         public bool IsDeleted { get; set; }
 
@@ -21,7 +23,7 @@ namespace GOATY.Domain.RepairTasks
             Guid id,
             string name,
             string desc,
-            TimeEstimations time,
+            TimeStamps time,
             decimal cost,
             List<RepairTaskDetails> repairTaskDetails)
             : base(id)
@@ -37,7 +39,7 @@ namespace GOATY.Domain.RepairTasks
         public static Result<RepairTask> Create(Guid id,
                                         string name,
                                         string desc,
-                                        TimeEstimations time,
+                                        TimeStamps time,
                                         decimal cost,
                                         List<RepairTaskDetails> repairTaskDetails)
         {
@@ -64,7 +66,7 @@ namespace GOATY.Domain.RepairTasks
                 return RepairTaskErrors.InvalidCostEstimated(totalCost);
             }
 
-            if (!Enum.IsDefined(typeof(TimeEstimations) , time))
+            if (!Enum.IsDefined(typeof(TimeStamps) , time))
             {
                 return RepairTaskErrors.InvalidTimeEstimated;
             }
@@ -80,7 +82,7 @@ namespace GOATY.Domain.RepairTasks
         public static Result<Updated> Update(RepairTask repairTask,
                                         string name,
                                         string desc,
-                                        TimeEstimations time,
+                                        TimeStamps time,
                                         decimal cost)
         {
 
@@ -93,7 +95,7 @@ namespace GOATY.Domain.RepairTasks
                 return RepairTaskErrors.InvalidDescription;
             }
 
-            if (!Enum.IsDefined(typeof(TimeEstimations) , time))
+            if (!Enum.IsDefined(typeof(TimeStamps) , time))
             {
                 return RepairTaskErrors.InvalidTimeEstimated;
             }

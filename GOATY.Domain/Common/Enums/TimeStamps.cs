@@ -1,6 +1,6 @@
-﻿namespace GOATY.Domain.RepairTasks.Enums
+﻿namespace GOATY.Domain.Common.Enums
 {
-    public enum TimeEstimations
+    public enum TimeStamps
     {
         Min10 = 10,
         Min15 = 15,
@@ -10,6 +10,7 @@
         Min90 = 90,
         Min120 = 120,
         Min150 = 150,
-        Min180 = 180
+        Min180 = 180,
+        Min360 = 360
     }
 }

@@ -2,6 +2,7 @@
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Customers.Vehicles;
 using GOATY.Domain.RepairTasks;
+using GOATY.Domain.WorkOrders;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
@@ -15,8 +16,12 @@ namespace GOATY.Domain.Customers
         public string? Phone { get; private set; }
         public string? Email { get; private set; }
         public string? Address { get; private set; }
+
         private readonly List<Vehicle> _vehicles = [];
         public IEnumerable<Vehicle> Vehicles  => _vehicles.AsReadOnly();
+
+        private readonly List<WorkOrder> _workOrders = [];
+        public IEnumerable<WorkOrder> WorkOrders => _workOrders.AsReadOnly();
 
         private Customer() { }
         private Customer(Guid id,

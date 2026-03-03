@@ -1,6 +1,6 @@
 ﻿using GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepairTaskCommands;
+using GOATY.Domain.Common.Enums;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.RepairTasks.Enums;
 using MediatR;
 
 namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepairTaskCommands
@@ -9,7 +9,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
         Guid Id,
         string Name,
         string Description,
-        TimeEstimations TimeEstimated,
+        TimeStamps TimeEstimated,
         decimal CostEstimated,
         IReadOnlyList<PartRequirements> Parts) 
         : IRequest<Result<Updated>>;

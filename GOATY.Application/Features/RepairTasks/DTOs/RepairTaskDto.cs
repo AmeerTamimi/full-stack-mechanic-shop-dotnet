@@ -1,4 +1,4 @@
-﻿using GOATY.Domain.RepairTasks.Enums;
+﻿using GOATY.Domain.Common.Enums;
 
 namespace GOATY.Application.Features.RepairTasks.DTOs
 {
@@ -9,7 +9,7 @@ namespace GOATY.Application.Features.RepairTasks.DTOs
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public TimeEstimations TimeEstimated { get; set; }
+        public TimeStamps TimeEstimated { get; set; }
         public decimal CostEstimated { get; set; }
         public List<RepairTaskDetailsDto> RepairTasksDetailsDto { get; set; }
     }

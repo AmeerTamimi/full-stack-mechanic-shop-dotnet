@@ -1,7 +1,7 @@
 ﻿using GOATY.Domain.Common.Constans;
+using GOATY.Domain.Common.Enums;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks;
-using GOATY.Domain.RepairTasks.Enums;
 
 namespace GOATY.Domain.UnitTests.RepairTasks
 {
@@ -13,7 +13,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "Battery Repair";
             var desc = "Replace battery terminals";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
 
             var partId = Guid.NewGuid();
             var details = new List<RepairTaskDetails>
@@ -42,7 +42,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.Empty;
             var name = "Battery Repair";
             var desc = "Replace battery terminals";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
 
             var details = new List<RepairTaskDetails>
             {
@@ -66,7 +66,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "   ";
             var desc = "Replace battery terminals";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
 
             var details = new List<RepairTaskDetails>
             {
@@ -90,7 +90,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "Battery Repair";
             var desc = "";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
 
             var details = new List<RepairTaskDetails>
             {
@@ -114,7 +114,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "Battery Repair";
             var desc = "Replace battery terminals";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var cost = 999m;
 
             var result = RepairTask.Create(id, name, desc, time, cost, repairTaskDetails: null!);
@@ -132,7 +132,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "Battery Repair";
             var desc = "Replace battery terminals";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var cost = 999m;
 
             var result = RepairTask.Create(id, name, desc, time, cost, new List<RepairTaskDetails>());
@@ -150,7 +150,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "Battery Repair";
             var desc = "Replace battery terminals";
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
 
             var details = new List<RepairTaskDetails>
             {
@@ -177,7 +177,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var id = Guid.NewGuid();
             var name = "Battery Repair";
             var desc = "Replace battery terminals";
-            var time = (TimeEstimations)999;
+            var time = (TimeStamps)999;
 
             var details = new List<RepairTaskDetails>
             {
@@ -199,7 +199,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
         public void Update_WithValidData_ShouldSucceed()
         {
             var id = Guid.NewGuid();
-            var initialTime = Enum.GetValues<TimeEstimations>().First();
+            var initialTime = Enum.GetValues<TimeStamps>().First();
             var initialDetails = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
@@ -208,7 +208,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
 
             var newName = "New Name";
             var newDesc = "New Desc";
-            var newTime = Enum.GetValues<TimeEstimations>().Last();
+            var newTime = Enum.GetValues<TimeStamps>().Last();
             var newDetails = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 3, unitPrice: 50m).Value
@@ -243,7 +243,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
         public void Update_WithInvalidName_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var details = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
@@ -270,7 +270,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
         public void Update_WithInvalidDescription_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var details = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
@@ -296,7 +296,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
         public void Update_WithNullRepairTaskDetails_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var details = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
@@ -322,7 +322,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
         public void Update_WithInvalidCostEstimated_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var details = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 2, unitPrice: 30m).Value
@@ -351,14 +351,14 @@ namespace GOATY.Domain.UnitTests.RepairTasks
         public void Update_WithInvalidTimeEstimated_ShouldFail()
         {
             var id = Guid.NewGuid();
-            var time = Enum.GetValues<TimeEstimations>().First();
+            var time = Enum.GetValues<TimeStamps>().First();
             var details = new List<RepairTaskDetails>
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
             var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
 
-            var invalidTime = (TimeEstimations)999;
+            var invalidTime = (TimeStamps)999;
 
             var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", invalidTime, cost: 999999m);
             var updateActual = updateResult.Error;

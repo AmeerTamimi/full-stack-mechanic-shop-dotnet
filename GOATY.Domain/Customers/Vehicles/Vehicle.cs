@@ -1,5 +1,6 @@
 ﻿using GOATY.Domain.Common;
 using GOATY.Domain.Common.Results;
+using GOATY.Domain.WorkOrders;
 
 namespace GOATY.Domain.Customers.Vehicles
 {
@@ -13,6 +14,7 @@ namespace GOATY.Domain.Customers.Vehicles
         public Customer? Customer { get; set; }
         public string VehicleInfo => $"{Brand} | {Model} | {Year}";
 
+        public readonly List<WorkOrder> WorkOrders = [];
         private Vehicle() { }
         private Vehicle(Guid id,Guid customerId, string brand, string model, int year, string licensePlate)
         : base(id)

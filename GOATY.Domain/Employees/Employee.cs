@@ -1,6 +1,7 @@
 ﻿using GOATY.Domain.Common;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.Employees.Enums;
+using GOATY.Domain.WorkOrders;
 
 namespace GOATY.Domain.Employees
 {
@@ -12,6 +13,9 @@ namespace GOATY.Domain.Employees
         public string? Email { get; private set; }
         public string? PasswordHash { get; private set; }
         public Role Role { get; private set; }
+
+        private readonly List<WorkOrder> _workOrders = [];
+        public IEnumerable<WorkOrder> WorkOrders => _workOrders.AsReadOnly();
 
         private Employee() { }
         private Employee(
