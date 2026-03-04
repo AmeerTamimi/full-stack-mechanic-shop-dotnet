@@ -29,7 +29,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.RelocateWorkO
                 );
             }
 
-            if(_workOrderRules.IsBayOccupied(request.NewBay , request.NewStartTime , workOrder.EndTime))
+            if(await _workOrderRules.IsBayOccupied(request.NewBay , request.NewStartTime , workOrder.EndTime , ct))
             {
                 return ApplicationErrors.BayIsOccupied;
             }

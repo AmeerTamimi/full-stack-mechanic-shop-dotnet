@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GOATY.Domain.Common.Results;
+using MediatR;
 
 namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician
 {
-    internal class AssignTechnicianCommand
-    {
-    }
+    public sealed record class AssignTechnicianCommand(
+        Guid WorkOrderId ,
+        Guid EmployeeId)
+        : IRequest<Result<Updated>>;
 }

@@ -15,7 +15,8 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
     public sealed class CreateWorkOrderCommandHandler(
         IAppDbContext context,
         ILogger<CreateWorkOrderCommandHandler> logger,
-        HybridCache cache)
+        HybridCache cache,
+        IWorkOrderRules _workOrderRules)
         : IRequestHandler<CreateWorkOrderCommand, Result<WorkOrderDto>>
     {
         public async Task<Result<WorkOrderDto>> Handle(CreateWorkOrderCommand request, CancellationToken ct)
@@ -43,12 +44,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                 );
             }
 
-            var isCustomerHasVehicle = await context.Vehicles
-                .AnyAsync(v => v.CustomerId == customer.Id &&
-                               v.Id == vehicle.Id
-                               ,ct);
-
-            if (!isCustomerHasVehicle)
+            if(!await _workOrderRules.IsCustomerHasVehicle(request.CustomerId , request.VehicleId, ct))
             {
                 return ApplicationErrors.CustomerDoesNotOwnVehicle;
             }
@@ -123,12 +119,12 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             }
 
             var workOrderResult = WorkOrder.Create(WorkOderId,
-                                             vehicle.Id,
-                                             customer.Id,
-                                             employee.Id,
-                                             request.StartTime,
-                                             request.Bay,
-                                             workOderRepairTasksModels);
+                                                   vehicle.Id,
+                                                   customer.Id,
+                                                   employee.Id,
+                                                   request.StartTime,
+                                                   request.Bay,
+                                                   workOderRepairTasksModels);
 
             if (!workOrderResult.IsSuccess)
             {
@@ -137,46 +133,19 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             var workOrder = workOrderResult.Value;
 
-
-            var isConflictVehicle = await context.WorkOrders
-                .AnyAsync(wo => wo.VehicleId == workOrder.VehicleId &&
-                                wo.State == State.InProgress , ct);
-
-            if (isConflictVehicle)
+            if (await _workOrderRules.IsVehicleOccupied(request.VehicleId, workOrder.StartTime, workOrder.EndTime, ct))
             {
-                return ApplicationErrors.VehicleHasWorkOrderConflict;
+                return ApplicationErrors.VehicleHasSchedulingConflict;
             }
 
-            var isOverlappedVehicle = await context.WorkOrders
-                .AnyAsync(wo => wo.State == State.Scheduled &&
-                                wo.VehicleId == workOrder.VehicleId &&
-                                workOrder.EndTime > wo.StartTime &&
-                                workOrder.StartTime < wo.StartTime.AddMinutes(wo.TotalTime)
-                                ,ct);
-
-            if (isOverlappedVehicle)
+            if (await _workOrderRules.IsTechnicianOccupied(request.EmployeeId, workOrder.StartTime, workOrder.EndTime, ct))
             {
-                return ApplicationErrors.VehicleHasWorkOrderOverlap;
+                return ApplicationErrors.TechnicianIsOccupied;
             }
 
-            var isOverlappedEmployee = await context.WorkOrders
-                .AnyAsync(wo => wo.EmployeeId == workOrder.EmployeeId &&
-                                wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
-                                wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime, ct);
-
-            if (isOverlappedEmployee)
+            if (await _workOrderRules.IsBayOccupied(request.Bay, request.StartTime, workOrder.EndTime , ct))
             {
-                return ApplicationErrors.EmployeeHasWorkOrderOverlap;
-            }
-
-            var isOverlappedBay = await context.WorkOrders
-                .AnyAsync(wo => wo.Bay == workOrder.Bay &&
-                                wo.StartTime < workOrder.StartTime.AddMinutes(workOrder.TotalTime) &&
-                                wo.StartTime.AddMinutes(wo.TotalTime) > workOrder.StartTime, ct);
-
-            if (isOverlappedBay)
-            {
-                return ApplicationErrors.BayHasWorkOrderOverlap;
+                return ApplicationErrors.BayIsOccupied;
             }
 
             await context.WorkOrders.AddAsync(workOrder , ct);

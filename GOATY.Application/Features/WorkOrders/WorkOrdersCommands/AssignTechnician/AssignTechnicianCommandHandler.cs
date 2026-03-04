@@ -41,12 +41,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnic
                 );
             }
 
-            if (_workOrderRules.IsWorkOrderOccupied(request.WorkOrderId))
-            {
-                return ApplicationErrors.WorkOrderIsOccupied;
-            }
-
-            if (_workOrderRules.IsTechnicianOccupied(request.EmployeeId , workOrder.StartTime , workOrder.EndTime))
+            if (await _workOrderRules.IsTechnicianOccupied(request.EmployeeId , workOrder.StartTime , workOrder.EndTime , ct))
             {
                 return ApplicationErrors.TechnicianIsOccupied;
             }

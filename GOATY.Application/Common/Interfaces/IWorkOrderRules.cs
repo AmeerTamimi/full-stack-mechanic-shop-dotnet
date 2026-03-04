@@ -5,9 +5,9 @@ namespace GOATY.Application.Common.Interfaces
 {
     public interface IWorkOrderRules
     {
-        bool IsWorkOrderOccupied(Guid id);
-        bool IsTechnicianOccupied(Guid id , DateTime startTime , DateTime endTime);
-        bool IsBayOccupied(Bay bay, DateTime startTime, DateTime endTime);
-        bool IsVehicleOccupied(Guid id, DateTime startTime, DateTime endTime);
+        Task<bool> IsTechnicianOccupied(Guid id, DateTime startTime, DateTime endTime, CancellationToken ct);
+        Task<bool> IsBayOccupied(Bay bay, DateTime startTime, DateTime endTime, CancellationToken ct);
+        Task<bool> IsVehicleOccupied(Guid id, DateTime startTime, DateTime endTime, CancellationToken ct);
+        Task<bool> IsCustomerHasVehicle(Guid customerId, Guid vehicleId, CancellationToken ct); 
     }
 }

@@ -41,16 +41,12 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateVehicle
                 );
             }
 
-            var isCustomerHasVehicle = await context.Vehicles
-                .AnyAsync(v => v.CustomerId == workOrder.CustomerId &&
-                               v.Id == request.VehicleId, ct);
-
-            if (!isCustomerHasVehicle)
+            if (!await _workOrderRules.IsCustomerHasVehicle(workOrder.CustomerId, workOrder.VehicleId , ct))
             {
                 return ApplicationErrors.CustomerDoesNotOwnVehicle;
             }
 
-            if (_workOrderRules.IsVehicleOccupied(request.VehicleId, workOrder.StartTime, workOrder.EndTime))
+            if (await _workOrderRules.IsVehicleOccupied(request.VehicleId, workOrder.StartTime, workOrder.EndTime , ct))
             {
                 return ApplicationErrors.VehicleHasSchedulingConflict;
             }

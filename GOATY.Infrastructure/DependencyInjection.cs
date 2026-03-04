@@ -1,6 +1,7 @@
 ﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Infrastructure.Data;
 using GOATY.Infrastructure.Identity;
+using GOATY.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,8 @@ namespace GOATY.Infrastructure
             service.AddDb(config)
                    .AddIdentity()
                    .AddJwtAuthentication()
-                   .Authorization();
+                   .Authorization()
+                   .GeneralServices();
 
             return service;
         }
@@ -30,6 +32,7 @@ namespace GOATY.Infrastructure
             });
 
             services.AddScoped<IAppDbContext, AppDbContext>();
+            services.AddScoped<ApplicationDataInitilizer>();
 
             return services;
         }
@@ -50,7 +53,6 @@ namespace GOATY.Infrastructure
 
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddScoped<ITokenProvider, TokenProvider>();
-            services.AddScoped<ApplicationDataInitilizer>();
 
             return services;
         }
@@ -75,6 +77,11 @@ namespace GOATY.Infrastructure
             return services;
         }
 
+        public static IServiceCollection GeneralServices(this IServiceCollection services)
+        {
+            services.AddScoped<IWorkOrderRules, WorkOrderRules>();
 
+            return services;
+        }
     }
 }

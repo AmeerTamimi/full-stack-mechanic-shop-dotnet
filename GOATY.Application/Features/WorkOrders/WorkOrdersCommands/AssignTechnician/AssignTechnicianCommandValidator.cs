@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician
 {
-    internal class AssignTechnicianCommandValidator
+    public sealed class AssignTechnicianCommandValidator : AbstractValidator<AssignTechnicianCommand>
     {
+        public AssignTechnicianCommandValidator()
+        {
+            RuleFor(x => x.WorkOrderId)
+                .NotEmpty().WithMessage("WorkOrderId is required.");
+
+            RuleFor(x => x.EmployeeId)
+                .NotEmpty().WithMessage("EmployeeId is required.");
+        }
     }
 }

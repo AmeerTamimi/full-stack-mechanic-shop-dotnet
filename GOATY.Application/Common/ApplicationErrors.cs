@@ -4,17 +4,6 @@ namespace GOATY.Application.Common
 {
     public static class ApplicationErrors
     {
-        public static Error VehicleHasWorkOrderConflict =
-                Error.Conflict(
-                    code: "WorkOrder.Vehicle.Conflict",
-                    description: $"Vehicle already has an inProgress Work order."
-                );
-
-        public static readonly Error VehicleHasWorkOrderOverlap =
-                Error.Conflict(
-                    code: "WorkOrder.Vehicle.Overlap",
-                    description: "Vehicle has another Scheduled work order that overlaps with the requested time."
-                );
 
         public static readonly Error VehicleHasSchedulingConflict =
                 Error.Conflict(
@@ -26,12 +15,6 @@ namespace GOATY.Application.Common
                 Error.Conflict(
                     code: "Customer.Vehicle.NotOwned",
                     description: $"The Customer does not own The Vehicle."
-                );
-
-        public static readonly Error EmployeeHasWorkOrderOverlap =
-                Error.Conflict(
-                    code: "WorkOrder.Employee.Overlap",
-                    description: "Employee has another work order that overlaps with the requested time."
                 );
 
         public static readonly Error BayHasWorkOrderOverlap =
@@ -61,7 +44,7 @@ namespace GOATY.Application.Common
         public static readonly Error TechnicianIsOccupied =
             Error.Conflict(
                 code: "Technician.Occupied",
-                description: "Technician is working on another work order."
+                description: "Technician has another work order that overlaps with the requested time."
             );
 
         public static readonly Error CannotChangeStateWhenClosed =
