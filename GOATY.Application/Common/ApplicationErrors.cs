@@ -16,6 +16,12 @@ namespace GOATY.Application.Common
                     description: "Vehicle has another Scheduled work order that overlaps with the requested time."
                 );
 
+        public static readonly Error VehicleHasSchedulingConflict =
+                Error.Conflict(
+                    code: "WorkOrder.Vehicle.SchedulingConflict",
+                    description: "Vehicle already has a work order that overlaps with the requested time."
+                );
+
         public static Error CustomerDoesNotOwnVehicle = 
                 Error.Conflict(
                     code: "Customer.Vehicle.NotOwned",
@@ -45,5 +51,29 @@ namespace GOATY.Application.Common
                     code: "WorkOrder.State.StartTime.NotReached",
                     description: "Cannot change work order state before its StartTime."
                 );
+
+        public static readonly Error WorkOrderIsOccupied =
+                Error.Conflict(
+                    code: "WorkOrder.Occupied",
+                    description: "Work order has technician already."
+                );
+
+        public static readonly Error TechnicianIsOccupied =
+            Error.Conflict(
+                code: "Technician.Occupied",
+                description: "Technician is working on another work order."
+            );
+
+        public static readonly Error CannotChangeStateWhenClosed =
+                Error.Conflict(
+                    code: "WorkOrder.State.Closed",
+                    description: "Cannot change work order state when it is Completed or Cancelled."
+                );
+
+        public static readonly Error BayIsOccupied =
+            Error.Conflict(
+                code: "Bay.Occupied",
+                description: "Bay is occupied."
+            );
     }
 }

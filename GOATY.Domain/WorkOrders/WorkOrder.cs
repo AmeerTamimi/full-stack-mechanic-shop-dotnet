@@ -27,6 +27,8 @@ namespace GOATY.Domain.WorkOrders
         private readonly List<WorkOrderRepairTasks> _workOrderRepairTasks = [];
         public IEnumerable<WorkOrderRepairTasks> WorkOrderRepairTasks => _workOrderRepairTasks;
 
+        private bool IsEditable => State == State.Scheduled;
+
         private WorkOrder() { }
         private WorkOrder(Guid id,
                           Guid vehicleId,
@@ -162,6 +164,11 @@ namespace GOATY.Domain.WorkOrders
 
         public Result<Updated> UpdateState(State newState)
         {
+            if (!IsEditable)
+            {
+                return WorkOrderErrors.NotEditable;
+            }
+
             if((State == State.Scheduled && newState == State.Completed) ||
                 (State == State.InProgress && newState == State.Scheduled) ||
                 State == State.Completed ||
@@ -171,6 +178,60 @@ namespace GOATY.Domain.WorkOrders
             }
 
             State = newState;
+
+            return Result.Updated;
+        }
+
+        public Result<Updated> Relocate(Bay newBay , DateTime newStartTime)
+        {
+            if (!IsEditable)
+            {
+                return WorkOrderErrors.NotEditable;
+            }
+
+            if(DateTime.Now < newStartTime)
+            {
+                return WorkOrderErrors.InvalidStartTime;
+            }
+            if(!Enum.IsDefined(typeof(Bay) , newBay))
+            {
+                return WorkOrderErrors.InvalidBay;
+            }
+
+            Bay = newBay;
+            StartTime = newStartTime;
+
+            return Result.Updated;
+        }
+        public Result<Updated> UpdateVehicle(Guid vehicleId)
+        {
+            if (!IsEditable)
+            {
+                return WorkOrderErrors.NotEditable;
+            }
+
+            if (vehicleId == Guid.Empty)
+            {
+                return WorkOrderErrors.InvalidTechnicianId;
+            }
+
+            VehicleId = vehicleId;
+
+            return Result.Updated;
+        }
+        public Result<Updated> UpdateTechnician(Guid technicianId)
+        {
+            if (!IsEditable)
+            {
+                return WorkOrderErrors.NotEditable;
+            }
+
+            if(technicianId == Guid.Empty)
+            {
+                return WorkOrderErrors.InvalidTechnicianId;
+            }
+
+            EmployeeId = technicianId;
 
             return Result.Updated;
         }

@@ -182,7 +182,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             await context.WorkOrders.AddAsync(workOrder , ct);
             await context.SaveChangesAsync(ct);
 
-            await cache.RemoveByTagAsync("work-orders");
+            await cache.RemoveByTagAsync("work-orders" , ct);
 
             return workOrder.ToDto();
         }

@@ -59,5 +59,16 @@ namespace GOATY.Domain.WorkOrders
                 code: "WorkOrder.State.InvalidTransition",
                 description: "Invalid work order state transition. Valid transitions: Scheduled -> InProgress, InProgress -> Completed, Scheduled -> Cancelled, InProgress -> Cancelled."
             );
+
+        public static readonly Error InvalidBay = 
+            Error.Validation(
+                code: "WorkOrder.Bay.Invalid",
+                description: "Invalid bay value."
+            );
+
+        public static readonly Error NotEditable = Error.Conflict(
+            code: "WorkOrder.NotEditable",
+            description: "Work order is not editable."
+        );
     }
 }
