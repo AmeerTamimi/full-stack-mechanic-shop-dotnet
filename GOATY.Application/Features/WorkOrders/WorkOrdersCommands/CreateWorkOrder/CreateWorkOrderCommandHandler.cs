@@ -63,10 +63,10 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             var workOrderRepairTasks = request.WorkOrderRepairTasks;
 
             var duplictedRepairTaskInRequest = workOrderRepairTasks
-                .GroupBy(wr => wr.Id)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
+                                                .GroupBy(wr => wr.Id)
+                                                .Where(g => g.Count() > 1)
+                                                .Select(g => g.Key)
+                                                .ToList();
 
             if (duplictedRepairTaskInRequest.Count > 0)
             {

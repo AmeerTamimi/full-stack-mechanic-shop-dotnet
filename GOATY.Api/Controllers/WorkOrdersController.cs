@@ -1,13 +1,15 @@
-﻿using GOATY.Application.Features.WorkOrders.WorkOrdersCommands;
+﻿using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrder;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.DeleteWorkOrder;
-using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrder;
+using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.RelocateWorkOrder;
+using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateVehicle;
+using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrderRepairTasks;
+using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrderState;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.WorkOrderRepairTasksCommands;
 using GOATY.Application.Features.WorkOrders.WorkOrdersQueries.GetWorkOrderById;
 using GOATY.Application.Features.WorkOrders.WorkOrdersQueries.GetWorkOrders;
 using GOATY.Contracts.Requests;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers
@@ -27,10 +29,10 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetWorkOrderById(Guid id)
+        [HttpGet("{workOrderId:guid}")]
+        public async Task<IActionResult> GetWorkOrderById(Guid workOrderId)
         {
-            var result = await mediator.Send(new GetWorkOrderByIdQuery(id));
+            var result = await mediator.Send(new GetWorkOrderByIdQuery(workOrderId));
 
             return result.Match(
                 response => Ok(response),
@@ -39,7 +41,7 @@ namespace GOATY.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddWorkOrder(WorkOrderRequest request)
+        public async Task<IActionResult> AddWorkOrder(CreateWorkOrderRequest request)
         {
             var result = await mediator.Send(new CreateWorkOrderCommand(request.VehicleId,
                                                                         request.CustomerId,
@@ -56,18 +58,10 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateWorkOrder(Guid id , WorkOrderRequest request)
+        [HttpPut("technician/{workOrderId:guid}")]
+        public async Task<IActionResult> AssignWorkOrderTechnician(Guid workOrderId , AssignTechnicianRequest request)
         {
-            var result = await mediator.Send(new UpdateWorkOrderCommand(id,
-                                                                        request.VehicleId,
-                                                                        request.CustomerId,
-                                                                        request.EmployeeId,
-                                                                        request.StartTime,
-                                                                        request.Bay,
-                                                                        request.WorkOrderRepairTasks
-                                                                        .Select(wr => new WorkOrderRepairTasksCommand(wr.RepairTaskId))
-                                                                        .ToList()));
+            var result = await mediator.Send(new AssignTechnicianCommand(workOrderId, request.EmployeeId));
 
             return result.Match(
                 response => NoContent(),
@@ -75,10 +69,54 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteWorkOrder(Guid id)
+        [HttpPut("relocate/{workOrderId:guid}")]
+        public async Task<IActionResult> RelocateWorkOrder([FromRoute] Guid workOrderId, RelocateWorkOrderRequest request)
         {
-            var result = await mediator.Send(new DeleteWorkOrderCommand(id));
+            var result = await mediator.Send(new RelocateWorkOrderCommand(workOrderId , request.StartTime , request.Bay));
+
+            return result.Match(
+                response => NoContent(),
+                Problem
+            );
+        }
+
+        [HttpPut("vehicle/{workOrderId:guid}")]
+        public async Task<IActionResult> UpdateWorkOrderVehicle(Guid workOrderId, UpdateWorkOrderVehicleRequest request)
+        {
+            var result = await mediator.Send(new UpdateWorkOrderVehicleCommand(workOrderId, request.VehicleId));
+
+            return result.Match(
+                response => NoContent(),
+                Problem
+            );
+        }
+
+        [HttpPut("state/{workOrderId:guid}")]
+        public async Task<IActionResult> UpdateWorkOrderState(Guid workOrderId, UpdateWorkOrderStateRequest request)
+        {
+            var result = await mediator.Send(new UpdateWorkOrderStateCommand(workOrderId,request.State));
+
+            return result.Match(
+                response => NoContent(),
+                Problem
+            );
+        }
+
+        [HttpPut("repair-tasks/{workOrderId:guid}")]
+        public async Task<IActionResult> UpdateWorkOrderRepairTasks(Guid workOrderId, UpdateWorkOrderRepairTasksRequest request)
+        {
+            var result = await mediator.Send(new UpdateWorkOrderRepairTasksCommand(workOrderId, request.WorkOrderRepairTasks
+                                                                                                 .Select(wr => new WorkOrderRepairTasksCommand(wr.RepairTaskId)).ToList()));
+
+            return result.Match(
+                response => NoContent(),
+                Problem
+            );
+        }
+        [HttpDelete("{workOrderId:guid}")]
+        public async Task<IActionResult> DeleteWorkOrder(Guid workOrderId)
+        {
+            var result = await mediator.Send(new DeleteWorkOrderCommand(workOrderId));
 
             return result.Match(
                 response => Ok(response),

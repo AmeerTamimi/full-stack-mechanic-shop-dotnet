@@ -9,14 +9,14 @@ using Microsoft.Extensions.Logging;
 
 namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateVehicle
 {
-    public sealed class UpdateVehicleCommandHandler(
+    public sealed class UpdateWorkOrderVehicleCommandHandler(
         IAppDbContext context,
-        ILogger<UpdateVehicleCommandHandler> logger,
+        ILogger<UpdateWorkOrderVehicleCommandHandler> logger,
         HybridCache cache,
         IWorkOrderRules _workOrderRules)
-        : IRequestHandler<UpdateVehicleCommand, Result<Updated>>
+        : IRequestHandler<UpdateWorkOrderVehicleCommand, Result<Updated>>
     {
-        public async Task<Result<Updated>> Handle(UpdateVehicleCommand request, CancellationToken ct)
+        public async Task<Result<Updated>> Handle(UpdateWorkOrderVehicleCommand request, CancellationToken ct)
         {
             var workOrder = await context.WorkOrders
                 .Include(wo => wo.WorkOrderRepairTasks)
@@ -41,7 +41,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateVehicle
                 );
             }
 
-            if (!await _workOrderRules.IsCustomerHasVehicle(workOrder.CustomerId, workOrder.VehicleId , ct))
+            if (!await _workOrderRules.IsCustomerHasVehicle(workOrder.CustomerId, request.VehicleId , ct))
             {
                 return ApplicationErrors.CustomerDoesNotOwnVehicle;
             }

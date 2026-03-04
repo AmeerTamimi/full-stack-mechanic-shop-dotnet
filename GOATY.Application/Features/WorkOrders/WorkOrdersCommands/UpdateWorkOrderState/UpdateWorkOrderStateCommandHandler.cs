@@ -31,7 +31,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrd
 
             var newState = request.State;
 
-            if(DateTime.Now > workOrder.StartTime)
+            if(DateTime.Now < workOrder.StartTime)
             {
                 return ApplicationErrors.CannotChangeWorkOrderStateBeforeStartTime;
             }

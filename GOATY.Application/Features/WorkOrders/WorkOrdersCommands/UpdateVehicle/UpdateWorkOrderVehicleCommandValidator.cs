@@ -2,9 +2,9 @@
 
 namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateVehicle
 {
-    public sealed class UpdateVehicleCommandValidator : AbstractValidator<UpdateVehicleCommand>
+    public sealed class UpdateWorkOrderVehicleCommandValidator : AbstractValidator<UpdateWorkOrderVehicleCommand>
     {
-        public UpdateVehicleCommandValidator()
+        public UpdateWorkOrderVehicleCommandValidator()
         {
             RuleFor(x => x.WorkOrderId)
                 .NotEmpty().WithMessage("WorkOrderId is required.");

@@ -1,10 +1,11 @@
 @baseUrl = https://localhost:7196
 
 @partId = b7c47513-1018-42c6-a559-0619e7deb0a5
-@empId = 4d488fd3-b34c-44fe-a6fc-4fa65d9774ae
+@empId = eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
 @repairTaskId = aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
 @customerId = f1111111-1111-1111-1111-111111111111
 @customerId2 = f2222222-2222-2222-2222-222222222222
+@workOrderId = 0d4e9484-de67-47dd-a2b0-08894c42847e
 
 // Part ===============================================
 GET {{baseUrl}}/api/parts
@@ -219,6 +220,9 @@ DELETE {{baseUrl}}/api/customers/8f605e85-440c-4f9e-9268-529d08b833fd
 GET {{baseUrl}}/api/workorders
 
 ###
+GET {{baseUrl}}/api/workorders/{{workOrderId}}
+
+###
 POST {{baseUrl}}/api/workorders
 Content-type: application/json
 
@@ -236,21 +240,48 @@ Content-type: application/json
  }
 
 ###
-PUT {{baseUrl}}/api/workorders/0d4e9484-de67-47dd-a2b0-08894c42847e
+DELETE {{baseUrl}}/api/workorders/eb35a655-cdc3-4675-adaa-cd5ab8b506cc
+
+
+###
+PUT {{baseUrl}}/api/workorders/technician/99999999-9999-9999-9999-999999999991
 Content-type: application/json
 
 {
-    "vehicleId": "22ad247a-e053-4348-ba2e-9bb818681899",
-    "customerId": "f1111111-1111-1111-1111-111111111111",
-    "employeeId": "dddddddd-dddd-dddd-dddd-dddddddddddd",
-    "startTime": "2026-03-04T21:22:09.6730816",
-    "bay" : "A",
-    "WorkOrderRepairTasks": [
-      {
-        "RepairTaskId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-      }
-    ]
- }
+    "employeeId" : "{{empId}}"
+}
 
 ###
-DELETE {{baseUrl}}/api/workorders/eb35a655-cdc3-4675-adaa-cd5ab8b506cc
+PUT {{baseUrl}}/api/workorders/state/{{workOrderId}}
+Content-type: application/json
+
+{
+    "state" : "InProgress"
+}
+
+###
+PUT {{baseUrl}}/api/workorders/relocate/{{workOrderId}}
+Content-type: application/json
+
+{
+    "startTime" : "2026-03-04T21:22:00.6730816",
+    "bay" : "A"
+}
+
+### 
+PUT {{baseUrl}}/api/workorders/vehicle/{{workOrderId}}
+Content-type: application/json
+
+{
+    "vehicleId" : "2d13b9e1-6a50-4e35-9af3-29bc6b1a9be3"
+}
+
+### 
+PUT {{baseUrl}}/api/workorders/repair-tasks/{{workOrderId}}
+Content-type: application/json
+
+{
+    "vehicleId" : "2d13b9e1-6a50-4e35-9af3-29bc6b1a9be3"
+}
+### # c1 2d13b9e1-6a50-4e35-9af3-29bc6b1a9be3
+# c2 47aff439-5ceb-48d9-a71a-77bf8a8871b5

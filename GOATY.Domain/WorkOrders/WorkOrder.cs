@@ -164,11 +164,6 @@ namespace GOATY.Domain.WorkOrders
 
         public Result<Updated> UpdateState(State newState)
         {
-            if (!IsEditable)
-            {
-                return WorkOrderErrors.NotEditable;
-            }
-
             if((State == State.Scheduled && newState == State.Completed) ||
                 (State == State.InProgress && newState == State.Scheduled) ||
                 State == State.Completed ||
