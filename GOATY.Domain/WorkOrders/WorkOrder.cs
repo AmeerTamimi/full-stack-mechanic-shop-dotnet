@@ -14,20 +14,20 @@ namespace GOATY.Domain.WorkOrders
         public State State { get; private set; }
         public int TotalTime { get; private set; }
         public decimal TotalCost { get; private set; }
-        public DateTime StartTime { get; private set; }
-        public DateTime EndTime => StartTime.AddMinutes(TotalTime);
+        public DateTimeOffset StartTime { get; private set; }
+        public DateTimeOffset EndTime { get; private set; }
         public Bay Bay { get; private set; }
         public Guid VehicleId { get; private set; }
         public Guid CustomerId { get; private set; }
-        public Guid EmployeeId { get; private set; }
-        public Vehicle? Vehicle { get; set; }
-        public Customer? Customer { get; set; }
+        public Guid? EmployeeId { get; private set; }
+        public Vehicle Vehicle { get; set; }
+        public Customer Customer { get; set; }
         public Employee? Employee { get; set; }
 
         private readonly List<WorkOrderRepairTasks> _workOrderRepairTasks = [];
         public IEnumerable<WorkOrderRepairTasks> WorkOrderRepairTasks => _workOrderRepairTasks;
 
-        private bool IsEditable => State == State.Scheduled;
+        public bool IsEditable => State == State.Scheduled;
 
         private WorkOrder() { }
         private WorkOrder(Guid id,
@@ -45,6 +45,7 @@ namespace GOATY.Domain.WorkOrders
             CustomerId = customerId;
             EmployeeId = employeeId;
             StartTime = startTime;
+            EndTime = startTime.AddMinutes(TotalTime);
             Bay = bay;
             State = State.Scheduled;
             TotalTime = totalTime;
@@ -126,6 +127,7 @@ namespace GOATY.Domain.WorkOrders
             CustomerId = customerId;
             EmployeeId = employeeId;
             StartTime = startTime;
+            EndTime = startTime.AddMinutes(totalTime);
             Bay = bay;
 
             return Result.Updated;
@@ -195,6 +197,7 @@ namespace GOATY.Domain.WorkOrders
 
             Bay = newBay;
             StartTime = newStartTime;
+            EndTime = StartTime.AddMinutes(TotalTime);
 
             return Result.Updated;
         }

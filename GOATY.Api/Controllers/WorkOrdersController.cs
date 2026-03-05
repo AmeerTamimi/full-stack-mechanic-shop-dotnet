@@ -1,5 +1,4 @@
-﻿using GOATY.Application.Features.Schedule.ScheduleQueries.GetSchedule;
-using GOATY.Application.Features.Schedule.ScheduleQueries.GetTechnicianSchedule;
+﻿using Azure.Core;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrder;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.DeleteWorkOrder;
@@ -22,9 +21,23 @@ namespace GOATY.Api.Controllers
     public class WorkOrdersController(IMediator mediator) : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetWorkOrders()
+        public async Task<IActionResult> GetWorkOrders([FromQuery] GetWorkOrdersRequest query)
         {
-            var result = await mediator.Send(new GetWorkOrdersQuery());
+            var result = await mediator.Send(new GetWorkOrdersQuery(
+                query.Page,
+                query.PageSize,
+                query.SearchTerm,
+                query.SortColumn,
+                query.SortDirection,
+                query.State,
+                query.VehicleId,
+                query.LaborId,
+                query.StartDateFrom,
+                query.StartDateTo,
+                query.EndDateFrom,
+                query.EndDateTo,
+                query.Bay
+            ));
 
             return result.Match(
                 response => Ok(response),
@@ -127,26 +140,15 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpGet("schedule")]
-        public async Task<IActionResult> GetSchedule(GetScheduleRequest request)
-        {
-            var result = await mediator.Send(new GetScheduleQuery(request.Day));
+        //[HttpGet("schedule")]
+        //public async Task<IActionResult> GetSchedule(GetScheduleRequest request)
+        //{
+        //    var result = await mediator.Send(new GetScheduleQuery(request.Day));
 
-            return result.Match(
-                response => Ok(response),
-                Problem
-            );
-        }
-
-        [HttpGet("technician-schedule")]
-        public async Task<IActionResult> GetTechnicianSchedule(GetTechnicianScheduleRequest request)
-        {
-            var result = await mediator.Send(new GetTechnicianScheduleQuery(request.EmployeeId , request.Day));
-
-            return result.Match(
-                response => Ok(response),
-                Problem
-            );
-        }
+        //    return result.Match(
+        //        response => Ok(response),
+        //        Problem
+        //    );
+        //}
     }
 }

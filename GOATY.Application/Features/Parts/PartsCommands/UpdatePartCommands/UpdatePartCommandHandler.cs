@@ -12,11 +12,11 @@ namespace GOATY.Application.Features.Parts.PartsCommands.UpdatePartCommands
         public async Task<Result<Updated>> Handle(UpdatePartCommand request, CancellationToken ct)
         {
             var id = request.Id;
-            var partToUpdate = await context.Parts.SingleOrDefaultAsync(
+            var part = await context.Parts.SingleOrDefaultAsync(
                                                    p => p.Id == id,
                                                    ct);
 
-            if(partToUpdate is null)
+            if(part is null)
             {
                 return Error.NotFound(
                              code: "Part_NotFound",
@@ -24,11 +24,9 @@ namespace GOATY.Application.Features.Parts.PartsCommands.UpdatePartCommands
                             );
             }
 
-            var updateResult = Part.Update(partToUpdate,
-                                           request.Name,
+            var updateResult = part.Update(request.Name,
                                            request.Cost,
-                                           request.Quantity
-                                        );
+                                           request.Quantity);
 
             if (!updateResult.IsSuccess)
             {

@@ -8,8 +8,8 @@ namespace GOATY.Domain.RepairTasks
 {
     public sealed class RepairTask : AuditableEntity
     {
-        public string? Name { get; private set; }
-        public string? Description { get; private set; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
         public TimeStamps TimeEstimated { get; private set; }
         public decimal CostEstimated { get; private set; }
         public List<RepairTaskDetails> RepairTaskDetails { get; private set; } = [];

@@ -1,6 +1,7 @@
-﻿using GOATY.Application.Features.WorkOrders.DTOs;
+﻿using GOATY.Application.Features.Customers.Mappers;
+using GOATY.Application.Features.Employees.Mapping;
+using GOATY.Application.Features.WorkOrders.DTOs;
 using GOATY.Domain.WorkOrders;
-using GOATY.Domain.WorkOrders.Enums;
 
 namespace GOATY.Application.Features.WorkOrders.Mappers
 {
@@ -16,9 +17,10 @@ namespace GOATY.Application.Features.WorkOrders.Mappers
                 TotalTime = model.TotalTime,
                 TotalCost = model.TotalCost,
                 StartTime = model.StartTime,
-                VehicleId = model.VehicleId,
-                CustomerId = model.CustomerId,
-                EmployeeId = model.EmployeeId,
+                EndTime = model.EndTime,
+                Vehicle = model.Vehicle is null ? null : model.Vehicle.ToDto(),
+                Customer = model.Customer is null ? null : model.Customer.ToDto(),
+                Employee = model.Employee is null ? null : model.Employee.ToDto(),
                 RepairTasks = model.WorkOrderRepairTasks.ToDtos()
             };
         }

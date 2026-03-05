@@ -1,4 +1,5 @@
-﻿using GOATY.Application.Features.WorkOrders.DTOs;
+﻿using GOATY.Application.Features.RepairTasks.Mapping;
+using GOATY.Application.Features.WorkOrders.DTOs;
 using GOATY.Domain.Common.Enums;
 using GOATY.Domain.WorkOrders;
 
@@ -10,8 +11,7 @@ namespace GOATY.Application.Features.WorkOrders.Mappers
         {
             return new WorkOrderRepairTasksDto
             {
-                WorkOrderId = model.WorkOrderId,
-                RepairTaskId = model.RepairTaskId,
+                RepairTask = model.RepairTask.ToDto(),
                 Time = model.Time,
                 Cost = model.Cost,
             };

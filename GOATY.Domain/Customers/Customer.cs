@@ -12,7 +12,7 @@ namespace GOATY.Domain.Customers
     {
         public string? FirstName { get; private set; }
         public string? LastName { get; private set; }
-        public string FullName => $"{FirstName} {LastName}";
+        public string? FullName { get; private set; }
         public string? Phone { get; private set; }
         public string? Email { get; private set; }
         public string? Address { get; private set; }
@@ -35,6 +35,7 @@ namespace GOATY.Domain.Customers
             Id = id;
             FirstName = firstName;
             LastName = lastName;
+            FullName = $"{firstName} {lastName}";
             Phone = phone;
             Email = email;
             Address = address;
@@ -129,6 +130,7 @@ namespace GOATY.Domain.Customers
             
             FirstName = firstName;
             LastName = lastName;
+            FullName = $"{firstName} {lastName}";
             Phone = phone;
             Email = email;
             Address = address;

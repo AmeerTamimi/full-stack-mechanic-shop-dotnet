@@ -217,10 +217,10 @@ DELETE {{baseUrl}}/api/customers/8f605e85-440c-4f9e-9268-529d08b833fd
 // Work Orders ===================================================
 
 ###
-GET {{baseUrl}}/api/workorders
+GET {{baseUrl}}/api/workorders?Page=1&PageSize=10&sort=A&customerName=Hassan3&employeeName=Yousef
 
 ###
-GET {{baseUrl}}/api/workorders/{{workOrderId}}
+GET {{baseUrl}}/api/workorders/0d4e9484-de67-47dd-a2b0-08894c42847e
 
 ###
 POST {{baseUrl}}/api/workorders

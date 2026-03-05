@@ -48,11 +48,9 @@ namespace GOATY.Domain.Parts
             return new Part(id , name , cost , quantity);
         }
 
-        public static Result<Updated> Update(Part partToUpdate ,
-                                          string name ,
-                                          decimal cost ,
-                                          int quantity
-                                        )
+        public Result<Updated> Update(string name,
+                                             decimal cost,
+                                             int quantity)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -69,9 +67,9 @@ namespace GOATY.Domain.Parts
                 return PartErrors.QuantityInvalidError;
             }
 
-            partToUpdate.Name = name;
-            partToUpdate.Cost = cost;
-            partToUpdate.Quantity = quantity;
+            Name = name;
+            Cost = cost;
+            Quantity = quantity;
 
             return Result.Updated;
         }

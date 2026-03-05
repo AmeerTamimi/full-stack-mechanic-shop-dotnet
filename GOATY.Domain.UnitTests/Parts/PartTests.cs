@@ -80,7 +80,7 @@ namespace GOATY.Domain.UnitTests.Parts
             var created = Part.Create(id, "Old Name", 100m, 10);
             var part = created.Value;
 
-            var result = Part.Update(part, "New Name", 50m, 5);
+            var result = part.Update("New Name", 50m, 5);
 
             Assert.True(result.IsSuccess);
             Assert.Equal("New Name", part.Name);
@@ -95,7 +95,7 @@ namespace GOATY.Domain.UnitTests.Parts
             var created = Part.Create(id, "Old Name", 100m, 10);
             var part = created.Value;
 
-            var result = Part.Update(part, "", 50m, 5);
+            var result = part.Update("", 50m, 5);
 
             Assert.False(result.IsSuccess);
         }
@@ -107,7 +107,7 @@ namespace GOATY.Domain.UnitTests.Parts
             var created = Part.Create(id, "Old Name", 100m, 10);
             var part = created.Value;
 
-            var result = Part.Update(part, "New Name", -50m, 5);
+            var result = part.Update("New Name", -50m, 5);
 
             Assert.False(result.IsSuccess);
         }
@@ -119,7 +119,7 @@ namespace GOATY.Domain.UnitTests.Parts
             var created = Part.Create(id, "Old Name", 100m, 10);
             var part = created.Value;
 
-            var result = Part.Update(part, "New Name", 50m, -5);
+            var result = part.Update("New Name", 50m, -5);
 
             Assert.False(result.IsSuccess);
         }

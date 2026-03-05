@@ -15,8 +15,7 @@ namespace GOATY.Application.Features.Employees.EmployeeCommands.UpdateEmployeeCo
 
             var employee = await context.Employees.SingleOrDefaultAsync(
                                                             emp => emp.Id == employeeId,
-                                                            ct
-                                                          );
+                                                            ct);
 
             if(employee is null)
             {
@@ -26,11 +25,9 @@ namespace GOATY.Application.Features.Employees.EmployeeCommands.UpdateEmployeeCo
                             );
             }
 
-            var result = Employee.Update(employee,
-                                         request.FirstName,
+            var result = employee.Update(request.FirstName,
                                          request.LastName,
-                                         request.Role
-                                  );
+                                         request.Role);
 
             if (!result.IsSuccess)
             {

@@ -20,7 +20,17 @@ namespace GOATY.Contracts.Requests
     public sealed record class UpdateWorkOrderRepairTasksRequest(IReadOnlyList<WorkOrderRepairTaskRequest> WorkOrderRepairTasks);
     public sealed record class GetScheduleRequest(DateOnly Day = default);
     public sealed record class GetTechnicianScheduleRequest(Guid EmployeeId , DateOnly Day = default);
-
-
-
+    public sealed record class GetWorkOrdersRequest(int Page,
+        int PageSize,
+        string? SearchTerm,
+        string SortColumn = "createdAt",
+        string SortDirection = "desc",
+        State? State = null,
+        Guid? VehicleId = null,
+        Guid? LaborId = null,
+        DateTime? StartDateFrom = null,
+        DateTime? StartDateTo = null,
+        DateTime? EndDateFrom = null,
+        DateTime? EndDateTo = null,
+        Bay? Bay = null);
 }

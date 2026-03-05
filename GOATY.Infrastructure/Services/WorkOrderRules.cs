@@ -12,12 +12,12 @@ namespace GOATY.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<bool> IsBayOccupied(Bay bay, DateTime startTime, DateTime endTime, CancellationToken ct)
+        public async Task<bool> IsBayOccupied(Bay bay, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken ct)
         {
             return await _context.WorkOrders
                             .AnyAsync(wo => wo.Bay == bay &&
                                             wo.StartTime < endTime &&
-                                            wo.StartTime.AddMinutes(wo.TotalTime) > startTime,
+                                            wo.EndTime > startTime,
                                             ct);
         }
 
@@ -29,15 +29,15 @@ namespace GOATY.Infrastructure.Services
                                        ct);
         }
 
-        public async Task<bool> IsTechnicianOccupied(Guid employeeId, DateTime startTime, DateTime endTime, CancellationToken ct)
+        public async Task<bool> IsTechnicianOccupied(Guid employeeId, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken ct)
         {
             return await _context.WorkOrders
                             .AnyAsync(wo => wo.EmployeeId == employeeId &&
                                 wo.StartTime < endTime &&
-                                wo.StartTime.AddMinutes(wo.TotalTime) > startTime, ct);
+                                wo.EndTime > startTime, ct);
         }
 
-        public async Task<bool> IsVehicleOccupied(Guid vehicleId, DateTime startTime, DateTime endTime, CancellationToken ct)
+        public async Task<bool> IsVehicleOccupied(Guid vehicleId, DateTimeOffset startTime, DateTimeOffset endTime, CancellationToken ct)
         {
             var conflictedVehicle = await _context.WorkOrders
                                             .AnyAsync(wo => wo.VehicleId == vehicleId &&
@@ -48,7 +48,7 @@ namespace GOATY.Infrastructure.Services
                                             .AnyAsync(wo => wo.State == State.Scheduled &&
                                                 wo.VehicleId == vehicleId &&
                                                 endTime > wo.StartTime &&
-                                                startTime < wo.StartTime.AddMinutes(wo.TotalTime),
+                                                startTime < wo.EndTime,
                                                 ct);
 
             return !conflictedVehicle && !overlappedVehicle;

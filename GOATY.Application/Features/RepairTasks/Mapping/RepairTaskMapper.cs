@@ -1,4 +1,5 @@
-﻿using GOATY.Application.Features.RepairTasks.DTOs;
+﻿using GOATY.Application.Features.Parts.Mapping;
+using GOATY.Application.Features.RepairTasks.DTOs;
 using GOATY.Domain.RepairTasks;
 
 namespace GOATY.Application.Features.RepairTasks.Mapping
@@ -14,7 +15,7 @@ namespace GOATY.Application.Features.RepairTasks.Mapping
                 Description = model.Description,
                 TimeEstimated = model.TimeEstimated,
                 CostEstimated = model.CostEstimated,
-                RepairTasksDetailsDto = model.RepairTaskDetails.ToDtos()
+                Parts = model.RepairTaskDetails is null ? null : model.RepairTaskDetails.ToDtos()
             };
         }
         public static List<RepairTaskDto> ToDtos(this List<RepairTask> models)
@@ -25,8 +26,7 @@ namespace GOATY.Application.Features.RepairTasks.Mapping
         {
             return new RepairTaskDetailsDto
             {
-                RepairTaskId = model.RepairTaskId,
-                PartId = model.PartId,
+                Part = model.Part is null ? null : model.Part.ToDto(),
                 Quantity = model.Quantity,
                 UnitPrice = model.UnitPrice
             };

@@ -104,7 +104,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var newLastName = "New Last Name";
             var newRole = Role.Manager;
 
-            var result = Employee.Update(employee, newFirstName, newLastName, newRole);
+            var result = employee.Update(newFirstName, newLastName, newRole);
 
             var actual = employee;
 
@@ -125,7 +125,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var newLastName = "New Last Name";
             var newRole = Role.Manager;
 
-            var result = Employee.Update(employee, newFirstName, newLastName, newRole);
+            var result = employee.Update(newFirstName, newLastName, newRole);
 
             var actual = result.Error;
             var expected = EmployeeErrors.InvalidFirstName;
@@ -144,7 +144,7 @@ namespace GOATY.Domain.UnitTests.Employees
             string newLastName = null!;
             var newRole = Role.Manager;
 
-            var result = Employee.Update(employee, newFirstName, newLastName, newRole);
+            var result = employee.Update(newFirstName, newLastName, newRole);
 
             var actual = result.Error;
             var expected = EmployeeErrors.InvalidLastName;
@@ -163,7 +163,7 @@ namespace GOATY.Domain.UnitTests.Employees
             var newLastName = "New Last Name";
             var newRole = (Role)5;
 
-            var result = Employee.Update(employee, newFirstName, newLastName, newRole);
+            var result = employee.Update(newFirstName, newLastName, newRole);
 
             var actual = result.Error;
             var expected = EmployeeErrors.InvalidRole;

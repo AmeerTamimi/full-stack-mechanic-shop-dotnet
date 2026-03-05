@@ -7,9 +7,9 @@ namespace GOATY.Domain.Employees
 {
     public sealed class Employee : AuditableEntity
     {
-        public string? FirstName { get; private set; }
-        public string? LastName { get; private set; }
-        public string? FullName { get; private set; } = $"";
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public string FullName { get; private set; }
         public string? Email { get; private set; }
         public string? PasswordHash { get; private set; }
         public Role Role { get; private set; }
@@ -28,6 +28,7 @@ namespace GOATY.Domain.Employees
             Id = id;
             FirstName = firstName;
             LastName = lastName;
+            FullName = $"{firstName} {lastName}";
             Role = role;
         }
         public static Result<Employee> Create(Guid id,
@@ -57,10 +58,9 @@ namespace GOATY.Domain.Employees
 
         }
 
-        public static Result<Updated> Update(Employee employee,
-                                              string firstName,
-                                              string lastName,
-                                              Role role
+        public Result<Updated> Update(string firstName,
+                                             string lastName,
+                                             Role role
                                              )
         {
             if (string.IsNullOrWhiteSpace(firstName))
@@ -77,9 +77,10 @@ namespace GOATY.Domain.Employees
                 return EmployeeErrors.InvalidRole;
             }
 
-            employee.FirstName = firstName;
-            employee.LastName = lastName;
-            employee.Role = role;
+            FirstName = firstName;
+            LastName = lastName;
+            FullName = $"{firstName} {lastName}";
+            Role = role;
 
             return Result.Updated;
         }

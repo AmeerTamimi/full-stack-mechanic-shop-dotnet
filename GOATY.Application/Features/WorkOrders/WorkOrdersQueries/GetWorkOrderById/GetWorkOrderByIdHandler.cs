@@ -16,9 +16,15 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersQueries.GetWorkOrderBy
         public async Task<Result<WorkOrderDto>> Handle(GetWorkOrderByIdQuery request, CancellationToken ct)
         {
             var workOrder = await context.WorkOrders
-                                         .Include(w => w.WorkOrderRepairTasks)
-                                         .AsNoTracking()
-                                         .SingleOrDefaultAsync(w => w.Id == request.Id, ct);
+                .AsNoTracking()
+                .Include(wo => wo.Vehicle)
+                    .ThenInclude(v => v.Customer)
+                .Include(wo => wo.Employee)
+                .Include(wo => wo.WorkOrderRepairTasks)
+                    .ThenInclude(wr => wr.RepairTask)
+                        .ThenInclude(r => r.RepairTaskDetails)
+                            .ThenInclude(r => r.Part)
+                .SingleOrDefaultAsync(w => w.Id == request.Id, ct);
 
             if (workOrder is null)
             {
