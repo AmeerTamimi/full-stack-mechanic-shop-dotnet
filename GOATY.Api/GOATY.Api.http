@@ -281,7 +281,25 @@ PUT {{baseUrl}}/api/workorders/repair-tasks/{{workOrderId}}
 Content-type: application/json
 
 {
-    "vehicleId" : "2d13b9e1-6a50-4e35-9af3-29bc6b1a9be3"
+    "WorkOrderRepairTasks" : [
+      {"RepairTaskId" : "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"},
+      {"RepairTaskId" : "c3e88507-9013-4b96-bad8-796f09434820"}
+    ]
 }
-### # c1 2d13b9e1-6a50-4e35-9af3-29bc6b1a9be3
-# c2 47aff439-5ceb-48d9-a71a-77bf8a8871b5
+
+###
+GET {{baseUrl}}/api/workorders/schedule
+Content-type: application/json
+
+{
+  "Day" : "2026-03-04"
+}
+
+###
+GET {{baseUrl}}/api/workorders/technician-schedule
+Content-type: application/json
+
+{
+  "EmployeeId" : "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+  "Day" : "2026-03-01"
+}

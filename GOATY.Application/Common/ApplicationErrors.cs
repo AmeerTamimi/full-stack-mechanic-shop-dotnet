@@ -58,5 +58,11 @@ namespace GOATY.Application.Common
                 code: "Bay.Occupied",
                 description: "Bay is occupied."
             );
+
+        public static readonly Error NoWorkOrders =
+            Error.NotFound(
+                code: "WorkOrder.NotFound",
+                description: "No work orders were found for the selected day."
+            );
     }
 }

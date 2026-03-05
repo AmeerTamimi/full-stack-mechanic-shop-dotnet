@@ -1,4 +1,6 @@
-﻿using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician;
+﻿using GOATY.Application.Features.Schedule.ScheduleQueries.GetSchedule;
+using GOATY.Application.Features.Schedule.ScheduleQueries.GetTechnicianSchedule;
+using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrder;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.DeleteWorkOrder;
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.RelocateWorkOrder;
@@ -10,6 +12,7 @@ using GOATY.Application.Features.WorkOrders.WorkOrdersQueries.GetWorkOrderById;
 using GOATY.Application.Features.WorkOrders.WorkOrdersQueries.GetWorkOrders;
 using GOATY.Contracts.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GOATY.Api.Controllers
@@ -117,6 +120,28 @@ namespace GOATY.Api.Controllers
         public async Task<IActionResult> DeleteWorkOrder(Guid workOrderId)
         {
             var result = await mediator.Send(new DeleteWorkOrderCommand(workOrderId));
+
+            return result.Match(
+                response => Ok(response),
+                Problem
+            );
+        }
+
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetSchedule(GetScheduleRequest request)
+        {
+            var result = await mediator.Send(new GetScheduleQuery(request.Day));
+
+            return result.Match(
+                response => Ok(response),
+                Problem
+            );
+        }
+
+        [HttpGet("technician-schedule")]
+        public async Task<IActionResult> GetTechnicianSchedule(GetTechnicianScheduleRequest request)
+        {
+            var result = await mediator.Send(new GetTechnicianScheduleQuery(request.EmployeeId , request.Day));
 
             return result.Match(
                 response => Ok(response),
