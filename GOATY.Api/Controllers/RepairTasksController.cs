@@ -44,6 +44,7 @@ namespace GOATY.Api.Controllers
                                                                         request.Description!,
                                                                         request.TimeEstimated,
                                                                         request.CostEstimated,
+                                                                        request.TechnicianCost,
                                                                         request.Parts
                                                                                .Select(p => new PartRequirements(p.PartId,p.Quantity))
                                                                                .ToList()));
@@ -62,6 +63,7 @@ namespace GOATY.Api.Controllers
                                                                          request.Description!,
                                                                          request.TimeEstimated,
                                                                          request.CostEstimated,
+                                                                         request.TechnicianCost,
                                                                          request.Parts
                                                                                 .Select(p => new PartRequirements(p.PartId, p.Quantity))
                                                                                 .ToList()));

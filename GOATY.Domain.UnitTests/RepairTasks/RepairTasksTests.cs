@@ -22,8 +22,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
 
             var cost = 10000m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, details);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
 
             var actual = result.Value;
 
@@ -50,8 +51,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
 
             var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, details);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
 
             var actual = result.Error;
             var expected = RepairTaskErrors.InvalidId;
@@ -74,8 +76,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
 
             var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, details);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
 
             var actual = result.Error;
             var expected = RepairTaskErrors.InvalidName;
@@ -98,8 +101,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
 
             var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, details);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
 
             var actual = result.Error;
             var expected = RepairTaskErrors.InvalidDescription;
@@ -116,8 +120,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var desc = "Replace battery terminals";
             var time = Enum.GetValues<TimeStamps>().First();
             var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, repairTaskDetails: null!);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, repairTaskDetails: null!);
 
             var actual = result.Error;
             var expected = RepairTaskErrors.InvalidRepairTask;
@@ -134,8 +139,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             var desc = "Replace battery terminals";
             var time = Enum.GetValues<TimeStamps>().First();
             var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, new List<RepairTaskDetails>());
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, new List<RepairTaskDetails>());
 
             var actual = result.Error;
             var expected = RepairTaskErrors.InvalidRepairTask;
@@ -158,14 +164,13 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
 
             var subtotal = details.Sum(d => d.Quantity * d.UnitPrice);
-            var totalCost = subtotal + (subtotal * GOATYConstans.TaxRate) + GOATYConstans.TechnicianBase;
+            var cost = subtotal - 10m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var cost = totalCost - 10m; // less than needed
-
-            var result = RepairTask.Create(id, name, desc, time, cost, details);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
 
             var actual = result.Error;
-            var expected = RepairTaskErrors.InvalidCostEstimated(totalCost);
+            var expected = RepairTaskErrors.InvalidCostEstimated(subtotal);
 
             Assert.False(result.IsSuccess);
             Assert.Equivalent(actual, expected);
@@ -185,11 +190,37 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             };
 
             var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase;
 
-            var result = RepairTask.Create(id, name, desc, time, cost, details);
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
 
             var actual = result.Error;
             var expected = RepairTaskErrors.InvalidTimeEstimated;
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(actual, expected);
+        }
+
+        [Fact]
+        public void Create_WithInvalidTechnicianCost_ShouldFail()
+        {
+            var id = Guid.NewGuid();
+            var name = "Battery Repair";
+            var desc = "Replace battery terminals";
+            var time = Enum.GetValues<TimeStamps>().First();
+
+            var details = new List<RepairTaskDetails>
+            {   
+                RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
+            };
+
+            var cost = 999m;
+            var technicianCost = GOATYConstans.TechnicianBase - 1;
+
+            var result = RepairTask.Create(id, name, desc, time, cost, technicianCost, details);
+
+            var actual = result.Error;
+            var expected = RepairTaskErrors.InvalidTechnicianCost;
 
             Assert.False(result.IsSuccess);
             Assert.Equal(actual, expected);
@@ -204,7 +235,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
-            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", initialTime, 999999m, initialDetails).Value;
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", initialTime, 999999m, GOATYConstans.TechnicianBase, initialDetails).Value;
 
             var newName = "New Name";
             var newDesc = "New Desc";
@@ -214,8 +245,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 3, unitPrice: 50m).Value
             };
             var newCost = 999999m;
+            var newTechnicianCost = GOATYConstans.TechnicianBase;
 
-            var updateResult = RepairTask.Update(repairTask, name: newName, desc: newDesc, newTime, cost: newCost);
+            var updateResult = repairTask.Update(newName, newDesc, newTime, newCost, newTechnicianCost);
             var updateActual = updateResult.Value;
             var updateExpected = Result.Updated;
 
@@ -236,6 +268,7 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             Assert.Equal(newDesc, actualRepairTask.Description);
             Assert.Equal(newTime, actualRepairTask.TimeEstimated);
             Assert.Equal(newCost, actualRepairTask.CostEstimated);
+            Assert.Equal(newTechnicianCost, actualRepairTask.TechnicianCost);
             Assert.Equivalent(newDetails, actualRepairTask.RepairTaskDetails);
         }
 
@@ -249,9 +282,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
 
-            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, GOATYConstans.TechnicianBase, details).Value;
 
-            var updateResult = RepairTask.Update(repairTask, name: "", desc: "New Desc", time, cost: -1);
+            var updateResult = repairTask.Update("", "New Desc", time, -1, GOATYConstans.TechnicianBase);
             var updateActual = updateResult.Error;
             var updateExpected = RepairTaskErrors.InvalidName;
 
@@ -275,9 +308,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
-            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, GOATYConstans.TechnicianBase, details).Value;
 
-            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: null!, time, cost: -1);
+            var updateResult = repairTask.Update("New Name", null!, time, -1, GOATYConstans.TechnicianBase);
             var updateActual = updateResult.Error;
             var updateExpected = RepairTaskErrors.InvalidDescription;
 
@@ -301,9 +334,9 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
-            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, GOATYConstans.TechnicianBase, details).Value;
 
-            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", time, cost: 999999m);
+            var updateResult = repairTask.Update("New Name", "New Desc", time, 999999m, GOATYConstans.TechnicianBase);
             var updateActual = updateResult.Value;
             var updateExpected = Result.Updated;
 
@@ -327,24 +360,49 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 2, unitPrice: 30m).Value
             };
-            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, GOATYConstans.TechnicianBase, details).Value;
 
             var subtotal = details.Sum(d => d.Quantity * d.UnitPrice);
-            var totalCost = subtotal + (subtotal * GOATYConstans.TaxRate) + GOATYConstans.TechnicianBase;
 
-            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", time, cost: -1);
-            var updateActual = updateResult.Value;
-            var updateExpected = Result.Updated;
+            var updateResult = repairTask.Update("New Name", "New Desc", time, subtotal - 1, GOATYConstans.TechnicianBase);
+            var updateActual = updateResult.Error;
+            var updateExpected = RepairTaskErrors.InvalidCostEstimated(subtotal);
 
-            Assert.True(updateResult.IsSuccess);
+            Assert.False(updateResult.IsSuccess);
+            Assert.Equivalent(updateActual, updateExpected);
+
+            var upsertResult = repairTask.UpsertRepairTaskDetails(details);
+            var upsertActual = upsertResult.Value;
+            var upsertExpected = Result.Updated;
+
+            Assert.True(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
+        }
+
+        [Fact]
+        public void Update_WithInvalidTechnicianCost_ShouldFail()
+        {
+            var id = Guid.NewGuid();
+            var time = Enum.GetValues<TimeStamps>().First();
+            var details = new List<RepairTaskDetails>
+            {
+                RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
+            };
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, GOATYConstans.TechnicianBase, details).Value;
+
+            var updateResult = repairTask.Update("New Name", "New Desc", time, 999999m, GOATYConstans.TechnicianBase - 1);
+            var updateActual = updateResult.Error;
+            var updateExpected = RepairTaskErrors.InvalidTechnicianCost;
+
+            Assert.False(updateResult.IsSuccess);
             Assert.Equal(updateActual, updateExpected);
 
             var upsertResult = repairTask.UpsertRepairTaskDetails(details);
-            var upsertActual = upsertResult.Error;
-            var upsertExpected = RepairTaskErrors.InvalidCostEstimated(totalCost);
+            var upsertActual = upsertResult.Value;
+            var upsertExpected = Result.Updated;
 
-            Assert.False(upsertResult.IsSuccess);
-            Assert.Equivalent(upsertActual, upsertExpected);
+            Assert.True(upsertResult.IsSuccess);
+            Assert.Equal(upsertActual, upsertExpected);
         }
 
         [Fact]
@@ -356,11 +414,11 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             {
                 RepairTaskDetails.Create(id, Guid.NewGuid(), quantity: 1, unitPrice: 10m).Value
             };
-            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, details).Value;
+            var repairTask = RepairTask.Create(id, "Initial", "Initial Desc", time, 999999m, GOATYConstans.TechnicianBase, details).Value;
 
             var invalidTime = (TimeStamps)999;
 
-            var updateResult = RepairTask.Update(repairTask, name: "New Name", desc: "New Desc", invalidTime, cost: 999999m);
+            var updateResult = repairTask.Update("New Name", "New Desc", invalidTime, 999999m, GOATYConstans.TechnicianBase);
             var updateActual = updateResult.Error;
             var updateExpected = RepairTaskErrors.InvalidTimeEstimated;
 

@@ -11,6 +11,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
         string Description,
         TimeStamps TimeEstimated,
         decimal CostEstimated,
+        decimal TechnicianCost,
         IReadOnlyList<PartRequirements> Parts) 
         : IRequest<Result<Updated>>;
 }

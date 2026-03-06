@@ -217,6 +217,7 @@ namespace GOATY.Infrastructure.Data
                             desc: "We will ruin the battery lowkey :)",
                             time : TimeStamps.Min45,
                             cost: 300,
+                            technicianCost : 100,
                             repairTaskDetails: new List<RepairTaskDetails>{
                                 RepairTaskDetails.Create(Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),partId ,2 , 30).Value
                             }

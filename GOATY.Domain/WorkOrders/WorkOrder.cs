@@ -5,6 +5,7 @@ using GOATY.Domain.Customers;
 using GOATY.Domain.Customers.Vehicles;
 using GOATY.Domain.Employees;
 using GOATY.Domain.RepairTasks;
+using GOATY.Domain.WorkOrders.Billing;
 using GOATY.Domain.WorkOrders.Enums;
 
 namespace GOATY.Domain.WorkOrders
@@ -12,11 +13,12 @@ namespace GOATY.Domain.WorkOrders
     public sealed class WorkOrder : AuditableEntity
     {
         public State State { get; private set; }
-        public int TotalTime { get; private set; }
-        public decimal TotalCost { get; private set; }
+        public int TotalTime => _workOrderRepairTasks.Sum(wr => (int)wr.RepairTask.TimeEstimated);
+        public decimal TotalCost => _workOrderRepairTasks.Sum(wr => wr.RepairTask.CostEstimated);
         public DateTimeOffset StartTime { get; private set; }
         public DateTimeOffset EndTime { get; private set; }
         public Bay Bay { get; private set; }
+        public Invoice? Invoice { get; set; }
         public Guid VehicleId { get; private set; }
         public Guid CustomerId { get; private set; }
         public Guid? EmployeeId { get; private set; }
@@ -35,8 +37,6 @@ namespace GOATY.Domain.WorkOrders
                           Guid customerId,
                           Guid employeeId,
                           Bay bay,
-                          int totalTime,
-                          decimal totalCost,
                           DateTime startTime,
                           List<WorkOrderRepairTasks> repairTasks)
                           : base(id)
@@ -48,8 +48,6 @@ namespace GOATY.Domain.WorkOrders
             EndTime = startTime.AddMinutes(TotalTime);
             Bay = bay;
             State = State.Scheduled;
-            TotalTime = totalTime;
-            TotalCost = totalCost;
             _workOrderRepairTasks = repairTasks;
         }
 
@@ -86,10 +84,7 @@ namespace GOATY.Domain.WorkOrders
                 return WorkOrderErrors.InvalidRepairTasks;
             }
 
-            var totalTime = CalculateTotalTime(repairTasks);
-            var totalCost = CalculateTotalCost(repairTasks);
-
-            return new WorkOrder(id, vehicleId, customerId, employeeId, bay, totalTime, totalCost, startTime, repairTasks);
+            return new WorkOrder(id, vehicleId, customerId, employeeId, bay, startTime, repairTasks);
         }
 
         public Result<Updated> Update(Guid vehicleId,
@@ -120,14 +115,11 @@ namespace GOATY.Domain.WorkOrders
                 return WorkOrderErrors.InvalidRepairTasks;
             }
 
-            var totalTime = CalculateTotalTime(repairTasks);
-            var totalCost = CalculateTotalCost(repairTasks);
-
             VehicleId = vehicleId;
             CustomerId = customerId;
             EmployeeId = employeeId;
             StartTime = startTime;
-            EndTime = startTime.AddMinutes(totalTime);
+            EndTime = startTime.AddMinutes(TotalTime);
             Bay = bay;
 
             return Result.Updated;
@@ -232,28 +224,6 @@ namespace GOATY.Domain.WorkOrders
             EmployeeId = technicianId;
 
             return Result.Updated;
-        }
-        private static int CalculateTotalTime(List<WorkOrderRepairTasks> repairTasks)
-        {
-            var totalTime = 0;
-
-            foreach(var task in repairTasks)
-            {
-                totalTime += (int)task.Time;
-            }
-
-            return totalTime;
-        }
-        private static decimal CalculateTotalCost(List<WorkOrderRepairTasks> repairTasks)
-        {
-            var totalCost = 0m;
-
-            foreach (var task in repairTasks)
-            {
-                totalCost += task.Cost;
-            }
-
-            return totalCost;
         }
     }
 }

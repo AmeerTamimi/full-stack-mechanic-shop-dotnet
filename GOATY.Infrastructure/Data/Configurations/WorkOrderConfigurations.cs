@@ -12,6 +12,29 @@ namespace GOATY.Infrastructure.Data.Configurations
 
             builder.HasKey(wo => wo.Id);
 
+            builder.Ignore(wo => wo.TotalTime);
+            builder.Ignore(wo => wo.TotalCost);
+
+            builder.Property(wo => wo.State)
+                   .HasConversion<string>()
+                   .IsRequired();
+
+            builder.Property(wo => wo.StartTime)
+                   .IsRequired();
+
+            builder.Property(wo => wo.EndTime)
+                   .IsRequired();
+
+            builder.Property(wo => wo.Bay)
+                   .HasConversion<string>()
+                   .IsRequired();
+
+            builder.Property(wo => wo.VehicleId)
+                   .IsRequired();
+
+            builder.Property(wo => wo.CustomerId)
+                   .IsRequired();
+
             builder.HasOne(wo => wo.Vehicle)
                    .WithMany(v => v.WorkOrders)
                    .HasForeignKey(wo => wo.VehicleId)

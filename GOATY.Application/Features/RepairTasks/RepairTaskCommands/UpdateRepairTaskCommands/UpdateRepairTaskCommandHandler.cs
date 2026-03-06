@@ -74,11 +74,11 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.UpdateRepair
                 repairTaskDetailsList.Add(repairTaskDetails.Value);
             }
 
-            var repairTaskUpdateResult = RepairTask.Update(repairTask,
-                                                     request.Name,
-                                                     request.Description,
-                                                     request.TimeEstimated,
-                                                     request.CostEstimated);
+            var repairTaskUpdateResult = repairTask.Update(request.Name,
+                                                           request.Description,
+                                                           request.TimeEstimated,
+                                                           request.CostEstimated,
+                                                           request.TechnicianCost);
 
             if (!repairTaskUpdateResult.IsSuccess)
             {

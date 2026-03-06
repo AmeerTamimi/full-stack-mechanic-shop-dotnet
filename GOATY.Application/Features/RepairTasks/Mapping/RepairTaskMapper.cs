@@ -15,7 +15,7 @@ namespace GOATY.Application.Features.RepairTasks.Mapping
                 Description = model.Description,
                 TimeEstimated = model.TimeEstimated,
                 CostEstimated = model.CostEstimated,
-                Parts = model.RepairTaskDetails is null ? null : model.RepairTaskDetails.ToDtos()
+                Parts = model.RepairTaskDetails is null ? null : model.RepairTaskDetails.ToList().ToDtos()
             };
         }
         public static List<RepairTaskDto> ToDtos(this List<RepairTask> models)

@@ -68,6 +68,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskCommands.CreateRepair
                                                      request.Description,
                                                      request.TimeEstimated,
                                                      request.CostEstimated,
+                                                     request.TechnicianCost,
                                                      repairTaskDetailsList);
             if (!repairTaskResult.IsSuccess)
             {

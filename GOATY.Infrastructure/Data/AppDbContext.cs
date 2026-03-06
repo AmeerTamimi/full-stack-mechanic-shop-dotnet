@@ -6,6 +6,7 @@ using GOATY.Domain.Identity;
 using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using GOATY.Domain.WorkOrders;
+using GOATY.Domain.WorkOrders.Billing;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace GOATY.Infrastructure.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<WorkOrder> WorkOrders { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
