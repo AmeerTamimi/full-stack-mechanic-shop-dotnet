@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GOATY.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260306201625_AddInvoice")]
+    [Migration("20260306234400_AddInvoice")]
     partial class AddInvoice
     {
         /// <inheritdoc />
@@ -333,7 +333,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("PaidAt")
+                    b.Property<DateTimeOffset?>("PaidAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Status")
@@ -357,7 +357,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                     b.HasIndex("WorkOrderId")
                         .IsUnique();
 
-                    b.ToTable("Invocies", (string)null);
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("GOATY.Domain.WorkOrders.Billing.InvoiceItem", b =>
@@ -381,8 +381,8 @@ namespace GOATY.Infrastructure.Data.Migrations
                     b.Property<int>("TechnicianCost")
                         .HasColumnType("int");
 
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("UnitPrice")
                         .HasColumnType("int");

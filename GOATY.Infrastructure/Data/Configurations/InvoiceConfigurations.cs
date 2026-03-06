@@ -8,14 +8,11 @@ namespace GOATY.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Invoice> builder)
         {
-            builder.ToTable("Invocies");
+            builder.ToTable("Invoices");
 
             builder.HasKey(i => i.Id);
 
             builder.Property(i => i.IssuedAt)
-                   .IsRequired();
-
-            builder.Property(i => i.PaidAt)
                    .IsRequired();
 
             builder.Property(i => i.Status)

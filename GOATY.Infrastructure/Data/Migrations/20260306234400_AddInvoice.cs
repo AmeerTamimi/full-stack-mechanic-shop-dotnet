@@ -51,12 +51,12 @@ namespace GOATY.Infrastructure.Data.Migrations
                 defaultValue: 0m);
 
             migrationBuilder.CreateTable(
-                name: "Invocies",
+                name: "Invoices",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IssuedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    PaidAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    PaidAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SubTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -70,9 +70,9 @@ namespace GOATY.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Invocies", x => x.Id);
+                    table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invocies_WorkOrders_WorkOrderId",
+                        name: "FK_Invoices_WorkOrders_WorkOrderId",
                         column: x => x.WorkOrderId,
                         principalTable: "WorkOrders",
                         principalColumn: "Id",
@@ -87,7 +87,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                     TechnicianCost = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<int>(type: "int", nullable: false),
-                    Total = table.Column<int>(type: "int", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RepairTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     PartId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -97,9 +97,9 @@ namespace GOATY.Infrastructure.Data.Migrations
                     table.PrimaryKey("PK_InvoiceItem", x => x.Id);
                     table.CheckConstraint("CK_InvoiceItem_ExactlyOneSource", "(\r\n                        ([PartId] IS NOT NULL AND [RepairTaskId] IS NULL)\r\n                        OR\r\n                        ([PartId] IS NULL AND [RepairTaskId] IS NOT NULL)\r\n                    )");
                     table.ForeignKey(
-                        name: "FK_InvoiceItem_Invocies_InvoiceId",
+                        name: "FK_InvoiceItem_Invoices_InvoiceId",
                         column: x => x.InvoiceId,
-                        principalTable: "Invocies",
+                        principalTable: "Invoices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -115,12 +115,6 @@ namespace GOATY.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invocies_WorkOrderId",
-                table: "Invocies",
-                column: "WorkOrderId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_InvoiceItem_InvoiceId",
                 table: "InvoiceItem",
                 column: "InvoiceId");
@@ -134,6 +128,12 @@ namespace GOATY.Infrastructure.Data.Migrations
                 name: "IX_InvoiceItem_RepairTaskId",
                 table: "InvoiceItem",
                 column: "RepairTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_WorkOrderId",
+                table: "Invoices",
+                column: "WorkOrderId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -143,7 +143,7 @@ namespace GOATY.Infrastructure.Data.Migrations
                 name: "InvoiceItem");
 
             migrationBuilder.DropTable(
-                name: "Invocies");
+                name: "Invoices");
 
             migrationBuilder.DropColumn(
                 name: "TechnicianCost",

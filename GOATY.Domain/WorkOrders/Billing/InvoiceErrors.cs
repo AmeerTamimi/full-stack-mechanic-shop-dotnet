@@ -11,7 +11,7 @@ namespace GOATY.Domain.WorkOrders.Billing
 
         public static readonly Error InvalidDiscount = Error.Validation(
             code: "Invoice.Discount.Invalid",
-            description: "Invoice discount must be greater than or equal to 0."
+            description: "Invoice discount must be greater than or equal to 0 and less than or equal 100."
         );
 
         public static readonly Error InvalidIssuedDate = Error.Validation(

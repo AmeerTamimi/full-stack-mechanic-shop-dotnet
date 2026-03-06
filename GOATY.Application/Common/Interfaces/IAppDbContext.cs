@@ -5,6 +5,7 @@ using GOATY.Domain.Identity;
 using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using GOATY.Domain.WorkOrders;
+using GOATY.Domain.WorkOrders.Billing;
 using Microsoft.EntityFrameworkCore;
 
 namespace GOATY.Application.Common.Interfaces
@@ -15,9 +16,10 @@ namespace GOATY.Application.Common.Interfaces
         DbSet<Employee> Employees { get; }
         DbSet<RefreshToken> RefreshTokens { get; }
         DbSet<RepairTask> RepairTasks { get; }
-        public DbSet<Customer> Customers { get; }
-        public DbSet<Vehicle> Vehicles { get; }
-        public DbSet<WorkOrder> WorkOrders { get; }
+        DbSet<Customer> Customers { get; }
+        DbSet<Vehicle> Vehicles { get; }
+        DbSet<WorkOrder> WorkOrders { get; }
+        DbSet<Invoice> Invoices { get;}
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

@@ -26,6 +26,7 @@ namespace GOATY.Domain.WorkOrders.Billing
             Guid id,
             decimal discount,
             DateTimeOffset issuedAt,
+            decimal subTotal,
             decimal tax,
             decimal total,
             Guid workOrderId,
@@ -34,6 +35,7 @@ namespace GOATY.Domain.WorkOrders.Billing
             Id = id;
             Discount = discount;
             IssuedAt = issuedAt;
+            SubTotal = subTotal;
             Status = InvoiceStatus.NotPayed;
             Tax = tax;
             Total = total;
@@ -44,7 +46,6 @@ namespace GOATY.Domain.WorkOrders.Billing
         public static Result<Invoice> Create(Guid id,
                                              decimal discount,
                                              DateTimeOffset issuedAt,
-                                             decimal total,
                                              Guid workOrderId,
                                              List<InvoiceItem> invoiceItems)
         {
@@ -52,17 +53,13 @@ namespace GOATY.Domain.WorkOrders.Billing
             {
                 return InvoiceErrors.InvalidId;
             }
-            if (discount < 0)
+            if (discount < 0 || discount > 100)
             {
                 return InvoiceErrors.InvalidDiscount;
             }
             if (issuedAt.Date > DateTimeOffset.Now)
             {
                 return InvoiceErrors.InvalidIssuedDate;
-            }
-            if (total < 0)
-            {
-                return InvoiceErrors.InvalidTotalPrice;
             }
             if (Guid.Empty == workOrderId)
             {
@@ -73,9 +70,11 @@ namespace GOATY.Domain.WorkOrders.Billing
                 return InvoiceErrors.InvalidInvoiceItems;
             }
 
-            var tax = GOATYConstans.TaxRate * total;
+            var subtotal = invoiceItems.Sum(it => it.Total);
+            var tax = GOATYConstans.TaxRate * subtotal;
+            var total = subtotal + tax - (discount/100 * (subtotal + tax));
 
-            return new Invoice(id , discount , issuedAt , tax, total , workOrderId , invoiceItems);
+            return new Invoice(id , discount , issuedAt , subtotal,tax, total , workOrderId , invoiceItems);
         }
 
         public Result<Updated> UpdatePayStatus(InvoiceStatus newStatus)

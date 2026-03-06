@@ -6,6 +6,7 @@ using GOATY.Domain.Employees.Enums;
 using GOATY.Domain.Parts;
 using GOATY.Domain.RepairTasks;
 using GOATY.Domain.WorkOrders;
+using GOATY.Domain.WorkOrders.Billing;
 using GOATY.Domain.WorkOrders.Enums;
 using GOATY.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -325,6 +326,42 @@ namespace GOATY.Infrastructure.Data
                 ).Value;
 
                 _context.WorkOrders.AddRange([workOrder1, workOrder2]);
+            }
+
+            if(!await _context.Invoices.AnyAsync())
+            {
+                var invoiceId = Guid.Parse("99999999-9999-9999-9999-999999999992");
+
+                var invoice = Invoice.Create(
+                    id: invoiceId,
+                    discount: 20m,
+                    issuedAt: DateTimeOffset.Now,
+                    workOrderId: Guid.Parse("99999999-9999-9999-9999-999999999992"),
+                    invoiceItems: new List<InvoiceItem>
+                    {
+                        InvoiceItem.Create(
+                            id: Guid.NewGuid(),
+                            invoiceId: invoiceId,
+                            technicianCost: 150,
+                            quantity: 1,
+                            unitPrice: 300,
+                            repairTaskId: Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            partId: null
+                        ).Value,
+
+                        InvoiceItem.Create(
+                            id: Guid.NewGuid(),
+                            invoiceId: invoiceId,
+                            technicianCost: 100,
+                            quantity: 2,
+                            unitPrice: 75,
+                            repairTaskId: null,
+                            partId: Guid.Parse("b7c47513-1018-42c6-a559-0619e7deb0a5")
+                        ).Value
+                    }
+                ).Value;
+
+                await _context.Invoices.AddAsync(invoice);
             }
 
             await _context.SaveChangesAsync();

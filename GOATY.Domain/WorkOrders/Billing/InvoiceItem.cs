@@ -7,11 +7,11 @@ namespace GOATY.Domain.WorkOrders.Billing
 {
     public sealed class InvoiceItem
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; private set; }
         public int TechnicianCost { get; private set; }
         public int Quantity { get; private set; }
         public int UnitPrice { get; private set; }
-        public int Total { get; private set; }
+        public decimal Total { get; private set; }
         public Guid InvoiceId { get; private set; }
         public Invoice Invoice { get; private set; }
         public Guid? RepairTaskId { get; private set; }
@@ -24,7 +24,7 @@ namespace GOATY.Domain.WorkOrders.Billing
                            int technicianCost,
                            int quantity,
                            int unitPrice,
-                           int total,
+                           decimal total,
                            Guid? repairTaskId,
                            Guid? partId)
         {
@@ -43,7 +43,6 @@ namespace GOATY.Domain.WorkOrders.Billing
             int technicianCost,
             int quantity,
             int unitPrice,
-            int total,
             Guid? repairTaskId,
             Guid? partId)
         {
@@ -71,11 +70,6 @@ namespace GOATY.Domain.WorkOrders.Billing
                 return InvoiceItemErrors.InvalidUnitPrice;
             }
 
-            if (total < 0)
-            {
-                return InvoiceItemErrors.InvalidTotal;
-            }
-
             if (repairTaskId is null && partId is null)
             {
                 return InvoiceItemErrors.MissingSource;
@@ -86,16 +80,9 @@ namespace GOATY.Domain.WorkOrders.Billing
                 return InvoiceItemErrors.ConflictingSources;
             }
 
-            if (repairTaskId == Guid.Empty)
-            {
-                return InvoiceItemErrors.InvalidRepairTaskId;
-            }
-
-            if (partId == Guid.Empty)
-            {
-                return InvoiceItemErrors.InvalidPartId;
-            }
-
+            unitPrice += technicianCost;
+            decimal total = (quantity * unitPrice);
+            
             return new InvoiceItem(
                 id,
                 invoiceId,

@@ -303,3 +303,12 @@ Content-type: application/json
   "EmployeeId" : "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
   "Day" : "2026-03-01"
 }
+
+###
+GET {{baseUrl}}/api/invoices
+Content-type: application/json
+
+{
+  "Page" : "1",
+  "PageSize": "1"
+}
