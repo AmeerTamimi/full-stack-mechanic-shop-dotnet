@@ -25,7 +25,7 @@ namespace GOATY.Domain.WorkOrders
         public Employee? Employee { get; set; }
 
         private readonly List<WorkOrderRepairTasks> _workOrderRepairTasks = [];
-        public IEnumerable<WorkOrderRepairTasks> WorkOrderRepairTasks => _workOrderRepairTasks;
+        public IReadOnlyCollection<WorkOrderRepairTasks> WorkOrderRepairTasks => _workOrderRepairTasks;
 
         public bool IsEditable => State == State.Scheduled;
 

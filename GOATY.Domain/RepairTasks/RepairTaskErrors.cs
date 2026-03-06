@@ -53,5 +53,11 @@ namespace GOATY.Domain.RepairTasks
                                                         code: "RepairTask.Details.UnitPrice.Invalid",
                                                         description: "Invalid RepairTaskDetails : UnitPrice Is Invalid."
                                                     );
+
+        public static readonly Error InvalidTechnicianCost = Error.Validation(
+                                                        code: "RepairTask.TechnicianCost.Invalid",
+                                                        description: "Invalid Technician Cost : Technician Cost Must Be >= 50."
+                                                    );
+        
     }
 }

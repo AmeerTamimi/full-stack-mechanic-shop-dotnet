@@ -18,10 +18,10 @@ namespace GOATY.Domain.Customers
         public string? Address { get; private set; }
 
         private readonly List<Vehicle> _vehicles = [];
-        public IEnumerable<Vehicle> Vehicles  => _vehicles.AsReadOnly();
+        public IReadOnlyCollection<Vehicle> Vehicles  => _vehicles.AsReadOnly();
 
         private readonly List<WorkOrder> _workOrders = [];
-        public IEnumerable<WorkOrder> WorkOrders => _workOrders.AsReadOnly();
+        public IReadOnlyCollection<WorkOrder> WorkOrders => _workOrders.AsReadOnly();
 
         private Customer() { }
         private Customer(Guid id,
