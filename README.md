@@ -1,66 +1,69 @@
 # GOATY Mechanic Shop (WIP)
 
-A starter **Mechanic Shop / Workshop Management System** built on **.NET 9** with **Clean Architecture** and **CQRS** (via MediatR).
+A **Mechanic Shop / Workshop Management System** built with **.NET 9**, **Clean Architecture**, and **CQRS** using **MediatR**.
 
----
+The project is designed as a layered backend-first system for managing **customers, vehicles, employees, parts, repair task templates, work orders, scheduling, and authentication**. It goes beyond basic CRUD by including **real business rules, validation, caching, and role-based workflow structure**.
 
 ## Docs
 
-- **PRD (Product Requirements Document):** `docs/PRD.md`
-- **Use Case Diagram :** `docs/use-case-diagram.png`
-
----
-## Product & Design Docs
-
-- **PRD (Product Requirements Document):** `docs/PRD.md`
+- **PRD:** `docs/PRD.md`
 - **Use Case Diagram:** `docs/use-case-diagram.png`
 
-### Activity Diagrams (Swimlanes)
+## Activity Diagrams
 
-These diagrams document the **main flows + alternatives** (business rules, validation, and permission boundaries):
+- **Add Work Order** — `docs/activity/Add-WorkOrder-Diagram.png`
+- **Add Repair Task** — `docs/activity/Add-Repiar-Task-Diagram.png`
+- **Delete Customer** — `docs/activity/Delete-Customer-Diagram.drawio.png`
+- **Update Work Order Status** — `docs/activity/Update-WorkOrder-Status.png`
+- **View Dashboard** — `docs/activity/View-Dashborad-Diagram.png`
 
-1. **Add New Work Order Flow**  
-   File: `docs/activity/Add-WorkOrder-Diagram.png`  
-   Covers: create work order, conflict check (technician overlap), success vs error path.
+## What’s implemented
 
-2. **Add Repair Task Flow**  
-   File: `docs/activity/Add-Repiar-Task-Diagram.png`  
-   Covers: add template, **unique name** validation, error handling.
+- Customer and vehicle management
+- Employee management
+- Parts management
+- Repair task template management
+- Work order creation and updates
+- Work order filtering, pagination, and sorting
+- JWT authentication + refresh tokens
+- ASP.NET Core Identity integration
+- Domain unit tests for core entities
 
-3. **Delete Customer Flow**  
-   File: `docs/activity/Delete-Customer-Diagram.drawio.png`  
-   Covers: block deletion if customer has **Scheduled/InProgress** work order, otherwise delete customer + his vehicles.
+## Business rules included
 
-4. **Update Work Order Status Flow (Technician)**  
-   File: `docs/activity/Update-WorkOrder-Status.png`  
-   Covers: technician-only access, **valid status transitions**, reject invalid transitions.
+- Prevent duplicate vehicle plates
+- Ensure vehicle belongs to the selected customer
+- Prevent technician scheduling conflicts
+- Prevent bay conflicts
+- Prevent vehicle time overlap
+- Enforce valid work order state transitions
+- Restrict editing when a work order is no longer editable
 
-5. **View Dashboard Flow (Manager)**  
-   File: `docs/activity/View-Dashborad-Diagram.png`  
-   Covers: dashboard metrics + optional filtering.
+## Architecture
 
-1. 
-## What’s inside
+- **GOATY.Domain** — core business rules and domain model
+- **GOATY.Application** — CQRS handlers, validators, mappings, behaviors
+- **GOATY.Infrastructure** — EF Core, Identity, JWT, persistence, seeding
+- **GOATY.Api** — ASP.NET Core Web API
+- **GOATY.Contracts** — shared contracts/DTOs
+- **GOATY.Client** — Blazor Server UI shell
 
-- **GOATY.Api** : ASP.NET Core Web API (presentation layer)
-- **GOATY.Client** : Blazor Server UI (Razor Components)
-- **GOATY.Domain** : Core business rules (Entities, Domain Events, Result/Error pattern)
-- **GOATY.Application** : CQRS (Commands/Queries + handlers)
-- **GOATY.Infrastructure** : DB / persistence / external services
-- **GOATY.Contracts** : Shared DTOs/contracts between API & Client
+## Technical highlights
 
----
+- Clean Architecture separation
+- CQRS with MediatR
+- FluentValidation pipeline
+- Result/Error pattern for business outcomes
+- Logging, performance, and exception behaviors
+- HybridCache for cached read queries
+- EF Core + SQL Server
+- Role foundation for **Manager** and **Technician**
 
-## Architecture (Clean Architecture)
+## Why it stands out
 
-- **Domain** stays pure: business logic only.
-- **Application** orchestrates use-cases using **CQRS** + MediatR.
-- **Infrastructure** plugs in implementations (DB, files, integrations).
-- **API/Client** are entry points (HTTP/UI) — they call the Application layer.
+This project shows more than endpoint building. It demonstrates **architecture thinking, separation of concerns, enforceable business logic, and a scalable structure** for a real workshop management system.
 
----
-
-## Run the API
+## Run
 
 ```bash
 dotnet restore
