@@ -17,9 +17,9 @@ namespace GOATY.Api.Controllers
     public class EmployeesController(IMediator mediator) : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetEmployees()
+        public async Task<IActionResult> GetEmployees(PaginationRequest request)
         {
-            var result = await mediator.Send(new GetEmployeesQuery());
+            var result = await mediator.Send(new GetEmployeesQuery(request.Page , request.PageSize));
 
             return result.Match(
                 response => Ok(response),

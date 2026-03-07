@@ -19,8 +19,10 @@ namespace GOATY.Application.Features.Billing.Queries.GetInvoices
                                   .Include(i => i.InvoiceItems)
                                   .AsQueryable();
 
-            var page = request.Page;
-            var pageSize = request.PageSize;
+            var count = await invoicesQuery.CountAsync(ct);
+
+            var page = Math.Max(1, request.Page);
+            var pageSize = Math.Clamp(request.PageSize, 1, 100);
 
             var invoices = await invoicesQuery
                                     .Skip((page - 1) * pageSize)
@@ -32,7 +34,7 @@ namespace GOATY.Application.Features.Billing.Queries.GetInvoices
             {
                 Page = page,
                 PageSize = pageSize,
-                TotalItems = invoices.Count,
+                TotalItems = count,
                 Items = invoices.ToDtos()
             };
         }

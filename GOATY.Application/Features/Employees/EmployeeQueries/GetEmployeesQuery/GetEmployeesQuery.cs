@@ -1,13 +1,17 @@
 ﻿using GOATY.Application.Common.Interfaces;
+using GOATY.Application.Common.Models;
 using GOATY.Application.Features.Employees.DTOs;
 using GOATY.Domain.Common.Results;
-using MediatR;
 
 namespace GOATY.Application.Features.Employees.EmployeeQueries.GetEmployeesQuery
 {
-    public record class GetEmployeesQuery : ICachedQuery<Result<List<EmployeeDto>>>
+    public sealed record class GetEmployeesQuery(int Page, int PageSize)
+        : ICachedQuery<Result<PaginatedList<EmployeeDto>>>
     {
-        public string CacheKey => "employees";
+        public string CacheKey =>
+            $"employees:" +
+            $"p={Page}:" +
+            $"ps={PageSize}";
 
         public string[] Tags => ["employees"];
 

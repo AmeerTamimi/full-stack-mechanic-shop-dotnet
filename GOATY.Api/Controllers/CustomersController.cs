@@ -15,9 +15,9 @@ namespace GOATY.Api.Controllers
     public sealed class CustomersController(IMediator mediator) : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetCustomers()
+        public async Task<IActionResult> GetCustomers(PaginationRequest request)
         {
-            var result = await mediator.Send(new GetCustomersQuery());
+            var result = await mediator.Send(new GetCustomersQuery(request.Page , request.PageSize));
 
             return result.Match<IActionResult>(
                 response => Ok(response),

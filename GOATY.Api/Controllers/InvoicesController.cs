@@ -1,4 +1,5 @@
-﻿using GOATY.Application.Features.Billing.Queries.GetInvoices;
+﻿using GOATY.Application.Features.Billing.Queries.GetInvoiceById;
+using GOATY.Application.Features.Billing.Queries.GetInvoices;
 using GOATY.Contracts.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,16 @@ namespace GOATY.Api.Controllers
         {
             var result = await mediator.Send(new GetInvoicesQuery(
                                                 request.Page, request.PageSize));
+
+            return result.Match(
+                response => Ok(response),
+                Problem
+                );
+        }
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetInvoiceById(Guid id)
+        {
+            var result = await mediator.Send(new GetInvoiceByIdQuery(id));
 
             return result.Match(
                 response => Ok(response),

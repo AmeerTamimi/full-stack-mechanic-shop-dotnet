@@ -312,3 +312,6 @@ Content-type: application/json
   "Page" : "1",
   "PageSize": "1"
 }
+
+###
+GET {{baseUrl}}/api/invoices/{{invoiceId}}

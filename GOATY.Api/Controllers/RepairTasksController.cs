@@ -15,9 +15,9 @@ namespace GOATY.Api.Controllers
     public class RepairTasksController(IMediator mediator) : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetRepairTasks()
+        public async Task<IActionResult> GetRepairTasks(PaginationRequest request)
         {
-            var result = await mediator.Send(new GetRepairTaskQuery());
+            var result = await mediator.Send(new GetRepairTaskQuery(request.Page , request.PageSize));
 
             return result.Match<IActionResult>(
                     response => Ok(response),

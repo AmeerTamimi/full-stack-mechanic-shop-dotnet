@@ -1,13 +1,17 @@
 ﻿using GOATY.Application.Common.Interfaces;
+using GOATY.Application.Common.Models;
 using GOATY.Application.Features.Parts.DTOs;
 using GOATY.Domain.Common.Results;
-using MediatR;
 
 namespace GOATY.Application.Features.Parts.PartsQueries.GetPartsQuery
 {
-    public sealed record class GetPartsQuery : ICachedQuery<Result<List<PartDto>>>
+    public sealed record class GetPartsQuery(int Page, int PageSize)
+        : ICachedQuery<Result<PaginatedList<PartDto>>>
     {
-        public string CacheKey => "parts";
+        public string CacheKey =>
+            $"parts:" +
+            $"p={Page}:" +
+            $"ps={PageSize}";
 
         public string[] Tags => ["parts"];
 

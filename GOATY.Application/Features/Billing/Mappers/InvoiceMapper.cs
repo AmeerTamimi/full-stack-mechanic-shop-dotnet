@@ -9,6 +9,7 @@ namespace GOATY.Application.Features.Billing.Mappers
         {
             return new InvoiceDto
             {
+                Id = model.Id,
                 IssuedAt = model.IssuedAt,
                 PaidAt = model.PaidAt,
                 Status = model.Status,

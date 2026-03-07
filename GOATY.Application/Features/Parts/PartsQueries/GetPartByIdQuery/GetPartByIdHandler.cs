@@ -23,6 +23,7 @@ namespace GOATY.Application.Features.Parts.PartsQueries.GetPartByIdQuery
                     description: $"Part With Id {id} was Not Found"
                 );
             }
+
             return partModel.ToDto();
         }
     }

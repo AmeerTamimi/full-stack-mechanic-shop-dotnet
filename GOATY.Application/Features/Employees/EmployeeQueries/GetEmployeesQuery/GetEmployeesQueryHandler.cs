@@ -1,4 +1,5 @@
 ﻿using GOATY.Application.Common.Interfaces;
+using GOATY.Application.Common.Models;
 using GOATY.Application.Features.Employees.DTOs;
 using GOATY.Application.Features.Employees.Mapping;
 using GOATY.Domain.Common.Results;
@@ -11,21 +12,38 @@ namespace GOATY.Application.Features.Employees.EmployeeQueries.GetEmployeesQuery
     public sealed class GetEmployeesQueryHandler(
         IAppDbContext context,
         ILogger<GetEmployeesQueryHandler> logger
-        ) : IRequestHandler<GetEmployeesQuery, Result<List<EmployeeDto>>>
+        ) : IRequestHandler<GetEmployeesQuery, Result<PaginatedList<EmployeeDto>>>
     {
-        public async Task<Result<List<EmployeeDto>>> Handle(GetEmployeesQuery request, CancellationToken ct)
+        public async Task<Result<PaginatedList<EmployeeDto>>> Handle(GetEmployeesQuery request, CancellationToken ct)
         {
             logger.LogInformation("Handling {Query}", nameof(GetEmployeesQuery));
 
-            var employees =  await context.Employees
-                                          .AsNoTracking()
+            var employeesQuery = context.Employees
+                                        .AsNoTracking()
+                                        .AsQueryable();
+
+            var count = await employeesQuery.CountAsync(ct);
+
+            var page = Math.Max(1, request.Page);
+            var pageSize = Math.Clamp(request.PageSize, 1, 100);
+
+            var employees = await employeesQuery
+                                          .Skip((page - 1) * pageSize)
+                                          .Take(pageSize)
                                           .ToListAsync(ct);
 
             logger.LogInformation("Handled {Query}. Returned {EmployeeCount} Employees",
-                                                                    nameof(GetEmployeesQuery),
-                                                                    employees.Count()
-                                                                );
-            return employees.ToDtos();
+                nameof(GetEmployeesQuery),
+                employees.Count);
+
+            return new PaginatedList<EmployeeDto>
+            {
+                Items = employees.ToDtos(),
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = count,
+                TotalPages = (int)Math.Ceiling(count / (double)pageSize)
+            };
         }
     }
 }

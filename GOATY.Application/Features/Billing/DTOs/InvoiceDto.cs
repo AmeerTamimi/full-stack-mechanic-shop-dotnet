@@ -5,6 +5,7 @@ namespace GOATY.Application.Features.Billing.DTOs
 {
     public sealed class InvoiceDto
     {
+        public Guid Id { get; set; }
         public DateTimeOffset IssuedAt { get; set; }
         public DateTimeOffset? PaidAt { get; set; }
         public InvoiceStatus Status { get; set; }

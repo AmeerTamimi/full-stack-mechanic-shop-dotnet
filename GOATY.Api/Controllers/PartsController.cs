@@ -15,9 +15,9 @@ namespace GOATY.Api.Controllers
     public class PartsController(IMediator mediator) : ApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetParts()
+        public async Task<IActionResult> GetParts(PaginationRequest request)
         {
-            var result = await mediator.Send(new GetPartsQuery());
+            var result = await mediator.Send(new GetPartsQuery(request.Page , request.PageSize));
             return result.Match<IActionResult>(
                 response => Ok(response),
                 Problem
