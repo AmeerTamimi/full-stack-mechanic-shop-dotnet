@@ -2,6 +2,7 @@
 {
     public sealed class Dashboard
     {
+        public DateOnly Day { get; set; }
         public int TotalOrders { get; set; }
         public int TotalScheduled { get; set; }
         public int TotalInProgress { get; set; }
@@ -14,11 +15,11 @@
         public int UniqueVehicles { get; set; }
         public int UniqueCustomers { get; set; }
         public decimal ProfitMargin { get; set; }
-        public double CompletionRate { get; set; }
-        public double CancellationRate { get; set; }
-        public double AvgRevenuPerOrder { get; set; }
-        public double OrdersPerVehicle { get; set; }
-        public double PartsCostRatio { get; set; }
-        public double LaborCostRatio { get; set; }
+        public decimal CompletionRate { get; set; }
+        public decimal CancellationRate { get; set; }
+        public decimal AvgRevenuPerOrder { get; set; }
+        public decimal OrdersPerVehicle { get; set; }
+        public decimal PartsCostRatio { get; set; }
+        public decimal LaborCostRatio { get; set; }
     }
 }

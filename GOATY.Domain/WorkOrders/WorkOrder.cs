@@ -13,8 +13,6 @@ namespace GOATY.Domain.WorkOrders
     public sealed class WorkOrder : AuditableEntity
     {
         public State State { get; private set; }
-        public int TotalTime => _workOrderRepairTasks.Sum(wr => (int)wr.RepairTask.TimeEstimated);
-        public decimal TotalCost => _workOrderRepairTasks.Sum(wr => wr.RepairTask.CostEstimated);
         public DateTimeOffset StartTime { get; private set; }
         public DateTimeOffset EndTime { get; private set; }
         public Bay Bay { get; private set; }
@@ -25,6 +23,10 @@ namespace GOATY.Domain.WorkOrders
         public Vehicle Vehicle { get; set; }
         public Customer Customer { get; set; }
         public Employee? Employee { get; set; }
+        public int TotalTime => _workOrderRepairTasks.Sum(wr => (int)wr.RepairTask.TimeEstimated);
+        public decimal TotalCost => _workOrderRepairTasks.Sum(wr => wr.RepairTask.CostEstimated);
+        public decimal TotalPartsCost => _workOrderRepairTasks.Select(wr => wr.RepairTask).SelectMany(r => r.RepairTaskDetails).Sum(rd => rd.UnitPrice);
+        public decimal TotalTechniciansCost => _workOrderRepairTasks.Select(wr => wr.RepairTask).Sum(r => r.TechnicianCost);
 
         private readonly List<WorkOrderRepairTasks> _workOrderRepairTasks = [];
         public IReadOnlyCollection<WorkOrderRepairTasks> WorkOrderRepairTasks => _workOrderRepairTasks;
