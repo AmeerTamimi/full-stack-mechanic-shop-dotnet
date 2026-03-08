@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 
-namespace GOATY.Application.Features.Billing.Commands.CreateInvoice
+namespace GOATY.Application.Features.Billing.Commands.IssueInvoice
 {
     public sealed class CreateInvoiceCommandHandler(
         IAppDbContext context,

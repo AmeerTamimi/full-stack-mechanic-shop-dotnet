@@ -317,10 +317,18 @@ Content-type: application/json
 GET {{baseUrl}}/api/invoices/{{invoiceId}}
 
 ###
+GET {{baseUrl}}/api/invoices/pdf/{{invoiceId}}
+
+###
 POST {{baseUrl}}/api/invoices/99999999-9999-9999-9999-999999999991
 
 ###
-PUT {{baseUrl}}/api/invoices/{{invoiceId}}
+PUT {{baseUrl}}/api/invoices/settle/{{invoiceId}}
+
+###
+PUT {{baseUrl}}/api/invoices/refund/{{invoiceId}}
+
+
 
 ###
 GET {{baseUrl}}/api/dashboard

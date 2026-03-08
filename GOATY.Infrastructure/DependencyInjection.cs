@@ -2,6 +2,7 @@
 using GOATY.Infrastructure.Data;
 using GOATY.Infrastructure.Identity;
 using GOATY.Infrastructure.Services;
+using MechanicShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,7 @@ namespace GOATY.Infrastructure
         public static IServiceCollection GeneralServices(this IServiceCollection services)
         {
             services.AddScoped<IWorkOrderRules, WorkOrderRules>();
+            services.AddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
 
             return services;
         }

@@ -12,6 +12,7 @@ namespace GOATY.Domain.WorkOrders.Billing
         public int Quantity { get; private set; }
         public decimal UnitPrice { get; private set; }
         public decimal Total { get; private set; }
+        public string Description { get; set; }
         public Guid InvoiceId { get; private set; }
         public Invoice Invoice { get; private set; }
         public Guid? RepairTaskId { get; private set; }

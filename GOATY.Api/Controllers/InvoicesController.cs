@@ -1,6 +1,7 @@
-﻿using GOATY.Application.Features.Billing.Commands.CreateInvoice;
+﻿using GOATY.Application.Features.Billing.Commands.IssueInvoice;
 using GOATY.Application.Features.Billing.Commands.RefundInvoice;
 using GOATY.Application.Features.Billing.Commands.SettleInvoice;
+using GOATY.Application.Features.Billing.Queries.GeneratePdf;
 using GOATY.Application.Features.Billing.Queries.GetInvoiceById;
 using GOATY.Application.Features.Billing.Queries.GetInvoices;
 using GOATY.Contracts.Requests;
@@ -25,15 +26,27 @@ namespace GOATY.Api.Controllers
                 );
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetInvoiceById(Guid id)
+
+        [HttpGet("{invoiceId:guid}")]
+        public async Task<IActionResult> GetInvoiceById(Guid invoiceId)
         {
-            var result = await mediator.Send(new GetInvoiceByIdQuery(id));
+            var result = await mediator.Send(new GetInvoiceByIdQuery(invoiceId));
 
             return result.Match(
                 response => Ok(response),
                 Problem
             );
+        }
+
+        [HttpGet("pdf/{invoiceId:guid}")]
+        public async Task<IActionResult> GetInvoicePdf(Guid invoiceId)
+        {
+            var result = await mediator.Send(new GeneratePdfQuery(invoiceId));
+
+            return result.Match(
+                response => Ok(response),
+                Problem
+                );
         }
 
         [HttpPost("{workOrderId:guid}")]

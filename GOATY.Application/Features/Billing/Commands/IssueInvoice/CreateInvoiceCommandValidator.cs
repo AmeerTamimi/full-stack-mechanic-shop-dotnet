@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace GOATY.Application.Features.Billing.Commands.CreateInvoice
+namespace GOATY.Application.Features.Billing.Commands.IssueInvoice
 {
     public sealed class CreateInvoiceCommandValidator : AbstractValidator<CreateInvoiceCommand>
     {
