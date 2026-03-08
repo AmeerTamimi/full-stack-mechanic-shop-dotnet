@@ -1,6 +1,7 @@
 ﻿using GOATY.Application.Common.Interfaces;
 using GOATY.Application.Features.Dashboards.DTOs;
 using GOATY.Domain.Common.Results;
+using GOATY.Domain.WorkOrders.Billing;
 using GOATY.Domain.WorkOrders.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace GOATY.Application.Features.Dashboards.DashboardQueries
                                                 .ThenInclude(wr => wr.RepairTask)
                                                     .ThenInclude(r => r.RepairTaskDetails)
                                                         .ThenInclude(rd => rd.Part)
+                                           .Include(wo => wo.Invoice)
                                            .AsQueryable();
 
 
@@ -68,11 +70,15 @@ namespace GOATY.Application.Features.Dashboards.DashboardQueries
             var totalCompleted = workOrders.Where(wo => wo.State == State.Completed).Count();
             var totalCancelled = workOrders.Where(wo => wo.State == State.Cancelled).Count();
 
-            var totalRevenue = workOrders.Where(wo => wo.Invoice != null)
+            var totalRevenue = workOrders.Where(wo => wo.Invoice != null &&
+                                                      wo.Invoice.Status == InvoiceStatus.Payed)
                                          .Sum(wo => wo.Invoice!.Total);
 
-            var totalPartsCost = workOrders.Sum(wo => wo.TotalPartsCost);
-            var totalTechniciansCost = workOrders.Sum(wo => wo.TotalTechniciansCost);
+            var totalPartsCost = workOrders.Where(wo => wo.State == State.Completed)
+                                           .Sum(wo => wo.TotalPartsCost);
+
+            var totalTechniciansCost = workOrders.Where(wo => wo.State == State.Completed)
+                                                 .Sum(wo => wo.TotalTechniciansCost);
 
             var netProfit = totalRevenue - (totalPartsCost + totalTechniciansCost);
 

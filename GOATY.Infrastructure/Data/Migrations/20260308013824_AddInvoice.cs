@@ -12,12 +12,13 @@ namespace GOATY.Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "TotalCost",
-                table: "WorkOrders");
-
-            migrationBuilder.DropColumn(
                 name: "TotalTime",
                 table: "WorkOrders");
+
+            migrationBuilder.RenameColumn(
+                name: "TotalCost",
+                table: "WorkOrders",
+                newName: "Discount");
 
             migrationBuilder.AlterColumn<string>(
                 name: "State",
@@ -149,6 +150,11 @@ namespace GOATY.Infrastructure.Data.Migrations
                 name: "TechnicianCost",
                 table: "RepairTasks");
 
+            migrationBuilder.RenameColumn(
+                name: "Discount",
+                table: "WorkOrders",
+                newName: "TotalCost");
+
             migrationBuilder.AlterColumn<int>(
                 name: "State",
                 table: "WorkOrders",
@@ -174,13 +180,6 @@ namespace GOATY.Infrastructure.Data.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
-
-            migrationBuilder.AddColumn<decimal>(
-                name: "TotalCost",
-                table: "WorkOrders",
-                type: "decimal(18,2)",
-                nullable: false,
-                defaultValue: 0m);
 
             migrationBuilder.AddColumn<int>(
                 name: "TotalTime",

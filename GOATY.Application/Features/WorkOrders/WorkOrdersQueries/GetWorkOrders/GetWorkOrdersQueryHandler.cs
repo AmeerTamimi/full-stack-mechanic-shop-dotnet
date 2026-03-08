@@ -42,7 +42,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersQueries.GetWorkOrders
             var count = await workOrdersQuery.CountAsync(cancellationToken: ct);
 
             var page = Math.Max(1, query.Page);
-            var pageSize = Math.Clamp(query.PageSize, 1, 100);
+            var pageSize = Math.Clamp(query.PageSize, 10, 100);
 
             var items = await workOrdersQuery
                   .Skip((page - 1) * pageSize)

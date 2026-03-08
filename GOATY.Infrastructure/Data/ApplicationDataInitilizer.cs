@@ -289,7 +289,8 @@ namespace GOATY.Infrastructure.Data
                             workOrderId: wo1Id,
                             repairTaskId: batteryRepairTask.Id,
                             time: batteryRepairTask.TimeEstimated,
-                            cost: batteryRepairTask.CostEstimated
+                            cost: batteryRepairTask.CostEstimated,
+                            quantity: 2
                         ).Value
                     };
 
@@ -300,6 +301,7 @@ namespace GOATY.Infrastructure.Data
                     employeeId: tech1Id,
                     startTime: DateTime.Now.AddDays(1),
                     bay: Bay.A,
+                    discount: 10,
                     repairTasks: wo1RepairTasks
                 ).Value;
 
@@ -311,7 +313,8 @@ namespace GOATY.Infrastructure.Data
                             workOrderId: wo2Id,
                             repairTaskId: batteryRepairTask.Id,
                             time: batteryRepairTask.TimeEstimated,
-                            cost: batteryRepairTask.CostEstimated
+                            cost: batteryRepairTask.CostEstimated,
+                            quantity: 1
                         ).Value
                     };
 
@@ -322,6 +325,7 @@ namespace GOATY.Infrastructure.Data
                     employeeId: tech2Id,
                     startTime: DateTime.Now.AddDays(2),
                     bay: Bay.B,
+                    discount: 20,
                     repairTasks: wo2RepairTasks
                 ).Value;
 
@@ -335,7 +339,6 @@ namespace GOATY.Infrastructure.Data
                 var invoice = Invoice.Create(
                     id: invoiceId,
                     discount: 20m,
-                    issuedAt: DateTimeOffset.Now,
                     workOrderId: Guid.Parse("99999999-9999-9999-9999-999999999992"),
                     invoiceItems: new List<InvoiceItem>
                     {
@@ -347,16 +350,6 @@ namespace GOATY.Infrastructure.Data
                             unitPrice: 300,
                             repairTaskId: Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             partId: null
-                        ).Value,
-
-                        InvoiceItem.Create(
-                            id: Guid.NewGuid(),
-                            invoiceId: invoiceId,
-                            technicianCost: 100,
-                            quantity: 2,
-                            unitPrice: 75,
-                            repairTaskId: null,
-                            partId: Guid.Parse("b7c47513-1018-42c6-a559-0619e7deb0a5")
                         ).Value
                     }
                 ).Value;

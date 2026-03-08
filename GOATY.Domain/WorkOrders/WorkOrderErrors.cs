@@ -29,6 +29,16 @@ namespace GOATY.Domain.WorkOrders
             description: "Invalid work order start time."
         );
 
+        public static readonly Error InvalidDiscount = Error.Validation(
+            code: "WorkOrder.Discount.Invalid",
+            description: "WorkOrder discount must be greater than or equal to 0 and less than or equal 100."
+        );
+
+        public static readonly Error InvalidQuantity = Error.Validation(
+            code: "WorkOrder.RepairTask.Quantity.Invalid",
+            description: "Invalid RepairTask Quantity."
+        );
+
         public static readonly Error InvalidRepairTasks = Error.Validation(
             code: "WorkOrder.RepairTasks.Invalid",
             description: "WorkOrder must contain at least one repair task."

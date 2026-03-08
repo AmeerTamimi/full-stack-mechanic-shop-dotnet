@@ -15,6 +15,7 @@ namespace GOATY.Domain.WorkOrders
         public State State { get; private set; }
         public DateTimeOffset StartTime { get; private set; }
         public DateTimeOffset EndTime { get; private set; }
+        public decimal Discount { get; set; }
         public Bay Bay { get; private set; }
         public Invoice? Invoice { get; set; }
         public Guid VehicleId { get; private set; }
@@ -40,6 +41,7 @@ namespace GOATY.Domain.WorkOrders
                           Guid employeeId,
                           Bay bay,
                           DateTime startTime,
+                          decimal discount,
                           List<WorkOrderRepairTasks> repairTasks)
                           : base(id)
         {
@@ -49,6 +51,7 @@ namespace GOATY.Domain.WorkOrders
             StartTime = startTime;
             EndTime = startTime.AddMinutes(TotalTime);
             Bay = bay;
+            Discount = discount;
             State = State.Scheduled;
             _workOrderRepairTasks = repairTasks;
         }
@@ -59,6 +62,7 @@ namespace GOATY.Domain.WorkOrders
                                                Guid employeeId,
                                                DateTime startTime,
                                                Bay bay,
+                                               decimal discount,
                                                List<WorkOrderRepairTasks> repairTasks)
         {
             if (Guid.Empty == id)
@@ -81,12 +85,16 @@ namespace GOATY.Domain.WorkOrders
             {
                 return WorkOrderErrors.InvalidStartTime;
             }
-            if(repairTasks is null || repairTasks.Count == 0)
+            if (discount < 0 || discount > 100)
+            {
+                return WorkOrderErrors.InvalidDiscount;
+            }
+            if (repairTasks is null || repairTasks.Count == 0)
             {
                 return WorkOrderErrors.InvalidRepairTasks;
             }
 
-            return new WorkOrder(id, vehicleId, customerId, employeeId, bay, startTime, repairTasks);
+            return new WorkOrder(id, vehicleId, customerId, employeeId, bay, startTime, discount, repairTasks);
         }
 
         public Result<Updated> Update(Guid vehicleId,
@@ -94,6 +102,7 @@ namespace GOATY.Domain.WorkOrders
                                       Guid employeeId,
                                       DateTime startTime,
                                       Bay bay,
+                                      decimal discount,
                                       List<WorkOrderRepairTasks> repairTasks)
         {
             if (Guid.Empty == vehicleId)
@@ -112,6 +121,10 @@ namespace GOATY.Domain.WorkOrders
             {
                 return WorkOrderErrors.InvalidStartTime;
             }
+            if (discount < 0 || discount > 100)
+            {
+                return WorkOrderErrors.InvalidDiscount;
+            }
             if (repairTasks is null || repairTasks.Count == 0)
             {
                 return WorkOrderErrors.InvalidRepairTasks;
@@ -123,6 +136,7 @@ namespace GOATY.Domain.WorkOrders
             StartTime = startTime;
             EndTime = startTime.AddMinutes(TotalTime);
             Bay = bay;
+            Discount = discount;
 
             return Result.Updated;
         }
@@ -138,7 +152,8 @@ namespace GOATY.Domain.WorkOrders
                     var createResult = WorkOrders.WorkOrderRepairTasks.Create(Id,
                                                                               incoming.RepairTaskId,
                                                                               incoming.Time,
-                                                                              incoming.Cost);
+                                                                              incoming.Cost,
+                                                                              incoming.Quantity);
                     if (!createResult.IsSuccess)
                     {
                         return createResult.Errors;
@@ -147,7 +162,7 @@ namespace GOATY.Domain.WorkOrders
                 }
                 else
                 {
-                    var updateResult = incoming.Update(incoming.Time,incoming.Cost);
+                    var updateResult = incoming.Update(incoming.Time,incoming.Cost,incoming.Quantity);
                     
                     if (!updateResult.IsSuccess)
                     {

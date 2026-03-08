@@ -1,5 +1,4 @@
-﻿using System;
-using GOATY.Domain.Common.Enums;
+﻿using GOATY.Domain.Common.Enums;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.RepairTasks;
 
@@ -9,6 +8,7 @@ namespace GOATY.Domain.WorkOrders
     {
         public Guid WorkOrderId { get; private set; }
         public Guid RepairTaskId { get; private set; }
+        public int Quantity { get; private set; }
         public TimeStamps Time { get; private set; }
         public decimal Cost { get; private set; }
 
@@ -20,18 +20,21 @@ namespace GOATY.Domain.WorkOrders
         private WorkOrderRepairTasks(Guid workOrderId,
                                      Guid repairTaskId,
                                      TimeStamps time,
-                                     decimal cost)
+                                     decimal cost,
+                                     int quantity)
         {
             WorkOrderId = workOrderId;
             RepairTaskId = repairTaskId;
             Time = time;
             Cost = cost;
+            Quantity = quantity;
         }
 
         public static Result<WorkOrderRepairTasks> Create(Guid workOrderId,
                                                           Guid repairTaskId,
                                                           TimeStamps time,
-                                                          decimal cost)
+                                                          decimal cost,
+                                                          int quantity)
         {
             if (Guid.Empty == workOrderId)
             {
@@ -53,10 +56,15 @@ namespace GOATY.Domain.WorkOrders
                 return WorkOrderErrors.InvalidRepairTaskCost;
             }
 
-            return new WorkOrderRepairTasks(workOrderId, repairTaskId, time, cost);
+            if (quantity <= 0)
+            {
+                return WorkOrderErrors.InvalidQuantity;
+            }
+
+            return new WorkOrderRepairTasks(workOrderId, repairTaskId, time, cost , quantity);
         }
 
-        public Result<Updated> Update(TimeStamps time, decimal cost)
+        public Result<Updated> Update(TimeStamps time, decimal cost , int quantity)
         {
             if (!Enum.IsDefined(typeof(TimeStamps), time))
             {
@@ -68,8 +76,14 @@ namespace GOATY.Domain.WorkOrders
                 return WorkOrderErrors.InvalidRepairTaskCost;
             }
 
+            if (quantity <= 0)
+            {
+                return WorkOrderErrors.InvalidQuantity;
+            }
+
             Time = time;
             Cost = cost;
+            Quantity = quantity;
 
             return Result.Updated;
         }

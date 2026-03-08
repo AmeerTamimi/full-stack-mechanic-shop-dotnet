@@ -6,9 +6,9 @@ namespace GOATY.Application.Features.Billing.DTOs
     public sealed class InvoiceItemDto
     {
         public Guid Id { get; set; }
-        public int TechnicianCost { get; set; }
+        public decimal TechnicianCost { get; set; }
         public int Quantity { get; set; }
-        public int UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
         public decimal Total { get; set; }
         public Guid InvoiceId { get; set; }
         public Guid? RepairTaskId { get; set; }

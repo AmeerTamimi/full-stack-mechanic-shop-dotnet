@@ -64,5 +64,36 @@ namespace GOATY.Application.Common
                 code: "WorkOrder.NotFound",
                 description: "No work orders were found for the selected day."
             );
+
+        public static readonly Error WorkOrderAlreadyHasInvoice =
+            Error.Conflict(
+                code: "WorkOrder.Invoice.AlreadyExists",
+                description: "Cannot create another invoice because this work order already has one."
+            );
+
+        public static readonly Error InvoiceAlreadyPayed =
+            Error.Conflict(
+                code: "Invoice.Pay.AlreadyPayed",
+                description: "Cannot settle an invoice that is already payed."
+            );
+
+        public static readonly Error InvoiceIsRefunded =
+            Error.Conflict(
+                code: "Invoice.Pay.Refunded",
+                description: "Cannot settle/refund an invoice that has been refunded."
+            );
+
+        public static readonly Error WorkOrderNotCompleted =
+            Error.Conflict(
+                code: "WorkOrder.NotCompleted",
+                description: "Cannot settle the invoice because the work order is not completed yet."
+            );
+
+        public static readonly Error InvoiceIsNotPayed =
+            Error.Conflict(
+                code: "Invoice.Refund.NotPayed",
+                description: "Cannot refund an invoice that has not been payed yet."
+            );
+
     }
 }

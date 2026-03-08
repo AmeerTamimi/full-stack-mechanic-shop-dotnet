@@ -217,10 +217,10 @@ DELETE {{baseUrl}}/api/customers/8f605e85-440c-4f9e-9268-529d08b833fd
 // Work Orders ===================================================
 
 ###
-GET {{baseUrl}}/api/workorders?State=Completed1
+GET {{baseUrl}}/api/workorders
 
 ###
-GET {{baseUrl}}/api/workorders/0d4e9484-de67-47dd-a2b0-08894c42847e
+GET {{baseUrl}}/api/workorders/b46043c0-2d07-4ec9-9391-8eec8b58ca3f
 
 ###
 POST {{baseUrl}}/api/workorders
@@ -252,11 +252,11 @@ Content-type: application/json
 }
 
 ###
-PUT {{baseUrl}}/api/workorders/state/{{workOrderId}}
+PUT {{baseUrl}}/api/workorders/state/99999999-9999-9999-9999-999999999991
 Content-type: application/json
 
 {
-    "state" : "InProgress"
+    "state" : "Completed"
 }
 
 ###
@@ -317,10 +317,16 @@ Content-type: application/json
 GET {{baseUrl}}/api/invoices/{{invoiceId}}
 
 ###
+POST {{baseUrl}}/api/invoices/99999999-9999-9999-9999-999999999991
+
+###
+PUT {{baseUrl}}/api/invoices/{{invoiceId}}
+
+###
 GET {{baseUrl}}/api/dashboard
 Content-type: application/json
 
 {
-  "day": "2026-03-06",
+  "day": "2026-03-04",
   "timeZone": "Asia/Hebron"
 }

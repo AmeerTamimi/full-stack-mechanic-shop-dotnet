@@ -75,7 +75,8 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrd
                     workOrder.Id,
                     repairTask.Id,
                     repairTask.TimeEstimated,
-                    repairTask.CostEstimated);
+                    repairTask.CostEstimated,
+                    1);
 
                 if (!workOrderRepairTaskModel.IsSuccess)
                 {

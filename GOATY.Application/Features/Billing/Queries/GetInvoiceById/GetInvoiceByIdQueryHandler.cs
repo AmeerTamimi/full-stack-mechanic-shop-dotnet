@@ -21,7 +21,7 @@ namespace GOATY.Application.Features.Billing.Queries.GetInvoiceById
             if (invoice is null)
             {
                 return Error.NotFound( 
-                    code: "IKnvoice_NotFound",
+                    code: "Invoice_NotFound",
                     description: $"Invoice With Id {request.Id} was Not Found"
                 );
             }

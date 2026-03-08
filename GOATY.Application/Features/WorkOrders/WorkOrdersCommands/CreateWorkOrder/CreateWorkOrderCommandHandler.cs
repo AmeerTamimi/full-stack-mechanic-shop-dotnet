@@ -108,7 +108,8 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                 var workOrderRepairTaskModel = WorkOrderRepairTasks.Create(WorkOderId,
                                                                            repairTask.Id,
                                                                            repairTask.TimeEstimated,
-                                                                           repairTask.CostEstimated);
+                                                                           repairTask.CostEstimated,
+                                                                           request.Quantity);
 
                 if (!workOrderRepairTaskModel.IsSuccess)
                 {
@@ -124,6 +125,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
                                                    employee.Id,
                                                    request.StartTime,
                                                    request.Bay,
+                                                   request.Discount,
                                                    workOderRepairTasksModels);
 
             if (!workOrderResult.IsSuccess)

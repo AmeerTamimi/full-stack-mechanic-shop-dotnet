@@ -8,9 +8,9 @@ namespace GOATY.Domain.WorkOrders.Billing
     public sealed class InvoiceItem
     {
         public Guid Id { get; private set; }
-        public int TechnicianCost { get; private set; }
+        public decimal TechnicianCost { get; private set; }
         public int Quantity { get; private set; }
-        public int UnitPrice { get; private set; }
+        public decimal UnitPrice { get; private set; }
         public decimal Total { get; private set; }
         public Guid InvoiceId { get; private set; }
         public Invoice Invoice { get; private set; }
@@ -21,9 +21,9 @@ namespace GOATY.Domain.WorkOrders.Billing
 
         public InvoiceItem(Guid id,
                            Guid invoiceId,
-                           int technicianCost,
+                           decimal technicianCost,
                            int quantity,
-                           int unitPrice,
+                           decimal unitPrice,
                            decimal total,
                            Guid? repairTaskId,
                            Guid? partId)
@@ -40,9 +40,9 @@ namespace GOATY.Domain.WorkOrders.Billing
         public static Result<InvoiceItem> Create(
             Guid id,
             Guid invoiceId,
-            int technicianCost,
+            decimal technicianCost,
             int quantity,
-            int unitPrice,
+            decimal unitPrice,
             Guid? repairTaskId,
             Guid? partId)
         {

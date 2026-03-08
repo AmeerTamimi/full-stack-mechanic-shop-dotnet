@@ -19,8 +19,4 @@
 	    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Billing\Commands\CreateBillingCommand\" />
-  </ItemGroup>
-
 </Project>

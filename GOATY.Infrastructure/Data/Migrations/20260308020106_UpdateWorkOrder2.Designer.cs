@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GOATY.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260306234400_AddInvoice")]
-    partial class AddInvoice
+    [Migration("20260308020106_UpdateWorkOrder2")]
+    partial class UpdateWorkOrder2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -378,14 +378,14 @@ namespace GOATY.Infrastructure.Data.Migrations
                     b.Property<Guid?>("RepairTaskId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("TechnicianCost")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TechnicianCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("UnitPrice")
-                        .HasColumnType("int");
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -419,6 +419,9 @@ namespace GOATY.Infrastructure.Data.Migrations
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
@@ -463,6 +466,9 @@ namespace GOATY.Infrastructure.Data.Migrations
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<int>("Time")
                         .HasColumnType("int");

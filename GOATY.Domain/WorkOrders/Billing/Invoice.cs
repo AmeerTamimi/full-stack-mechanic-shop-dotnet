@@ -24,7 +24,6 @@ namespace GOATY.Domain.WorkOrders.Billing
 
         private Invoice(
             Guid id,
-            decimal discount,
             DateTimeOffset issuedAt,
             decimal subTotal,
             decimal tax,
@@ -33,7 +32,6 @@ namespace GOATY.Domain.WorkOrders.Billing
             List<InvoiceItem> invoiceItems) : base(id)
         {
             Id = id;
-            Discount = discount;
             IssuedAt = issuedAt;
             SubTotal = subTotal;
             Status = InvoiceStatus.NotPayed;
@@ -44,9 +42,8 @@ namespace GOATY.Domain.WorkOrders.Billing
         }
 
         public static Result<Invoice> Create(Guid id,
-                                             decimal discount,
-                                             DateTimeOffset issuedAt,
                                              Guid workOrderId,
+                                             decimal discount,
                                              List<InvoiceItem> invoiceItems)
         {
             if(Guid.Empty == id)
@@ -56,10 +53,6 @@ namespace GOATY.Domain.WorkOrders.Billing
             if (discount < 0 || discount > 100)
             {
                 return InvoiceErrors.InvalidDiscount;
-            }
-            if (issuedAt.Date > DateTimeOffset.Now)
-            {
-                return InvoiceErrors.InvalidIssuedDate;
             }
             if (Guid.Empty == workOrderId)
             {
@@ -74,36 +67,43 @@ namespace GOATY.Domain.WorkOrders.Billing
             var tax = GOATYConstans.TaxRate * subtotal;
             var total = subtotal + tax - (discount/100 * (subtotal + tax));
 
-            return new Invoice(id , discount , issuedAt , subtotal,tax, total , workOrderId , invoiceItems);
+            return new Invoice(id , DateTimeOffset.Now , subtotal,tax, total , workOrderId , invoiceItems);
         }
 
-        public Result<Updated> UpdatePayStatus(InvoiceStatus newStatus)
+        public Result<Updated> PayInvoice()
         {
             if (!IsEditable)
             {
                 return InvoiceErrors.InvoiceNotEditable;
             }
 
-            if (!Enum.IsDefined(typeof(InvoiceStatus), newStatus))
-            {
-                return InvoiceErrors.InvalidStatus;
-            }
-
-            if(!ValidStatusTransition(Status , newStatus))
+            if(!ValidStatusTransition(Status , InvoiceStatus.Payed))
             {
                 return InvoiceErrors.InvalidStatusTransition;
             }
 
-            Status = newStatus;
-
-            if(Status == InvoiceStatus.Payed) // refuneded case
-            {
-                PaidAt = DateTimeOffset.Now;
-            }
+            Status = InvoiceStatus.Payed;
+            PaidAt = DateTimeOffset.Now;
 
             return Result.Updated;
         }
 
+        public Result<Updated> RefundInvoice()
+        {
+            if (!IsEditable)
+            {
+                return InvoiceErrors.InvoiceNotEditable;
+            }
+
+            if (!ValidStatusTransition(Status, InvoiceStatus.Refunded))
+            {
+                return InvoiceErrors.InvalidStatusTransition;
+            }
+
+            Status = InvoiceStatus.Refunded;
+
+            return Result.Updated;
+        }
         private bool ValidStatusTransition(InvoiceStatus currentStatus , InvoiceStatus newStatus)
         {
             return currentStatus == InvoiceStatus.NotPayed && newStatus == InvoiceStatus.Payed ||
