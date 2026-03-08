@@ -2,6 +2,7 @@
 using GOATY.Application.Common.Interfaces;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders.Enums;
+using GOATY.Domain.WorkOrders.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -44,6 +45,11 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrd
             }
 
             await context.SaveChangesAsync(ct);
+
+            if(newState == State.Completed)
+            {
+                workOrder.AddEvent(new WorkOrderCompletedDomainEvent { WorkOrderId = workOrder.Id });
+            }
 
             await cache.RemoveByTagAsync("work-orders");
 

@@ -1,13 +1,9 @@
 using GOATY.Api;
 using GOATY.Application;
-using GOATY.Application.Common.Configurations;
 using GOATY.Infrastructure;
 using GOATY.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddOptions<JwtConfigurations>()
-                    .Bind(builder.Configuration.GetSection(JwtConfigurations.JwtSettings));
 
 builder.Services.AddPresentation()
                 .AddApplication(builder.Configuration)

@@ -4,7 +4,7 @@ using GOATY.Application.Features.WorkOrders.DTOs;
 using GOATY.Application.Features.WorkOrders.Mappers;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders;
-using GOATY.Domain.WorkOrders.Enums;
+using GOATY.Domain.WorkOrders.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -16,6 +16,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
         IAppDbContext context,
         ILogger<CreateWorkOrderCommandHandler> logger,
         HybridCache cache,
+
         IWorkOrderRules _workOrderRules)
         : IRequestHandler<CreateWorkOrderCommand, Result<WorkOrderDto>>
     {
@@ -152,6 +153,8 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
 
             await context.WorkOrders.AddAsync(workOrder , ct);
             await context.SaveChangesAsync(ct);
+
+            workOrder.AddEvent(new WorkOrderCreatedDomainEvent());
 
             await cache.RemoveByTagAsync("work-orders" , ct);
 

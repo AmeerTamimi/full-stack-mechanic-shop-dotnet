@@ -3,7 +3,7 @@
     public abstract class Entity
     {
         public Guid Id { get; set; }
-        private readonly List<DomainEvent> _domainEvents;
+        private readonly List<DomainEvent> _domainEvents= [];
 
         protected Entity() { }
         protected Entity(Guid id)

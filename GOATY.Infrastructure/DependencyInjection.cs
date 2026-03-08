@@ -1,4 +1,5 @@
-﻿using GOATY.Application.Common.Interfaces;
+﻿using GOATY.Application.Common.Configurations;
+using GOATY.Application.Common.Interfaces;
 using GOATY.Infrastructure.Data;
 using GOATY.Infrastructure.Identity;
 using GOATY.Infrastructure.Services;
@@ -18,7 +19,7 @@ namespace GOATY.Infrastructure
         {
             service.AddDb(config)
                    .AddIdentity()
-                   .AddJwtAuthentication()
+                   .AddJwtAuthentication(config)
                    .Authorization()
                    .GeneralServices();
 
@@ -59,8 +60,11 @@ namespace GOATY.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddJwtAuthentication(this IServiceCollection services)
+        public static IServiceCollection AddJwtAuthentication(this IServiceCollection services , IConfiguration config)
         {
+            services.AddOptions<JwtConfigurations>()
+                    .Bind(config.GetSection(JwtConfigurations.JwtSettings));
+
             services.ConfigureOptions<JwtBearerConfigurations>();
 
             services.AddAuthentication(options =>
