@@ -33,6 +33,8 @@ namespace GOATY.Application.Features.Billing.Queries.GeneratePdf
             {
                 var content = invoiceGenerator.Generate(invoice);
 
+                File.WriteAllBytes("invoice.pdf", content);
+
                 return new InvoicePdfDto
                 {
                     Content = content,

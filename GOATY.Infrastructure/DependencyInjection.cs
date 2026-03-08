@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QuestPDF.Infrastructure;
 
 namespace GOATY.Infrastructure
 {
@@ -80,6 +81,7 @@ namespace GOATY.Infrastructure
 
         public static IServiceCollection GeneralServices(this IServiceCollection services)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
             services.AddScoped<IWorkOrderRules, WorkOrderRules>();
             services.AddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
 
