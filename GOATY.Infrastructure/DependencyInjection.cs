@@ -1,5 +1,6 @@
 ﻿using GOATY.Application.Common.Configurations;
 using GOATY.Application.Common.Interfaces;
+using GOATY.Infrastructure.BackgroundJobs;
 using GOATY.Infrastructure.Data;
 using GOATY.Infrastructure.Data.Interceptors;
 using GOATY.Infrastructure.Identity;
@@ -38,7 +39,10 @@ namespace GOATY.Infrastructure
                 options.UseSqlServer(config.GetSection("ConnectionString").Value);
             });
 
-            services.AddScoped<IAppDbContext, AppDbContext>();
+            services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+            
+            services.AddHostedService<CancellingWorkOrdersBackgroundJob>();
+            
             services.AddScoped<ApplicationDataInitilizer>();
 
             return services;
