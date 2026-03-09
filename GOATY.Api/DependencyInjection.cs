@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using GOATY.Api.Services;
+using GOATY.Application.Common.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace GOATY.Api
 {
@@ -11,6 +13,9 @@ namespace GOATY.Api
                 options.JsonSerializerOptions.Converters
                     .Add(new JsonStringEnumConverter());
             });
+
+            services.AddScoped<IUser, CurrentUser>();
+            services.AddHttpContextAccessor();
 
             return services;
         }

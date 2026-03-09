@@ -37,6 +37,7 @@ namespace GOATY.Infrastructure.Data
 
         public async Task InitilizeAsync()
         {
+            
             try
             {
                 await _context.Database.EnsureCreatedAsync();
@@ -209,7 +210,7 @@ namespace GOATY.Infrastructure.Data
 
             if(! await _context.RepairTasks.AnyAsync())
             {
-                var partId = (await _context.Parts.FirstAsync()).Id;
+                var partId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
                 await _context.AddRangeAsync([
                         RepairTask.Create(
@@ -348,6 +349,7 @@ namespace GOATY.Infrastructure.Data
                             technicianCost: 150,
                             quantity: 1,
                             unitPrice: 300,
+                            description : "Good Item Wallah",
                             repairTaskId: Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             partId: null
                         ).Value

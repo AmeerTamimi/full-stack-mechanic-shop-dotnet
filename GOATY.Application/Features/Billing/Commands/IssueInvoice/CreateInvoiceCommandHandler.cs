@@ -59,6 +59,7 @@ namespace GOATY.Application.Features.Billing.Commands.IssueInvoice
                                                      repairTask.TechnicianCost,
                                                      workOrderRepairTask.Quantity,
                                                      workOrderRepairTask.Cost,
+                                                     "Sorry",
                                                      repairTask.Id,
                                                      null);
 

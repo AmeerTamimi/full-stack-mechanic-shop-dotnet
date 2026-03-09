@@ -1,12 +1,14 @@
 ﻿using GOATY.Application.Common.Configurations;
 using GOATY.Application.Common.Interfaces;
 using GOATY.Infrastructure.Data;
+using GOATY.Infrastructure.Data.Interceptors;
 using GOATY.Infrastructure.Identity;
 using GOATY.Infrastructure.Services;
 using MechanicShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using QuestPDF.Infrastructure;
@@ -29,8 +31,10 @@ namespace GOATY.Infrastructure
         public static IServiceCollection AddDb(this IServiceCollection services,
                                                IConfiguration config)
         {
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddScoped<ISaveChangesInterceptor, AuditLoggingInterceptor>();
+            services.AddDbContext<AppDbContext>((sp , options) =>
             {
+                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
                 options.UseSqlServer(config.GetSection("ConnectionString").Value);
             });
 
@@ -88,7 +92,7 @@ namespace GOATY.Infrastructure
             QuestPDF.Settings.License = LicenseType.Community;
             services.AddScoped<IWorkOrderRules, WorkOrderRules>();
             services.AddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
-
+            services.AddScoped<INotificationService, NotificationService>();
             return services;
         }
     }

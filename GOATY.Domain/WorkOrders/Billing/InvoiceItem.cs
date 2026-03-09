@@ -26,6 +26,7 @@ namespace GOATY.Domain.WorkOrders.Billing
                            int quantity,
                            decimal unitPrice,
                            decimal total,
+                           string description,
                            Guid? repairTaskId,
                            Guid? partId)
         {
@@ -35,6 +36,7 @@ namespace GOATY.Domain.WorkOrders.Billing
             Quantity = quantity;
             UnitPrice = unitPrice;
             Total = total;
+            Description = description;
             RepairTaskId = repairTaskId;
             PartId = partId;
         }
@@ -44,6 +46,7 @@ namespace GOATY.Domain.WorkOrders.Billing
             decimal technicianCost,
             int quantity,
             decimal unitPrice,
+            string description,
             Guid? repairTaskId,
             Guid? partId)
         {
@@ -91,6 +94,7 @@ namespace GOATY.Domain.WorkOrders.Billing
                 quantity,
                 unitPrice,
                 total,
+                description,
                 repairTaskId,
                 partId);
         }

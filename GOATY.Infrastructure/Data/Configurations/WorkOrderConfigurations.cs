@@ -38,7 +38,7 @@ namespace GOATY.Infrastructure.Data.Configurations
             builder.HasOne(wo => wo.Vehicle)
                    .WithMany(v => v.WorkOrders)
                    .HasForeignKey(wo => wo.VehicleId)
-                   .OnDelete(DeleteBehavior.NoAction);
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(wo => wo.Customer)
                    .WithMany(c => c.WorkOrders)

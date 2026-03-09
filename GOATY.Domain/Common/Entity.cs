@@ -11,7 +11,8 @@
             Id = id == Guid.Empty ? Guid.NewGuid() : id;
         }
 
-        public void AddEvent(DomainEvent domainEvent){
+        public void AddEvent(DomainEvent domainEvent)
+        {
             _domainEvents.Add(domainEvent);
         }
         public void RemoveEvent(DomainEvent domainEven)
