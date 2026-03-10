@@ -35,7 +35,7 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetCustomerById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -54,7 +54,7 @@ namespace GOATY.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointName("CreateCustomer")]
@@ -76,10 +76,12 @@ namespace GOATY.Api.Controllers
                 )
             );
 
-            return result.Match<IActionResult>(
-                response => Ok(response),
-                Problem
-            );
+            return result.Match(
+            response => CreatedAtRoute(
+                routeName: "GetCustomerById",
+                routeValues: new { version = "1.0", customerId = response.Id },
+                value: response),
+            Problem);
         }
 
         [HttpPut("{id:guid}")]

@@ -30,10 +30,8 @@ namespace GOATY.Api
             {
                 services.AddOpenApi(version, options =>
                 {
-                    // Versioning config
                     options.AddDocumentTransformer<VersionInfoTransformer>();
 
-                    // Security Scheme config
                     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
                     options.AddOperationTransformer<BearerSecuritySchemeTransformer>();
                 });

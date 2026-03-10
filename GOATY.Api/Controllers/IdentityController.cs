@@ -10,7 +10,6 @@ namespace GOATY.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class IdentityController(IMediator mediator) : ApiController
-
     {
         [HttpPost("token/generate")]
         [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]

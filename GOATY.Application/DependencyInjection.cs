@@ -34,10 +34,10 @@ namespace GOATY.Application
 
             services.AddValidatorsFromAssembly(typeof(GOATY.Application.AssemblyMarker).Assembly);
 
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceoptionBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
-            services.AddTransient(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnhandledExceoptionBehaviour<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+            services.AddScoped(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehaviour<,>));
 
             services.AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions

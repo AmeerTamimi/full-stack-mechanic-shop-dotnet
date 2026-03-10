@@ -35,7 +35,7 @@ namespace GOATY.Api.Controllers
                 );
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetRepairTaskById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -75,9 +75,11 @@ namespace GOATY.Api.Controllers
                 .ToList()));
 
             return result.Match(
-                response => Ok(response),
-                Problem
-            );
+            response => CreatedAtRoute(
+                routeName: "GetRepairTaskById",
+                routeValues: new { version = "1.0", repairTaskId = response.Id },
+                value: response),
+            Problem);
         }
 
         [HttpPut("{id:guid}")]

@@ -34,7 +34,7 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}" , Name = "GetPartById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -53,7 +53,7 @@ namespace GOATY.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointName("CreatePart")]
@@ -65,9 +65,11 @@ namespace GOATY.Api.Controllers
             var result = await mediator.Send(new CreatePartCommand(part.Name!, part.Cost, part.Quantity));
 
             return result.Match(
-                response => Ok(response),
-                Problem
-            );
+            response => CreatedAtRoute(
+                routeName: "GetPartById",
+                routeValues: new { version = "1.0", id = response.Id },
+                value: response),
+            Problem);
         }
 
         [HttpPut("{id:guid}")]

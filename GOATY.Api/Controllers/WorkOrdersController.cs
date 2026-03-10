@@ -58,7 +58,7 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpGet("{workOrderId:guid}")]
+        [HttpGet("{workOrderId:guid}" , Name = "GetWorkOrderById")]
         [ProducesResponseType(typeof(WorkOrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]

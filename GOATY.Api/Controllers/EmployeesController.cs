@@ -37,7 +37,7 @@ namespace GOATY.Api.Controllers
             );
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetEmployeeById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -68,9 +68,11 @@ namespace GOATY.Api.Controllers
             var result = await mediator.Send(new CreateEmployeeCommand(request.FirstName!, request.LastName!, request.Role));
 
             return result.Match(
-                response => Ok(response),
-                Problem
-            );
+            response => CreatedAtRoute(
+                routeName: "GetEmployeeById",
+                routeValues: new { version = "1.0", employeeId = response.Id },
+                value: response),
+            Problem);
         }
 
         [HttpPut("{id:guid}")]
