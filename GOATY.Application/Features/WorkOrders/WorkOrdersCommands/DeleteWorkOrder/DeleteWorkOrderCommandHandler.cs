@@ -43,7 +43,6 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.DeleteWorkOrd
 
             workOrder.AddDomainEvent(new WorkOrderCollectionModifiedDomainEvent());
 
-
             await cache.RemoveByTagAsync("work-orders");
 
             return workOrder.ToDto();

@@ -4,6 +4,7 @@ using GOATY.Infrastructure.BackgroundJobs;
 using GOATY.Infrastructure.Data;
 using GOATY.Infrastructure.Data.Interceptors;
 using GOATY.Infrastructure.Identity;
+using GOATY.Infrastructure.RealTime;
 using GOATY.Infrastructure.Services;
 using MechanicShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,7 +42,7 @@ namespace GOATY.Infrastructure
 
             services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
             
-            services.AddHostedService<CancellingWorkOrdersBackgroundJob>();
+            services.AddHostedService<CancellingOverdueWorkOrdersBackgroundJob>();
             
             services.AddScoped<ApplicationDataInitilizer>();
 
@@ -97,6 +98,8 @@ namespace GOATY.Infrastructure
             services.AddScoped<IWorkOrderRules, WorkOrderRules>();
             services.AddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IWorkOrderNotifier, SignalRWorkOrderNotifier>();
+            services.AddSignalR();
             return services;
         }
     }

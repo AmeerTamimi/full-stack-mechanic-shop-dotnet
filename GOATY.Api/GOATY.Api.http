@@ -42,6 +42,11 @@ DELETE {{baseUrl}}/api/parts/{{partId}}
 // Employee ===============================================
 ###
 GET {{baseUrl}}/api/employees
+Content-type: application/json
+
+{
+
+}
 
 ###
 GET {{baseUrl}}/api/employees/{{empId}}

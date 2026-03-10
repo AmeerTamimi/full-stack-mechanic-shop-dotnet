@@ -8,16 +8,14 @@ using Microsoft.Extensions.Logging;
 
 namespace GOATY.Infrastructure.BackgroundJobs
 {
-    public sealed class CancellingWorkOrdersBackgroundJob(
+    public sealed class CancellingOverdueWorkOrdersBackgroundJob(
         IServiceScopeFactory scopeFactory,
-        ILogger<CancellingWorkOrdersBackgroundJob> logger)
+        ILogger<CancellingOverdueWorkOrdersBackgroundJob> logger)
         : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var period = TimeSpan.FromSeconds(5);
-
-            var periodicTimer = new PeriodicTimer(period);
+            var periodicTimer = new PeriodicTimer(TimeSpan.FromMinutes(10));
 
             var cutoff = DateTimeOffset.UtcNow.AddMinutes(-10);
 

@@ -2,5 +2,5 @@
 
 namespace GOATY.Domain.WorkOrders.Events
 {
-    public sealed class WorkOrderCreatedDomainEvent : DomainEvent;
+    public sealed class WorkOrderCollectionModifiedDomainEvent : DomainEvent;
 }

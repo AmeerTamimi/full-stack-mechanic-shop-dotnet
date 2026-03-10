@@ -10,6 +10,5 @@ namespace GOATY.Application.Features.WorkOrders.Events
     {
         public async Task Handle(WorkOrderCollectionModifiedDomainEvent notification, CancellationToken ct)
              => await workOrderNotifier.NotifyWorkOrdersChangedAsync(ct);
-        
     }
 }

@@ -2,6 +2,7 @@
 using GOATY.Application.Features.WorkOrders.WorkOrdersCommands.AssignTechnician;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders;
+using GOATY.Domain.WorkOrders.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -96,6 +97,8 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrd
             await context.SaveChangesAsync(ct);
 
             await cache.RemoveByTagAsync("work-orders", ct);
+
+            workOrder.AddDomainEvent(new WorkOrderCollectionModifiedDomainEvent());
 
             return Result.Updated;
         }

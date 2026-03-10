@@ -18,11 +18,15 @@ namespace GOATY.Application.Features.Schedule.Queries.GetSchedule
     {
         public async Task<Result<ScheduleDto>> Handle(GetScheduleQuery request, CancellationToken ct)
         {
-            var localStart = request.Day.ToDateTime(TimeOnly.MinValue);
+            var day = request.Day == default ? DateOnly.FromDateTime(DateTime.UtcNow) : request.Day;
+            
+            var localStart = day.ToDateTime(TimeOnly.MinValue);
             var localEnd = localStart.AddDays(1);
 
-            var utcStart = TimeZoneInfo.ConvertTimeToUtc(localStart, request.TimeZone);
-            var utcEnd = TimeZoneInfo.ConvertTimeToUtc(localEnd, request.TimeZone);
+            var timeZone = request.TimeZone == default ? TimeZoneInfo.Local : request.TimeZone;
+
+            var utcStart = TimeZoneInfo.ConvertTimeToUtc(localStart, timeZone);
+            var utcEnd = TimeZoneInfo.ConvertTimeToUtc(localEnd, timeZone);
 
 
             var workOrders = await context.WorkOrders
@@ -32,11 +36,11 @@ namespace GOATY.Application.Features.Schedule.Queries.GetSchedule
                 .Include(wo => wo.WorkOrderRepairTasks)
                 .ToListAsync(ct);
 
-            var now = TimeZoneInfo.ConvertTime(_datetime.GetUtcNow(), request.TimeZone);
+            var now = TimeZoneInfo.ConvertTime(_datetime.GetUtcNow(), timeZone);
 
             var result = new ScheduleDto
             {
-                Date = request.Day,
+                Date = day,
                 Bays = []
             };
 
@@ -55,8 +59,8 @@ namespace GOATY.Application.Features.Schedule.Queries.GetSchedule
                 {
                     var next = currentTime.AddMinutes(15); // slot time or chunk
 
-                    var startUtc = TimeZoneInfo.ConvertTimeToUtc(currentTime, request.TimeZone);
-                    var endUtc = TimeZoneInfo.ConvertTimeToUtc(next, request.TimeZone);
+                    var startUtc = TimeZoneInfo.ConvertTimeToUtc(currentTime,timeZone);
+                    var endUtc = TimeZoneInfo.ConvertTimeToUtc(next, timeZone);
 
                     var workOrder = workOrderForBay.FirstOrDefault
                                     (wo => wo.EndTime > startUtc &&
@@ -93,6 +97,7 @@ namespace GOATY.Application.Features.Schedule.Queries.GetSchedule
                             IsAvailable = true
                         });
                     }
+                    currentTime = next;
                 }
                 result.Bays.Add(new BayDto
                 {
@@ -100,7 +105,6 @@ namespace GOATY.Application.Features.Schedule.Queries.GetSchedule
                     Slots = slotsInfo
                 });
             }
-
             return result;
         }
         private static string? FormatVehicleInfo(Vehicle vehicle) =>
