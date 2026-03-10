@@ -4,6 +4,7 @@ using GOATY.Application.Features.WorkOrders.DTOs;
 using GOATY.Application.Features.WorkOrders.Mappers;
 using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders.Enums;
+using GOATY.Domain.WorkOrders.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -39,6 +40,9 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.DeleteWorkOrd
 
             context.WorkOrders.Remove(workOrder);
             await context.SaveChangesAsync(ct);
+
+            workOrder.AddDomainEvent(new WorkOrderCollectionModifiedDomainEvent());
+
 
             await cache.RemoveByTagAsync("work-orders");
 

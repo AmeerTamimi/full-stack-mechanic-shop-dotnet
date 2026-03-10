@@ -1,4 +1,5 @@
 ﻿using GOATY.Application.Common.Interfaces;
+using GOATY.Domain.Common.Results;
 using GOATY.Domain.WorkOrders.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,17 +28,21 @@ namespace GOATY.Infrastructure.BackgroundJobs
                     using var scope = scopeFactory.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
 
-                    logger.LogInformation("Scanning for scheduled work orders that should be cancelled.");
                     var workOrders = await context.WorkOrders
-                                                  .Where(wo => wo.State == State.Scheduled &&
-                                                               wo.StartTime <= cutoff)
-                                                  .ToListAsync();
+                        .Where(wo => wo.State == State.Scheduled &&wo.StartTime <= cutoff)
+                        .ToListAsync();
                     
                     if(workOrders.Count > 0)
                     {
                         foreach (var workOrder in workOrders)
                         {
-                            workOrder.UpdateState(State.Cancelled);
+                            var updatedResult = workOrder.UpdateState(State.Cancelled);
+
+                            if (!updatedResult.IsSuccess)
+                            {
+                                logger.LogWarning("Failed to cancel WorkOrder {Id}: {Error}"
+                                    ,workOrder.Id, updatedResult.Errors);
+                            }
                         }
 
                         await context.SaveChangesAsync(stoppingToken);

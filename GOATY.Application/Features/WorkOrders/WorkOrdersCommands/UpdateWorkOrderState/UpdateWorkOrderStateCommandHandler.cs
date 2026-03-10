@@ -48,7 +48,11 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.UpdateWorkOrd
 
             if(newState == State.Completed)
             {
-                workOrder.AddEvent(new WorkOrderCompletedDomainEvent { WorkOrderId = workOrder.Id });
+                workOrder.AddDomainEvent(new WorkOrderCompletedDomainEvent { WorkOrderId = workOrder.Id });
+            }
+            else
+            {
+                workOrder.AddDomainEvent(new WorkOrderCollectionModifiedDomainEvent());
             }
 
             await cache.RemoveByTagAsync("work-orders");

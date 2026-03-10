@@ -154,7 +154,7 @@ namespace GOATY.Application.Features.WorkOrders.WorkOrdersCommands.CreateWorkOrd
             await context.WorkOrders.AddAsync(workOrder , ct);
             await context.SaveChangesAsync(ct);
 
-            workOrder.AddEvent(new WorkOrderCreatedDomainEvent());
+            workOrder.AddEvent(new WorkOrderCollectionModifiedDomainEvent());
 
             await cache.RemoveByTagAsync("work-orders" , ct);
 

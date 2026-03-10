@@ -11,15 +11,15 @@
             Id = id == Guid.Empty ? Guid.NewGuid() : id;
         }
 
-        public void AddEvent(DomainEvent domainEvent)
+        public void AddDomainEvent(DomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }
-        public void RemoveEvent(DomainEvent domainEven)
+        public void RemoveDomainEvent(DomainEvent domainEven)
         {
             _domainEvents.Remove(domainEven);
         }
-        public void ClearEvents()
+        public void ClearDomainEvents()
         {
             _domainEvents.Clear();
         }
