@@ -1,17 +1,329 @@
-﻿using GOATY.Domain.Common;
+﻿using GOATY.Domain.Common.Enums;
 using GOATY.Domain.Common.Results;
-using GOATY.Domain.Customers;
-using GOATY.Domain.Customers.Vehicles;
-using GOATY.Domain.Employees;
-using GOATY.Domain.WorkOrders.Billing;
+using GOATY.Domain.WorkOrders;
 using GOATY.Domain.WorkOrders.Enums;
+using GOATY.Tests.Common.WorkOrders;
 
 namespace GOATY.Domain.UnitTests.WorkOrders
 {
     public sealed class WorkOrderTests
     {
-        //[Fact]
-        //public void 
+        [Fact]
+        public void Create_WithValidData_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create();
+
+            Assert.True(workOrder.IsSuccess);
+        }
+        [Fact]
+        public void Create_WithInvalidId_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create(id:Guid.Empty);
+
+            Assert.False(workOrder.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidId, workOrder.Error);
+        }
+
+        [Fact]
+        public void Create_WithInvalidVehicleId_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create(vehicleId: Guid.Empty);
+
+            Assert.False(workOrder.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidVehicleId, workOrder.Error);
+        }
+
+        [Fact]
+        public void Create_WithInvalidCustomerId_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create(customerId: Guid.Empty);
+
+            Assert.False(workOrder.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidCustomerId, workOrder.Error);
+        }
+
+        [Fact]
+        public void Create_WithInvalidEmployeeId_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create(employeeId: Guid.Empty);
+
+            Assert.False(workOrder.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidTechnicianId, workOrder.Error);
+        }
+
+        [Fact]
+        public void Create_WithPastStartTime_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create(startTime: DateTime.UtcNow.AddMinutes(-5));
+
+            Assert.False(workOrder.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidStartTime, workOrder.Error);
+        }
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(101)]
+        public void Create_WithInvalidDiscount_ShouldFail(decimal discount)
+        {
+            var workOrder = WorkOrderFactory.Create(discount: discount);
+
+            Assert.False(workOrder.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidDiscount, workOrder.Error);
+        }
+
+        [Fact]
+        public void Update_WithValidData_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var updateResult = workOrder.Update(vehicleId: Guid.NewGuid(),
+                                                customerId: Guid.NewGuid(),
+                                                employeeId: Guid.NewGuid(),
+                                                startTime: DateTime.UtcNow.AddMinutes(5),
+                                                bay: Bay.A,
+                                                discount: 50,
+                                                repairTasks: [WorkOrderRepairTaskFactory.Create().Value]);
+
+            Assert.True(updateResult.IsSuccess);
+        }
+
+        [Fact]
+        public void UpdateVehicle_WithValidVehicleId_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            var newVehicleId = Guid.NewGuid();
+
+            var result = workOrder.UpdateVehicle(newVehicleId);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Result.Updated, result.Value);
+            Assert.Equal(newVehicleId, workOrder.VehicleId);
+        }
+
+        [Fact]
+        public void UpdateVehicle_WithInvalidVehicleId_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var result = workOrder.UpdateVehicle(Guid.Empty);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidVehicleId, result.Error);
+        }
+
+        [Fact]
+        public void UpdateVehicle_WhenWorkOrderIsNotEditable_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.InProgress);
+
+            var result = workOrder.UpdateVehicle(Guid.NewGuid());
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.NotEditable, result.Error);
+        }
+
+        [Fact]
+        public void UpdateTechnician_WithValidTechnicianId_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            var newTechnicianId = Guid.NewGuid();
+
+            var result = workOrder.UpdateTechnician(newTechnicianId);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Result.Updated, result.Value);
+            Assert.Equal(newTechnicianId, workOrder.EmployeeId);
+        }
+
+        [Fact]
+        public void UpdateTechnician_WithInvalidTechnicianId_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var result = workOrder.UpdateTechnician(Guid.Empty);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidTechnicianId, result.Error);
+        }
+
+        [Fact]
+        public void UpdateTechnician_WhenWorkOrderIsNotEditable_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.InProgress);
+
+            var result = workOrder.UpdateTechnician(Guid.NewGuid());
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.NotEditable, result.Error);
+        }
+
+        [Fact]
+        public void Relocate_WithValidData_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            var newBay = Bay.B;
+
+            var newStartTime = DateTime.Now.AddMinutes(5);
+
+            var result = workOrder.Relocate(newBay, newStartTime);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Result.Updated, result.Value);
+            Assert.Equal(newBay, workOrder.Bay);
+            Assert.Equal(newStartTime, workOrder.StartTime);
+        }
+
+        [Fact]
+        public void Relocate_WhenWorkOrderIsNotEditable_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.InProgress);
+
+            var result = workOrder.Relocate(Bay.B, DateTime.Now.AddMinutes(-5));
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.NotEditable, result.Error);
+        }
+
+        [Fact]
+        public void Relocate_WithInvalidStartTime_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var result = workOrder.Relocate(Bay.B, DateTime.Now.AddMinutes(-5));
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidStartTime, result.Error);
+        }
+
+        [Fact]
+        public void Relocate_WithInvalidBay_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            var invalidBay = (Bay)999;
+
+            var result = workOrder.Relocate(invalidBay, DateTime.Now.AddMinutes(5));
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidBay, result.Error);
+        }
+
+        [Fact]
+        public void UpdateState_FromScheduledToInProgress_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var result = workOrder.UpdateState(State.InProgress);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Result.Updated, result.Value);
+            Assert.Equal(State.InProgress, workOrder.State);
+        }
+
+        [Fact]
+        public void UpdateState_FromScheduledToCompleted_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var result = workOrder.UpdateState(State.Completed);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidWorkOrderStateTransition, result.Error);
+        }
+
+        [Fact]
+        public void UpdateState_FromInProgressToScheduled_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.InProgress);
+
+            var result = workOrder.UpdateState(State.Scheduled);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidWorkOrderStateTransition, result.Error);
+        }
+
+        [Fact]
+        public void UpdateState_FromInProgressToCompleted_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.InProgress);
+
+            var result = workOrder.UpdateState(State.Completed);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Result.Updated, result.Value);
+            Assert.Equal(State.Completed, workOrder.State);
+        }
+
+        [Fact]
+        public void UpdateState_AfterCompleted_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.InProgress);
+            workOrder.UpdateState(State.Completed);
+
+            var result = workOrder.UpdateState(State.Cancelled);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidWorkOrderStateTransition, result.Error);
+        }
+
+        [Fact]
+        public void UpdateState_AfterCancelled_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+            workOrder.UpdateState(State.Cancelled);
+
+            var result = workOrder.UpdateState(State.InProgress);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidWorkOrderStateTransition, result.Error);
+        }
+
+        [Fact]
+        public void UpsertRepairTasks_WithNewRepairTask_ShouldSucceed()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var incoming = new List<WorkOrderRepairTasks>
+        {
+            WorkOrderRepairTaskFactory.Create(
+                workOrderId: workOrder.Id,
+                repairTaskId: Guid.NewGuid(),
+                time: TimeStamps.Min10,
+                cost: 100,
+                quantity: 1).Value
+        };
+
+            var result = workOrder.UpsertRepairTasks(incoming);
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(Result.Updated, result.Value);
+            Assert.Single(workOrder.WorkOrderRepairTasks);
+        }
+
+        [Fact]
+        public void UpsertRepairTasks_WithInvalidIncomingRepairTask_ShouldFail()
+        {
+            var workOrder = WorkOrderFactory.Create().Value;
+
+            var incoming = new List<WorkOrderRepairTasks>
+            {
+                WorkOrderRepairTaskFactory.Create(
+                    workOrderId: workOrder.Id,
+                    repairTaskId: Guid.NewGuid(),
+                    time: 0,
+                    cost: 100,
+                    quantity: 1).Value
+            };
+
+            var result = workOrder.UpsertRepairTasks(incoming);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal(WorkOrderErrors.InvalidRepairTasks, result.Error);
+        }
     }
 }
 //{

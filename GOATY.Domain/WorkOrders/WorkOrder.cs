@@ -24,7 +24,7 @@ namespace GOATY.Domain.WorkOrders
         public Vehicle Vehicle { get; set; }
         public Customer Customer { get; set; }
         public Employee? Employee { get; set; }
-        public int TotalTime => _workOrderRepairTasks.Sum(wr => (int)wr.RepairTask.TimeEstimated);
+        public int TotalTime => _workOrderRepairTasks.Sum(wr => (wr.RepairTask != null ? (int)wr.RepairTask.TimeEstimated : 0));
         public decimal TotalCost => _workOrderRepairTasks.Sum(wr => wr.RepairTask.CostEstimated);
         public decimal TotalPartsCost => _workOrderRepairTasks.Select(wr => wr.RepairTask).SelectMany(r => r.RepairTaskDetails).Sum(rd => rd.UnitPrice);
         public decimal TotalTechniciansCost => _workOrderRepairTasks.Select(wr => wr.RepairTask).Sum(r => r.TechnicianCost);
@@ -81,7 +81,7 @@ namespace GOATY.Domain.WorkOrders
             {
                 return WorkOrderErrors.InvalidTechnicianId;
             }
-            if(DateTime.Now > startTime)
+            if(DateTime.UtcNow > startTime)
             {
                 return WorkOrderErrors.InvalidStartTime;
             }
@@ -117,7 +117,7 @@ namespace GOATY.Domain.WorkOrders
             {
                 return WorkOrderErrors.InvalidTechnicianId;
             }
-            if (DateTime.Now > startTime)
+            if (DateTime.UtcNow > startTime)
             {
                 return WorkOrderErrors.InvalidStartTime;
             }
@@ -143,10 +143,16 @@ namespace GOATY.Domain.WorkOrders
 
         public Result<Updated> UpsertRepairTasks(List<WorkOrderRepairTasks> incomings)
         {
+            
             _workOrderRepairTasks.RemoveAll(exists => !incomings.Contains(exists));
 
             foreach(var incoming in incomings)
             {
+                if (incoming is null)
+                {
+                    return WorkOrderErrors.InvalidRepairTasks;
+                }
+
                 if (!_workOrderRepairTasks.Contains(incoming))
                 {
                     var createResult = WorkOrders.WorkOrderRepairTasks.Create(Id,
@@ -195,7 +201,7 @@ namespace GOATY.Domain.WorkOrders
                 return WorkOrderErrors.NotEditable;
             }
 
-            if(DateTime.Now < newStartTime)
+            if(DateTime.Now > newStartTime)
             {
                 return WorkOrderErrors.InvalidStartTime;
             }
@@ -219,7 +225,7 @@ namespace GOATY.Domain.WorkOrders
 
             if (vehicleId == Guid.Empty)
             {
-                return WorkOrderErrors.InvalidTechnicianId;
+                return WorkOrderErrors.InvalidVehicleId;
             }
 
             VehicleId = vehicleId;

@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GOATY.Common\GOATY.Tests.Common.csproj" />
     <ProjectReference Include="..\GOATY.Domain\GOATY.Domain.csproj" />
   </ItemGroup>
 

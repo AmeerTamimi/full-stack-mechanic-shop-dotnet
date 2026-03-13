@@ -62,11 +62,12 @@ namespace GOATY.Domain.UnitTests.RepairTasks
             Assert.Equal(actual, expected);
         }
 
-        [Fact]
-        public void Create_WithInvalidName_ShouldFail()
+        [Theory]
+        [InlineData(null)]
+        [InlineData(" ")]
+        public void Create_WithInvalidName_ShouldFail(string name)
         {
             var id = Guid.NewGuid();
-            var name = "   ";
             var desc = "Replace battery terminals";
             var time = Enum.GetValues<TimeStamps>().First();
 
