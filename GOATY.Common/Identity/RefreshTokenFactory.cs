@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GOATY.Domain.Common.Results;
+using GOATY.Domain.Identity;
 
 namespace GOATY.Tests.Common.Identity
 {
-    internal class RefreshTokenFactory
+    public static class RefreshTokenFactory
     {
+        public static Result<RefreshToken> Create(Guid? id = null,
+                                                  string? userId = null,
+                                                  string? token = null,
+                                                  DateTimeOffset? expiration = null)
+        {
+            return RefreshToken.Create(
+                id ?? Guid.NewGuid(),
+                userId ?? "UserId",
+                token ?? "Access Token",
+                expiration ?? DateTimeOffset.Now.AddMinutes(300));
+        }
     }
 }

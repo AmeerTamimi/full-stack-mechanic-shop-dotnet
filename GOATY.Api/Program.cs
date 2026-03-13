@@ -1,12 +1,12 @@
-using GOATY.Api;
 using GOATY.Application;
 using GOATY.Infrastructure;
 using GOATY.Infrastructure.Data;
+using GOATY.Infrastructure.RealTime;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPresentation()
+builder.Services.AddPresentation(builder.Configuration)
                 .AddApplication(builder.Configuration)
                 .AddInfrastructure(builder.Configuration);
 
@@ -32,11 +32,18 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseHsts();
-}   
+}
+
+app.UseCoreMiddlewares(builder.Configuration);
+
 app.MapControllers();
 
-app.UseAuthentication();
+app.UseStatusCodePages();
 
-app.UseAuthorization();
+app.UseAntiforgery();
+
+app.MapStaticAssets();
+
+app.MapHub<WorkOrderHub>("/hubs/workorders");
 
 app.Run();

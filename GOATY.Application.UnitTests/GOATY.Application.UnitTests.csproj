@@ -18,4 +18,13 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Behaviours\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GOATY.Application\GOATY.Application.csproj" />
+    <ProjectReference Include="..\GOATY.Common\GOATY.Tests.Common.csproj" />
+  </ItemGroup>
+
 </Project>
