@@ -1,4 +1,4 @@
-# GOATY Mechanic Shop Management System
+﻿# GOATY Mechanic Shop Management System
 
 GOATY is a backend-first **mechanic shop / workshop management system** built with **.NET 9**, **ASP.NET Core Web API**, **Clean Architecture**, and **CQRS with MediatR**.
 
@@ -159,17 +159,16 @@ The solution follows a layered structure:
 
 ```text
 GOATY
-??? GOATY.Api
-??? GOATY.Application
-??? GOATY.Client
-??? GOATY.Common
-??? GOATY.Contracts
-??? GOATY.Domain
-??? GOATY.Domain.UnitTests
-??? GOATY.Infrastructure
-??? docs
+├── GOATY.Api
+├── GOATY.Application
+├── GOATY.Client
+├── GOATY.Common
+├── GOATY.Contracts
+├── GOATY.Domain
+├── GOATY.Domain.UnitTests
+├── GOATY.Infrastructure
+└── docs
 ```
-
 ---
 
 ## Development-time API surface
@@ -222,8 +221,6 @@ On development startup, the initializer creates the database (if needed) and see
 - repair tasks
 - work orders
 - invoices
-
-> These credentials and records are clearly development-only seed data.
 
 ---
 

@@ -9,7 +9,6 @@
 @invoiceId = 99999999-9999-9999-9999-999999999992
 // Part ===============================================
 GET {{baseUrl}}/api/parts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3OCIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJyb2xlIjoiTWFuYWdlciIsIm5iZiI6MTc3MTk1MjAwMSwiZXhwIjoxNzcxOTUzODAxLCJpYXQiOjE3NzE5NTIwMDEsImlzcyI6ImxvY2FsaG9zdCIsImF1ZCI6ImxvY2FsaG9zdCJ9.tEjMu0gQuk3TLju4KQL8hVSLmx1WMNHqhuTgBwVU9tc
 
 ###
 GET {{baseUrl}}/api/parts/{{partId}}

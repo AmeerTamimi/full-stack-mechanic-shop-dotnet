@@ -19,6 +19,7 @@ public static class DependencyInjection
                 .AddExceptionHandling()
                 .AddControllerWithJsonConfiguration()
                 .AddIdentityInfrastructure()
+                .AddCorsPolicy()
                 .AddAppRateLimiting()
                 .AddAppOutputCaching()
                 .AddSignalR();
@@ -95,6 +96,24 @@ public static class DependencyInjection
         return services;
     }
 
+    public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("FrontendPolicy", policy =>
+            {
+                policy
+                    .WithOrigins(
+                        "http://127.0.0.1:5500",
+                        "http://localhost:5500"
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
+        return services;
+    }
     public static IServiceCollection AddControllerWithJsonConfiguration(this IServiceCollection services)
     {
         services.AddControllers().AddJsonOptions(options => options
@@ -122,7 +141,7 @@ public static class DependencyInjection
         app.UseHttpsRedirection();
 
         // 5. CORS (before authentication/authorization)
-        app.UseCors();
+        app.UseCors("FrontendPolicy");
 
         // 6. Rate limiting (before authentication to protect auth endpoints)
         app.UseRateLimiter();

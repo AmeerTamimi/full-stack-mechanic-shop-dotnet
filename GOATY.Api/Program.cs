@@ -40,10 +40,6 @@ app.MapControllers();
 
 app.UseStatusCodePages();
 
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-
 app.MapHub<WorkOrderHub>("/hubs/workorders");
 
 app.Run();
