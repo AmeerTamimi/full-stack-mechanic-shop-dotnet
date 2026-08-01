@@ -385,7 +385,8 @@ namespace GOATY.Infrastructure.Data
 
             await initialiser.InitilizeAsync();
 
-            await initialiser.SeedAsync();
+            // Seeding is disabled for local frontend/backend integration work.
+            // await initialiser.SeedAsync();
         }
     }
 }
