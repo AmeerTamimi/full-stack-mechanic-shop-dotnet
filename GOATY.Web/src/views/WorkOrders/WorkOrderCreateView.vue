@@ -1,8 +1,9 @@
 <script setup>
-import { ArrowLeft, ClipboardList, LoaderCircle, Save, Wrench } from "@lucide/vue";
+import { ArrowLeft, ClipboardList, LoaderCircle, Plus, Save, Wrench } from "@lucide/vue";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ActionButton from "@/components/Shared/ActionButton.vue";
+import EmptyState from "@/components/Shared/EmptyState.vue";
 import ErrorState from "@/components/Shared/ErrorState.vue";
 import FormField from "@/components/Shared/FormField.vue";
 import FormPanel from "@/components/Shared/FormPanel.vue";
@@ -15,7 +16,7 @@ import { getEmployees } from "@/services/employees.service";
 import { getRepairTasks } from "@/services/repairTasks.service";
 import { addWorkOrder } from "@/services/workOrders.service";
 import { useUiStore } from "@/store/modules/ui";
-import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { getBackendErrorMessage, getBackendErrorTitle, normalizePaginatedResponse } from "@/utils/api";
 import { formatMinutes, formatMoney } from "@/utils/formatters";
 import { asArray, readValue } from "@/utils/objectAccess";
 import {
@@ -87,6 +88,18 @@ const selectedTaskTime = computed(() => {
     0
   );
 });
+const customersWithVehiclesCount = computed(() => {
+  return customers.value.filter((customer) => getCustomerVehicles(customer).length > 0).length;
+});
+const hasVehicleOptions = computed(() => customersWithVehiclesCount.value > 0);
+const missingOptionMessages = computed(() => {
+  return [
+    hasVehicleOptions.value ? "" : "Add at least one customer with a vehicle.",
+    technicianOptions.value.length ? "" : "Add at least one technician employee.",
+    repairTasks.value.length ? "" : "Add at least one repair task template.",
+  ].filter(Boolean);
+});
+const hasMissingFormOptions = computed(() => missingOptionMessages.value.length > 0);
 const canSubmit = computed(() => {
   return (
     !isLoading.value &&
@@ -271,7 +284,9 @@ async function handleSubmit() {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to create work order. Please try again."),
-      "Create work order failed"
+      getBackendErrorTitle(error, "Create work order failed", {
+        conflictTitle: "Scheduling conflict",
+      })
     );
   } finally {
     isSaving.value = false;
@@ -317,6 +332,32 @@ onMounted(() => {
         :message="loadErrorMessage"
         @retry="loadOptions"
       />
+
+      <EmptyState
+        v-else-if="hasMissingFormOptions"
+        title="Work order setup is incomplete"
+        :message="missingOptionMessages.join(' ')"
+      >
+        <template #icon>
+          <ClipboardList :size="28" />
+        </template>
+        <template #action>
+          <div class="empty-actions">
+            <ActionButton v-if="!hasVehicleOptions" :to="{ name: 'customer-create' }">
+              <Plus :size="18" />
+              <span>Add customer and vehicle</span>
+            </ActionButton>
+            <ActionButton v-if="!technicianOptions.length" variant="secondary" :to="{ name: 'employee-create' }">
+              <Plus :size="18" />
+              <span>Add technician</span>
+            </ActionButton>
+            <ActionButton v-if="!repairTasks.length" variant="secondary" :to="{ name: 'repair-task-create' }">
+              <Plus :size="18" />
+              <span>Add repair task</span>
+            </ActionButton>
+          </div>
+        </template>
+      </EmptyState>
 
       <form v-else class="crud-form" novalidate @submit.prevent="handleSubmit">
         <FormField id="work-order-customer" label="Customer" :error="errors.customerId">
@@ -538,6 +579,13 @@ onMounted(() => {
   font-weight: 700;
 }
 
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .task-option-grid {
   display: grid;
   gap: 12px;
@@ -563,14 +611,17 @@ onMounted(() => {
 .task-option__content {
   display: grid;
   gap: 7px;
+  min-width: 0;
 }
 
 .task-option__content strong {
+  overflow-wrap: anywhere;
   color: #111827;
   font-size: 15px;
 }
 
 .task-option__content small {
+  overflow-wrap: anywhere;
   color: #64748b;
   font-size: 13px;
   line-height: 1.45;

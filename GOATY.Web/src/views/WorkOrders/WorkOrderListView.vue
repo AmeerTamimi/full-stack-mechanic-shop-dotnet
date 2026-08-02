@@ -13,6 +13,7 @@ import {
   X,
 } from "@lucide/vue";
 import { computed, onMounted, reactive, ref } from "vue";
+import { useWorkOrderRealtime } from "@/composables/useWorkOrderRealtime";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import EntityFilterBar from "@/components/Shared/EntityFilterBar.vue";
 import EntityListShell from "@/components/Shared/EntityListShell.vue";
@@ -24,9 +25,13 @@ import SummaryGrid from "@/components/Shared/SummaryGrid.vue";
 import { getCustomers } from "@/services/customers.service";
 import { getEmployees } from "@/services/employees.service";
 import { deleteWorkOrder, getWorkOrders } from "@/services/workOrders.service";
+import {
+  getWorkOrderRealtimeStatusLabel,
+  getWorkOrderRealtimeStatusTone,
+} from "@/services/workOrderRealtime.service";
 import { useAuthStore } from "@/store/modules/auth";
 import { useUiStore } from "@/store/modules/ui";
-import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { getBackendErrorMessage, getBackendErrorTitle, normalizePaginatedResponse } from "@/utils/api";
 import { formatMinutes } from "@/utils/formatters";
 import { readValue } from "@/utils/objectAccess";
 import {
@@ -69,13 +74,17 @@ const filters = reactive({
   searchTerm: "",
   state: "",
   bay: "",
-  laborId: "",
+  laborId: auth.isTechnician && !auth.isManager ? auth.employeeId : "",
   vehicleId: "",
   startDateFrom: "",
   startDateTo: "",
-  sort: "createdAt:desc",
+  sort: auth.isTechnician && !auth.isManager ? "startAt:asc" : "createdAt:desc",
 });
 
+const isTechnicianView = computed(() => auth.isTechnician && !auth.isManager);
+const technicianEmployeeId = computed(() => auth.employeeId);
+const hasTechnicianEmployeeScope = computed(() => isTechnicianView.value && Boolean(technicianEmployeeId.value));
+const isTechnicianScopeUnavailable = computed(() => isTechnicianView.value && !technicianEmployeeId.value);
 const hasWorkOrders = computed(() => workOrders.value.length > 0);
 const firstItemNumber = computed(() => {
   if (!totalItems.value) return 0;
@@ -91,7 +100,33 @@ const inProgressCount = computed(
 const completedCount = computed(
   () => workOrders.value.filter((workOrder) => getWorkOrderState(workOrder) === WORK_ORDER_STATES.completed).length
 );
-const resultLabel = computed(() => `${totalItems.value} total`);
+const resultLabel = computed(() => {
+  return hasTechnicianEmployeeScope.value
+    ? `${totalItems.value} assigned`
+    : `${totalItems.value} total`;
+});
+const pageSubtitle = computed(() => {
+  if (hasTechnicianEmployeeScope.value) {
+    return "Your assigned jobs, status flow, bays, and schedule windows.";
+  }
+
+  if (isTechnicianScopeUnavailable.value) {
+    return "Technician view is active; employee identity is not available in the login token.";
+  }
+
+  return "Track scheduled jobs, technician assignments, bays, and status flow.";
+});
+const emptyMessage = computed(() => {
+  if (hasTechnicianEmployeeScope.value) {
+    return "No assigned work orders match the current filters.";
+  }
+
+  if (isTechnicianScopeUnavailable.value) {
+    return "No work orders were returned by the API for this technician session.";
+  }
+
+  return "Create a work order or adjust filters to find workshop jobs.";
+});
 const technicianOptions = computed(() => {
   return employees.value
     .filter((employee) => Number(readValue(employee, "role", "Role")) === 2)
@@ -109,8 +144,21 @@ const vehicleOptions = computed(() => {
   );
 });
 const hasActiveFilters = computed(() => {
-  return Object.entries(filters).some(([key, value]) => key !== "sort" && Boolean(value));
+  return Object.entries(filters).some(([key, value]) => {
+    if (key === "sort") return false;
+    if (key === "laborId" && isTechnicianView.value) return false;
+
+    return Boolean(value);
+  });
 });
+const {
+  realtimeStatus,
+} = useWorkOrderRealtime({
+  enabled: computed(() => auth.isAuthenticated),
+  onChanged: refreshFromRealtime,
+});
+const realtimeStatusLabel = computed(() => getWorkOrderRealtimeStatusLabel(realtimeStatus.value));
+const realtimeStatusTone = computed(() => getWorkOrderRealtimeStatusTone(realtimeStatus.value));
 
 function getSortParts() {
   const option =
@@ -123,6 +171,14 @@ function getSortParts() {
   };
 }
 
+function getEffectiveLaborId() {
+  if (isTechnicianView.value) {
+    return technicianEmployeeId.value || undefined;
+  }
+
+  return filters.laborId || undefined;
+}
+
 function getWorkOrderQuery(targetPage) {
   return {
     Page: targetPage,
@@ -130,7 +186,7 @@ function getWorkOrderQuery(targetPage) {
     SearchTerm: filters.searchTerm.trim() || undefined,
     State: filters.state || undefined,
     Bay: filters.bay || undefined,
-    LaborId: filters.laborId || undefined,
+    LaborId: getEffectiveLaborId(),
     VehicleId: filters.vehicleId || undefined,
     StartDateFrom: filters.startDateFrom ? `${filters.startDateFrom}T00:00:00` : undefined,
     StartDateTo: filters.startDateTo ? `${filters.startDateTo}T23:59:59` : undefined,
@@ -138,12 +194,18 @@ function getWorkOrderQuery(targetPage) {
   };
 }
 
-async function loadWorkOrders(targetPage = page.value) {
-  isLoading.value = true;
-  loadErrorMessage.value = "";
+async function loadWorkOrders(targetPage = page.value, options = {}) {
+  const { silent = false } = options;
+
+  if (!silent) {
+    isLoading.value = true;
+    loadErrorMessage.value = "";
+  }
 
   try {
-    const { data } = await getWorkOrders(getWorkOrderQuery(targetPage));
+    const { data } = await getWorkOrders(getWorkOrderQuery(targetPage), {
+      skipLoader: silent,
+    });
     const pagination = normalizePaginatedResponse(data, {
       page: targetPage,
       pageSize: pageSize.value,
@@ -155,12 +217,16 @@ async function loadWorkOrders(targetPage = page.value) {
     totalItems.value = pagination.totalItems;
     totalPages.value = pagination.totalPages;
   } catch (error) {
-    loadErrorMessage.value = getBackendErrorMessage(
-      error,
-      "Something went wrong while loading work orders."
-    );
+    if (!silent) {
+      loadErrorMessage.value = getBackendErrorMessage(
+        error,
+        "Something went wrong while loading work orders."
+      );
+    }
   } finally {
-    isLoading.value = false;
+    if (!silent) {
+      isLoading.value = false;
+    }
   }
 }
 
@@ -197,12 +263,18 @@ async function resetFilters() {
   filters.searchTerm = "";
   filters.state = "";
   filters.bay = "";
-  filters.laborId = "";
+  filters.laborId = hasTechnicianEmployeeScope.value ? technicianEmployeeId.value : "";
   filters.vehicleId = "";
   filters.startDateFrom = "";
   filters.startDateTo = "";
-  filters.sort = "createdAt:desc";
+  filters.sort = isTechnicianView.value ? "startAt:asc" : "createdAt:desc";
   await loadWorkOrders(1);
+}
+
+async function refreshFromRealtime() {
+  if (isLoading.value) return;
+
+  await loadWorkOrders(page.value, { silent: true });
 }
 
 async function handleDelete(workOrder) {
@@ -234,7 +306,9 @@ async function handleDelete(workOrder) {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to delete this work order."),
-      "Delete failed"
+      getBackendErrorTitle(error, "Delete failed", {
+        conflictTitle: "Work order conflict",
+      })
     );
   } finally {
     deletingWorkOrderId.value = null;
@@ -256,6 +330,11 @@ function goToNextPage() {
 }
 
 onMounted(() => {
+  if (isTechnicianView.value) {
+    filters.laborId = technicianEmployeeId.value || "";
+    filters.sort = "startAt:asc";
+  }
+
   loadFilterReferences();
   loadWorkOrders();
 });
@@ -266,11 +345,25 @@ onMounted(() => {
     <PageHeader
       eyebrow="Operations"
       title="Work orders"
-      subtitle="Track scheduled jobs, technician assignments, bays, and status flow."
+      :subtitle="pageSubtitle"
       :icon="ClipboardList"
       tone="dashboard"
     >
       <template #actions>
+        <StatusChip :label="realtimeStatusLabel" :tone="realtimeStatusTone" :icon="RefreshCw" />
+        <StatusChip
+          v-if="hasTechnicianEmployeeScope"
+          label="My assigned work"
+          tone="info"
+          :icon="UserCog"
+        />
+        <StatusChip
+          v-else-if="isTechnicianScopeUnavailable"
+          label="Technician scope unavailable"
+          tone="warning"
+          :icon="UserCog"
+        />
+
         <ActionButton
           variant="secondary"
           icon-only
@@ -289,10 +382,15 @@ onMounted(() => {
     </PageHeader>
 
     <SummaryGrid aria-label="Work order summary">
-      <SummaryCard label="Total matching" :value="totalItems" />
+      <SummaryCard :label="hasTechnicianEmployeeScope ? 'Assigned matching' : 'Total matching'" :value="totalItems" />
       <SummaryCard label="Scheduled on page" :value="scheduledCount" />
       <SummaryCard label="In progress on page" :value="inProgressCount" />
     </SummaryGrid>
+
+    <div v-if="isTechnicianScopeUnavailable" class="scope-alert">
+      <UserCog :size="18" />
+      <span>Employee id is missing from the login token, so automatic assigned-work filtering is unavailable.</span>
+    </div>
 
     <EntityListShell
       :is-loading="isLoading"
@@ -300,7 +398,7 @@ onMounted(() => {
       :error-message="loadErrorMessage"
       loading-message="Loading work orders..."
       empty-title="No work orders found"
-      empty-message="Create a work order or adjust filters to find workshop jobs."
+      :empty-message="emptyMessage"
       :first-item="firstItemNumber"
       :last-item="lastItemNumber"
       :total-items="totalItems"
@@ -543,6 +641,7 @@ onMounted(() => {
 .filter-control {
   min-height: 42px;
   min-width: 132px;
+  max-width: 100%;
   padding: 0 10px;
   color: #111827;
   background: #fff;
@@ -553,6 +652,26 @@ onMounted(() => {
 
 .filter-control--wide {
   min-width: 210px;
+}
+
+.scope-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.scope-alert span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .entity-avatar--work-order {
@@ -589,5 +708,13 @@ onMounted(() => {
 
 .task-time {
   margin-top: 7px;
+}
+
+@media (max-width: 760px) {
+  .filter-control,
+  .filter-control--wide {
+    width: 100%;
+    min-width: 0;
+  }
 }
 </style>

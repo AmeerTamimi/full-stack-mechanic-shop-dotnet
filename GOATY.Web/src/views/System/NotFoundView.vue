@@ -1,9 +1,14 @@
 <script setup>
-import { Gauge, LogIn, SearchX } from "@lucide/vue";
+import { CalendarDays, Gauge, LogIn, SearchX } from "@lucide/vue";
+import { computed } from "vue";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import { useAuthStore } from "@/store/modules/auth";
 
 const auth = useAuthStore();
+const hasDefaultRoute = computed(() => auth.isManager || auth.isTechnician);
+const defaultRoute = computed(() => (auth.isManager ? { name: "home" } : { name: "schedule" }));
+const defaultRouteLabel = computed(() => (auth.isManager ? "Go to dashboard" : "Go to schedule"));
+const DefaultRouteIcon = computed(() => (auth.isManager ? Gauge : CalendarDays));
 </script>
 
 <template>
@@ -20,14 +25,14 @@ const auth = useAuthStore();
       </p>
 
       <div class="system-panel__actions">
-        <ActionButton v-if="auth.isAuthenticated && auth.isManager" :to="{ name: 'home' }">
-          <Gauge :size="18" />
-          <span>Go to dashboard</span>
+        <ActionButton v-if="auth.isAuthenticated && hasDefaultRoute" :to="defaultRoute">
+          <component :is="DefaultRouteIcon" :size="18" />
+          <span>{{ defaultRouteLabel }}</span>
         </ActionButton>
 
-        <ActionButton v-else :to="{ name: 'login' }">
+        <ActionButton v-else :to="{ name: auth.isAuthenticated ? 'forbidden' : 'login' }">
           <LogIn :size="18" />
-          <span>Go to login</span>
+          <span>{{ auth.isAuthenticated ? "Go to access page" : "Go to login" }}</span>
         </ActionButton>
       </div>
     </section>

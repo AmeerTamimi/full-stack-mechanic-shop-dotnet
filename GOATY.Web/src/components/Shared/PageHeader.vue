@@ -174,6 +174,8 @@ defineProps({
   gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .page-header__actions :deep(.action-button--primary) {
@@ -199,6 +201,7 @@ defineProps({
   .page-header {
     align-items: stretch;
     flex-direction: column;
+    padding: 18px;
   }
 
   .page-header__actions {
@@ -206,9 +209,18 @@ defineProps({
     justify-content: flex-start;
   }
 
+  .page-header__actions :deep(.action-button),
+  .page-header__actions :deep(.status-chip) {
+    max-width: 100%;
+  }
+
   .page-header__content {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .page-header h1 {
+    font-size: 30px;
   }
 }
 </style>

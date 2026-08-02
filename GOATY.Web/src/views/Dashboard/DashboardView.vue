@@ -11,6 +11,7 @@ import {
   Gauge,
   Package,
   Percent,
+  ReceiptText,
   RefreshCw,
   TrendingUp,
   UserRound,
@@ -157,6 +158,13 @@ const moduleCards = [
     routeName: "work-orders",
     icon: ClipboardList,
     tone: "orders",
+  },
+  {
+    title: "Invoices",
+    text: "Issue, settle, refund, and download billing records.",
+    routeName: "invoices",
+    icon: ReceiptText,
+    tone: "billing",
   },
   {
     title: "Parts",
@@ -886,6 +894,10 @@ onMounted(() => {
 
 .module-card--schedule {
   --module-accent: #22c55e;
+}
+
+.module-card--billing {
+  --module-accent: #0f766e;
 }
 
 .module-card--people {

@@ -66,6 +66,8 @@ defineEmits(["retry"]);
 
 .error-state h2 {
   margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   color: #111827;
   font-size: 24px;
 }
@@ -73,7 +75,12 @@ defineEmits(["retry"]);
 .error-state p {
   max-width: 430px;
   margin: 0 0 8px;
+  overflow-wrap: anywhere;
   color: #6b7280;
   line-height: 1.5;
+}
+
+.error-state__action {
+  max-width: 100%;
 }
 </style>

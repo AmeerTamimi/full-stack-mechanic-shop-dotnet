@@ -132,10 +132,17 @@ function clearSearch() {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 .entity-filter-bar__actions {
   justify-content: flex-end;
+}
+
+.entity-filter-bar__filters :deep(.filter-control) {
+  max-width: 100%;
 }
 
 .entity-filter-bar__result {
@@ -154,6 +161,11 @@ function clearSearch() {
   .entity-filter-bar__actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .entity-filter-bar__filters :deep(.filter-control) {
+    width: 100%;
+    min-width: 0;
   }
 }
 </style>

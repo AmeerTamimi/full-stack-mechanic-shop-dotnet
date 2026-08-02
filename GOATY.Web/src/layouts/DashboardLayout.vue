@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
-import { CalendarDays, ClipboardList, Gauge, LogOut, Package, UserRound, Users, Wrench } from "@lucide/vue";
+import { CalendarDays, ClipboardList, Gauge, LogOut, Package, ReceiptText, UserRound, Users, Wrench } from "@lucide/vue";
 import { useAuthStore } from "@/store/modules/auth";
 
 const route = useRoute();
@@ -32,6 +32,12 @@ const navItems = [
     routeName: "work-orders",
     icon: ClipboardList,
     roles: ["Manager", "Technician"],
+  },
+  {
+    label: "Invoices",
+    routeName: "invoices",
+    icon: ReceiptText,
+    roles: ["Manager"],
   },
   {
     label: "Repair tasks",

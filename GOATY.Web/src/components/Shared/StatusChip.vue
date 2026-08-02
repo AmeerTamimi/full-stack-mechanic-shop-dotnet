@@ -34,9 +34,16 @@ defineProps({
   gap: 6px;
   width: max-content;
   max-width: 100%;
+  min-width: 0;
   border-radius: 999px;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.status-chip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .status-chip--md {

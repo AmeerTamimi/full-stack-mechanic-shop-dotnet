@@ -70,6 +70,10 @@ defineProps({
 }
 
 @media (max-width: 720px) {
+  .form-panel {
+    padding: 20px;
+  }
+
   .form-panel__intro {
     align-items: flex-start;
     flex-direction: column;

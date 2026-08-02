@@ -45,6 +45,8 @@ defineProps({
 
 .empty-state h2 {
   margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   color: #111827;
   font-size: 24px;
 }
@@ -52,6 +54,11 @@ defineProps({
 .empty-state p {
   max-width: 390px;
   margin: 0 0 8px;
+  overflow-wrap: anywhere;
   color: #6b7280;
+}
+
+.empty-state__action {
+  max-width: 100%;
 }
 </style>

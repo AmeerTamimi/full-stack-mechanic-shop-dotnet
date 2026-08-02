@@ -1,7 +1,7 @@
 import http from "./http.js";
 
-export function getWorkOrders(params = {}) {
-  return http.get("/api/WorkOrders", { params });
+export function getWorkOrders(params = {}, config = {}) {
+  return http.get("/api/WorkOrders", { params, ...config });
 }
 
 export function getWorkOrder(id) {

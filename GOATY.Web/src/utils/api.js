@@ -8,7 +8,9 @@ export function normalizePaginatedResponse(data, defaults = {}) {
   const page = Number(readValue(data, "page", "Page", fallbackPage)) || fallbackPage;
   const pageSize = Number(readValue(data, "pageSize", "PageSize", fallbackPageSize)) || fallbackPageSize;
   const totalItems = Number(readValue(data, "totalItems", "TotalItems", items.length)) || 0;
-  const totalPages = Number(readValue(data, "totalPages", "TotalPages", 1)) || 1;
+  const rawTotalPages = Number(readValue(data, "totalPages", "TotalPages", 0)) || 0;
+  const computedTotalPages = pageSize > 0 ? Math.ceil(totalItems / pageSize) : 1;
+  const totalPages = rawTotalPages || computedTotalPages || 1;
 
   return {
     items,
@@ -55,6 +57,20 @@ export function getBackendErrorMessage(error, fallbackMessage = "Something went 
     data.Message ??
     fallbackMessage
   );
+}
+
+export function getBackendErrorTitle(error, fallbackTitle = "Something went wrong", options = {}) {
+  const { conflictTitle = "Conflict" } = options;
+  const status = error?.response?.status;
+
+  if (status === 400) return "Check the form";
+  if (status === 401) return "Session expired";
+  if (status === 403) return "Access denied";
+  if (status === 404) return "Not found";
+  if (status === 409) return conflictTitle;
+  if (!error?.response) return "Connection failed";
+
+  return fallbackTitle;
 }
 
 export function isUnauthorizedError(error) {
