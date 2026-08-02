@@ -35,6 +35,12 @@ const routes = [
                 meta: { title: "Parts", roles: MANAGER_ROLES },
             },
             {
+                path: "schedule",
+                name: "schedule",
+                component: () => import("@/views/Schedule/ScheduleView.vue"),
+                meta: { title: "Schedule", roles: WORK_ORDER_ROLES },
+            },
+            {
                 path: "work-orders",
                 name: "work-orders",
                 component: () => import("@/views/WorkOrders/WorkOrderListView.vue"),

@@ -145,6 +145,20 @@ const ratioCards = computed(() => [
 
 const moduleCards = [
   {
+    title: "Schedule",
+    text: "Daily bay timeline and technician workload.",
+    routeName: "schedule",
+    icon: CalendarDays,
+    tone: "schedule",
+  },
+  {
+    title: "Work orders",
+    text: "Create and manage service jobs through their lifecycle.",
+    routeName: "work-orders",
+    icon: ClipboardList,
+    tone: "orders",
+  },
+  {
     title: "Parts",
     text: "Inventory list, create, edit, and delete.",
     routeName: "parts",
@@ -864,6 +878,14 @@ onMounted(() => {
 
 .module-card--inventory {
   --module-accent: #f59e0b;
+}
+
+.module-card--orders {
+  --module-accent: #8b5cf6;
+}
+
+.module-card--schedule {
+  --module-accent: #22c55e;
 }
 
 .module-card--people {

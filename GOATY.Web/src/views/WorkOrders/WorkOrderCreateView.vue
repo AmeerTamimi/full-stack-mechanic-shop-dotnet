@@ -1,7 +1,7 @@
 <script setup>
 import { ArrowLeft, ClipboardList, LoaderCircle, Save, Wrench } from "@lucide/vue";
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import ErrorState from "@/components/Shared/ErrorState.vue";
 import FormField from "@/components/Shared/FormField.vue";
@@ -30,6 +30,7 @@ import {
   WORK_ORDER_BAY_OPTIONS,
 } from "@/utils/workOrders";
 
+const route = useRoute();
 const router = useRouter();
 const ui = useUiStore();
 
@@ -44,8 +45,8 @@ const form = reactive({
   customerId: "",
   vehicleId: "",
   employeeId: "",
-  startTime: getDefaultStartTime(),
-  bay: "",
+  startTime: getInitialStartTime(),
+  bay: getInitialBay(),
   discount: "0",
   quantity: "1",
   repairTaskIds: [],
@@ -119,6 +120,26 @@ function getDefaultStartTime() {
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function getInitialStartTime() {
+  const value = route.query.startTime?.toString();
+
+  if (value && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
+    return value.slice(0, 16);
+  }
+
+  return getDefaultStartTime();
+}
+
+function getInitialBay() {
+  const value = Number(route.query.bay);
+
+  if (WORK_ORDER_BAY_OPTIONS.some((bay) => Number(bay.value) === value)) {
+    return String(value);
+  }
+
+  return "";
 }
 
 function clearErrors() {
