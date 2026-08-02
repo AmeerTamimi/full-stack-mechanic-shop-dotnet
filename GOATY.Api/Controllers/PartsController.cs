@@ -65,10 +65,7 @@ namespace GOATY.Api.Controllers
             var result = await mediator.Send(new CreatePartCommand(part.Name!, part.Cost, part.Quantity));
 
             return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetPartById",
-                routeValues: new { version = "1.0", id = response.Id },
-                value: response),
+            response => Created($"/api/parts/{response.Id}", response),
             Problem);
         }
 

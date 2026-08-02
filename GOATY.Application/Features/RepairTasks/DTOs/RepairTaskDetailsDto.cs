@@ -6,6 +6,7 @@ namespace GOATY.Application.Features.RepairTasks.DTOs
 {
     public sealed class RepairTaskDetailsDto
     {
+        public Guid PartId { get; set; }
         public PartDto? Part { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }

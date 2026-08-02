@@ -9,6 +9,7 @@ namespace GOATY.Application.Features.RepairTasks.DTOs
         public string? Description { get; set; }
         public TimeStamps TimeEstimated { get; set; }
         public decimal CostEstimated { get; set; }
+        public decimal TechnicianCost { get; set; }
         public List<RepairTaskDetailsDto>? Parts { get; set; }
     }
 }

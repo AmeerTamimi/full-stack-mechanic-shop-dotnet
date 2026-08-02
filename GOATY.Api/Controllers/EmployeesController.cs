@@ -68,10 +68,7 @@ namespace GOATY.Api.Controllers
             var result = await mediator.Send(new CreateEmployeeCommand(request.FirstName!, request.LastName!, request.Role));
 
             return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetEmployeeById",
-                routeValues: new { version = "1.0", employeeId = response.Id },
-                value: response),
+            response => Created($"/api/Employees/{response.Id}", response),
             Problem);
         }
 

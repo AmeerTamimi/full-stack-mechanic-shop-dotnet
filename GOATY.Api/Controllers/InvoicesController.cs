@@ -86,10 +86,7 @@ namespace GOATY.Api.Controllers
             var result = await mediator.Send(new CreateInvoiceCommand(workOrderId));
 
             return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetInvoiceById",
-                routeValues: new { version = "1.0",invoiceId = response.Id },
-                value: response),
+            response => Created($"/api/Invoices/{response.Id}", response),
             Problem);
         }
 
