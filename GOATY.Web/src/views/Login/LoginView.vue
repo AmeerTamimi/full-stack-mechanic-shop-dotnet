@@ -3,6 +3,7 @@ import { Eye, EyeOff, LoaderCircle, LogIn } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/modules/auth";
+import { getBackendErrorMessage } from "@/utils/api";
 
 const route = useRoute();
 const router = useRouter();
@@ -31,11 +32,9 @@ async function handleSubmit() {
     await router.push(redirectPath);
   } catch (error) {
     errorMessage.value =
-      error.response?.data?.detail ||
-      error.response?.data?.title ||
-      (error.response?.status === 401
+      error.response?.status === 401
         ? "Invalid email or password."
-        : "Unable to sign in. Please try again.");
+        : getBackendErrorMessage(error, "Unable to sign in. Please try again.");
   } finally {
     isLoading.value = false;
   }

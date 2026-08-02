@@ -1,78 +1,97 @@
 <script setup>
-import { Package, Pencil, Plus, RefreshCw, Trash2 } from "@lucide/vue";
+import { Package, Pencil, Plus, RefreshCw, Trash2, X } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import ActionButton from "@/components/Shared/ActionButton.vue";
-import ContentPanel from "@/components/Shared/ContentPanel.vue";
-import EmptyState from "@/components/Shared/EmptyState.vue";
-import LoadingState from "@/components/Shared/LoadingState.vue";
+import EntityFilterBar from "@/components/Shared/EntityFilterBar.vue";
+import EntityListShell from "@/components/Shared/EntityListShell.vue";
 import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
-import PaginationBar from "@/components/Shared/PaginationBar.vue";
+import StatusChip from "@/components/Shared/StatusChip.vue";
 import SummaryCard from "@/components/Shared/SummaryCard.vue";
 import SummaryGrid from "@/components/Shared/SummaryGrid.vue";
 import { deletePart, getParts } from "@/services/parts.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { formatMoney } from "@/utils/formatters";
+import { matchesSearch, readValue } from "@/utils/objectAccess";
 
 const ui = useUiStore();
 const parts = ref([]);
+const search = ref("");
 const page = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
 const totalPages = ref(1);
 const isLoading = ref(false);
 const deletingPartId = ref(null);
+const loadErrorMessage = ref("");
 
-const hasParts = computed(() => parts.value.length > 0);
+const visibleParts = computed(() => {
+  return parts.value.filter((part) =>
+    matchesSearch(
+      [
+        getPartId(part),
+        getPartName(part),
+        readValue(part, "cost", "Cost"),
+        readValue(part, "quantity", "Quantity"),
+      ],
+      search.value
+    )
+  );
+});
+
+const hasVisibleParts = computed(() => visibleParts.value.length > 0);
 const firstItemNumber = computed(() => {
   if (!totalItems.value) return 0;
   return (page.value - 1) * pageSize.value + 1;
 });
-const lastItemNumber = computed(() => {
-  return Math.min(page.value * pageSize.value, totalItems.value);
+const lastItemNumber = computed(() => Math.min(page.value * pageSize.value, totalItems.value));
+const resultLabel = computed(() => {
+  if (search.value.trim()) {
+    return `${visibleParts.value.length} match${visibleParts.value.length === 1 ? "" : "es"} on this page`;
+  }
+
+  return `${totalItems.value} total`;
 });
-
-function formatMoney(value) {
-  const numberValue = Number(value ?? 0);
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(numberValue);
-}
+const emptyTitle = computed(() => (search.value.trim() ? "No parts match this search" : "No parts yet"));
+const emptyMessage = computed(() =>
+  search.value.trim()
+    ? "Clear the search or move to another page to keep scanning inventory."
+    : "Add your first inventory part to start building the catalog."
+);
 
 function getPartId(part) {
-  return part.id ?? part.Id;
+  return readValue(part, "id", "Id");
 }
 
 function getPartName(part) {
-  return part.name ?? part.Name ?? "Unnamed part";
-}
-
-function getErrorMessage(error) {
-  return (
-    error.response?.data?.detail ||
-    error.response?.data?.title ||
-    "Something went wrong while loading parts."
-  );
+  return readValue(part, "name", "Name", "Unnamed part");
 }
 
 async function loadParts(targetPage = page.value) {
   isLoading.value = true;
+  loadErrorMessage.value = "";
 
   try {
     const { data } = await getParts({
       Page: targetPage,
       PageSize: pageSize.value,
     });
+    const pagination = normalizePaginatedResponse(data, {
+      page: targetPage,
+      pageSize: pageSize.value,
+    });
 
-    parts.value = data.items ?? data.Items ?? [];
-    page.value = data.page ?? data.Page ?? targetPage;
-    pageSize.value = data.pageSize ?? data.PageSize ?? pageSize.value;
-    totalItems.value = data.totalItems ?? data.TotalItems ?? parts.value.length;
-    totalPages.value = data.totalPages ?? data.TotalPages ?? 1;
+    parts.value = pagination.items;
+    page.value = pagination.page;
+    pageSize.value = pagination.pageSize;
+    totalItems.value = pagination.totalItems;
+    totalPages.value = pagination.totalPages;
   } catch (error) {
-    ui.showErrorToast(getErrorMessage(error), "Unable to load parts");
+    loadErrorMessage.value = getBackendErrorMessage(
+      error,
+      "Something went wrong while loading parts."
+    );
   } finally {
     isLoading.value = false;
   }
@@ -108,14 +127,16 @@ async function handleDelete(part) {
     }
   } catch (error) {
     ui.showErrorToast(
-      error.response?.data?.detail ||
-        error.response?.data?.title ||
-        "Unable to delete this part.",
+      getBackendErrorMessage(error, "Unable to delete this part."),
       "Delete failed"
     );
   } finally {
     deletingPartId.value = null;
   }
+}
+
+function clearSearch() {
+  search.value = "";
 }
 
 function goToPreviousPage() {
@@ -166,26 +187,61 @@ onMounted(() => {
       <SummaryCard label="Rows per page" :value="pageSize" />
     </SummaryGrid>
 
-    <ContentPanel>
-      <LoadingState v-if="isLoading && !hasParts" message="Loading parts..." />
+    <EntityListShell
+      :is-loading="isLoading"
+      :has-items="hasVisibleParts"
+      :error-message="loadErrorMessage"
+      loading-message="Loading parts..."
+      :empty-title="emptyTitle"
+      :empty-message="emptyMessage"
+      :first-item="firstItemNumber"
+      :last-item="lastItemNumber"
+      :total-items="totalItems"
+      :page="page"
+      :total-pages="totalPages"
+      @retry="loadParts()"
+      @previous="goToPreviousPage"
+      @next="goToNextPage"
+    >
+      <template #filters>
+        <EntityFilterBar
+          v-model:search="search"
+          search-placeholder="Search current page by name, ID, cost, or quantity"
+          :disabled="isLoading"
+          :result-label="resultLabel"
+          @clear="clearSearch"
+        >
+          <template #actions>
+            <ActionButton
+              v-if="search"
+              variant="secondary"
+              type="button"
+              :disabled="isLoading"
+              @click="clearSearch"
+            >
+              <X :size="17" />
+              <span>Clear</span>
+            </ActionButton>
+          </template>
+        </EntityFilterBar>
+      </template>
 
-      <EmptyState
-        v-else-if="!hasParts"
-        title="No parts yet"
-        message="Add your first inventory part to start building the catalog."
-      >
-        <template #icon>
-          <Package :size="28" />
-        </template>
-        <template #action>
-          <ActionButton :to="{ name: 'part-create' }">
-            <Plus :size="18" />
-            <span>Create part</span>
-          </ActionButton>
-        </template>
-      </EmptyState>
+      <template #emptyIcon>
+        <Package :size="28" />
+      </template>
 
-      <div v-else class="table-wrap">
+      <template #emptyAction>
+        <ActionButton v-if="search" variant="secondary" @click="clearSearch">
+          <X :size="17" />
+          <span>Clear search</span>
+        </ActionButton>
+        <ActionButton v-else :to="{ name: 'part-create' }">
+          <Plus :size="18" />
+          <span>Create part</span>
+        </ActionButton>
+      </template>
+
+      <div class="table-wrap">
         <table class="data-table">
           <thead>
             <tr>
@@ -196,7 +252,7 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="part in parts" :key="getPartId(part)">
+            <tr v-for="part in visibleParts" :key="getPartId(part)">
               <td>
                 <div class="entity-name">
                   <span class="entity-avatar">
@@ -208,11 +264,12 @@ onMounted(() => {
                   </div>
                 </div>
               </td>
-              <td>{{ formatMoney(part.cost ?? part.Cost) }}</td>
+              <td>{{ formatMoney(readValue(part, "cost", "Cost", 0)) }}</td>
               <td>
-                <span class="quantity-pill">
-                  {{ part.quantity ?? part.Quantity }} in stock
-                </span>
+                <StatusChip
+                  :label="`${readValue(part, 'quantity', 'Quantity', 0)} in stock`"
+                  tone="inventory"
+                />
               </td>
               <td>
                 <div class="row-actions">
@@ -242,33 +299,6 @@ onMounted(() => {
           </tbody>
         </table>
       </div>
-
-      <PaginationBar
-        v-if="hasParts"
-        :first-item="firstItemNumber"
-        :last-item="lastItemNumber"
-        :total-items="totalItems"
-        :page="page"
-        :total-pages="totalPages"
-        :disabled="isLoading"
-        @previous="goToPreviousPage"
-        @next="goToNextPage"
-      />
-    </ContentPanel>
+    </EntityListShell>
   </PageShell>
 </template>
-
-<style scoped>
-.quantity-pill {
-  display: inline-flex;
-  min-width: 104px;
-  justify-content: center;
-  padding: 6px 10px;
-  color: #166534;
-  background: #dcfce7;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
-}
-</style>

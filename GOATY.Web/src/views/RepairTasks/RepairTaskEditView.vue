@@ -11,6 +11,8 @@ import PageShell from "@/components/Shared/PageShell.vue";
 import { getParts } from "@/services/parts.service";
 import { getRepairTask, updateRepairTask } from "@/services/repairTasks.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { formatMoney } from "@/utils/formatters";
 
 const route = useRoute();
 const router = useRouter();
@@ -23,43 +25,6 @@ const isLoading = ref(false);
 const isPartsLoading = ref(false);
 const isSaving = ref(false);
 
-function getBackendErrorMessage(error, fallbackMessage) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return fallbackMessage;
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return fallbackMessage;
-}
-
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
-}
-
 async function loadParts() {
   isPartsLoading.value = true;
 
@@ -69,7 +34,10 @@ async function loadParts() {
       PageSize: 100,
     });
 
-    parts.value = data.items ?? data.Items ?? [];
+    parts.value = normalizePaginatedResponse(data, {
+      page: 1,
+      pageSize: 100,
+    }).items;
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(

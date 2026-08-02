@@ -8,37 +8,55 @@ import {
   RefreshCw,
   Trash2,
   Wrench,
+  X,
 } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import ActionButton from "@/components/Shared/ActionButton.vue";
-import ContentPanel from "@/components/Shared/ContentPanel.vue";
-import EmptyState from "@/components/Shared/EmptyState.vue";
-import LoadingState from "@/components/Shared/LoadingState.vue";
+import EntityFilterBar from "@/components/Shared/EntityFilterBar.vue";
+import EntityListShell from "@/components/Shared/EntityListShell.vue";
 import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
-import PaginationBar from "@/components/Shared/PaginationBar.vue";
+import StatusChip from "@/components/Shared/StatusChip.vue";
 import SummaryCard from "@/components/Shared/SummaryCard.vue";
 import SummaryGrid from "@/components/Shared/SummaryGrid.vue";
 import { deleteRepairTask, getRepairTasks } from "@/services/repairTasks.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { formatMinutes, formatMoney } from "@/utils/formatters";
+import { asArray, matchesSearch, readValue } from "@/utils/objectAccess";
 
 const ui = useUiStore();
 const repairTasks = ref([]);
+const search = ref("");
 const page = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
 const totalPages = ref(1);
 const isLoading = ref(false);
 const deletingRepairTaskId = ref(null);
+const loadErrorMessage = ref("");
 
-const hasRepairTasks = computed(() => repairTasks.value.length > 0);
+const visibleRepairTasks = computed(() => {
+  return repairTasks.value.filter((task) =>
+    matchesSearch(
+      [
+        getRepairTaskId(task),
+        getRepairTaskName(task),
+        getDescription(task),
+        formatMinutes(getValue(task, "timeEstimated", "TimeEstimated")),
+        ...getParts(task).flatMap((line) => [getPartName(line), getLineQuantity(line)]),
+      ],
+      search.value
+    )
+  );
+});
+
+const hasVisibleRepairTasks = computed(() => visibleRepairTasks.value.length > 0);
 const firstItemNumber = computed(() => {
   if (!totalItems.value) return 0;
   return (page.value - 1) * pageSize.value + 1;
 });
-const lastItemNumber = computed(() => {
-  return Math.min(page.value * pageSize.value, totalItems.value);
-});
+const lastItemNumber = computed(() => Math.min(page.value * pageSize.value, totalItems.value));
 const requiredPartsOnPage = computed(() => {
   return repairTasks.value.reduce((count, task) => count + getParts(task).length, 0);
 });
@@ -52,22 +70,24 @@ const avgEstimatedCost = computed(() => {
 
   return formatMoney(total / repairTasks.value.length);
 });
+const resultLabel = computed(() => {
+  if (search.value.trim()) {
+    return `${visibleRepairTasks.value.length} match${visibleRepairTasks.value.length === 1 ? "" : "es"} on this page`;
+  }
 
-const timeLabels = {
-  10: "10 min",
-  15: "15 min",
-  30: "30 min",
-  45: "45 min",
-  60: "1 hr",
-  90: "1 hr 30 min",
-  120: "2 hr",
-  150: "2 hr 30 min",
-  180: "3 hr",
-  360: "6 hr",
-};
+  return `${totalItems.value} total`;
+});
+const emptyTitle = computed(() =>
+  search.value.trim() ? "No repair tasks match this search" : "No repair tasks yet"
+);
+const emptyMessage = computed(() =>
+  search.value.trim()
+    ? "Clear the search or move to another page to keep scanning task templates."
+    : "Create your first repair task template and attach required inventory parts."
+);
 
 function getValue(source, camelKey, pascalKey, fallback = "") {
-  return source?.[camelKey] ?? source?.[pascalKey] ?? fallback;
+  return readValue(source, camelKey, pascalKey, fallback);
 }
 
 function getRepairTaskId(task) {
@@ -83,7 +103,7 @@ function getDescription(task) {
 }
 
 function getParts(task) {
-  return getValue(task, "parts", "Parts", []);
+  return asArray(getValue(task, "parts", "Parts", []));
 }
 
 function getPartName(line) {
@@ -102,42 +122,30 @@ function getPartsTotal(task) {
   }, 0);
 }
 
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
-}
-
-function formatTime(value) {
-  return timeLabels[Number(value)] ?? `${value} min`;
-}
-
-function getErrorMessage(error) {
-  return (
-    error.response?.data?.detail ||
-    error.response?.data?.title ||
-    "Something went wrong while loading repair tasks."
-  );
-}
-
 async function loadRepairTasks(targetPage = page.value) {
   isLoading.value = true;
+  loadErrorMessage.value = "";
 
   try {
     const { data } = await getRepairTasks({
       Page: targetPage,
       PageSize: pageSize.value,
     });
+    const pagination = normalizePaginatedResponse(data, {
+      page: targetPage,
+      pageSize: pageSize.value,
+    });
 
-    repairTasks.value = data.items ?? data.Items ?? [];
-    page.value = data.page ?? data.Page ?? targetPage;
-    pageSize.value = data.pageSize ?? data.PageSize ?? pageSize.value;
-    totalItems.value = data.totalItems ?? data.TotalItems ?? repairTasks.value.length;
-    totalPages.value = data.totalPages ?? data.TotalPages ?? 1;
+    repairTasks.value = pagination.items;
+    page.value = pagination.page;
+    pageSize.value = pagination.pageSize;
+    totalItems.value = pagination.totalItems;
+    totalPages.value = pagination.totalPages;
   } catch (error) {
-    ui.showErrorToast(getErrorMessage(error), "Unable to load repair tasks");
+    loadErrorMessage.value = getBackendErrorMessage(
+      error,
+      "Something went wrong while loading repair tasks."
+    );
   } finally {
     isLoading.value = false;
   }
@@ -173,14 +181,16 @@ async function handleDelete(task) {
     }
   } catch (error) {
     ui.showErrorToast(
-      error.response?.data?.detail ||
-        error.response?.data?.title ||
-        "Unable to delete this repair task.",
+      getBackendErrorMessage(error, "Unable to delete this repair task."),
       "Delete failed"
     );
   } finally {
     deletingRepairTaskId.value = null;
   }
+}
+
+function clearSearch() {
+  search.value = "";
 }
 
 function goToPreviousPage() {
@@ -231,26 +241,61 @@ onMounted(() => {
       <SummaryCard label="Average estimate" :value="avgEstimatedCost" />
     </SummaryGrid>
 
-    <ContentPanel>
-      <LoadingState v-if="isLoading && !hasRepairTasks" message="Loading repair tasks..." />
+    <EntityListShell
+      :is-loading="isLoading"
+      :has-items="hasVisibleRepairTasks"
+      :error-message="loadErrorMessage"
+      loading-message="Loading repair tasks..."
+      :empty-title="emptyTitle"
+      :empty-message="emptyMessage"
+      :first-item="firstItemNumber"
+      :last-item="lastItemNumber"
+      :total-items="totalItems"
+      :page="page"
+      :total-pages="totalPages"
+      @retry="loadRepairTasks()"
+      @previous="goToPreviousPage"
+      @next="goToNextPage"
+    >
+      <template #filters>
+        <EntityFilterBar
+          v-model:search="search"
+          search-placeholder="Search current page by task, description, duration, or part"
+          :disabled="isLoading"
+          :result-label="resultLabel"
+          @clear="clearSearch"
+        >
+          <template #actions>
+            <ActionButton
+              v-if="search"
+              variant="secondary"
+              type="button"
+              :disabled="isLoading"
+              @click="clearSearch"
+            >
+              <X :size="17" />
+              <span>Clear</span>
+            </ActionButton>
+          </template>
+        </EntityFilterBar>
+      </template>
 
-      <EmptyState
-        v-else-if="!hasRepairTasks"
-        title="No repair tasks yet"
-        message="Create your first repair task template and attach required inventory parts."
-      >
-        <template #icon>
-          <Wrench :size="28" />
-        </template>
-        <template #action>
-          <ActionButton :to="{ name: 'repair-task-create' }">
-            <Plus :size="18" />
-            <span>Create repair task</span>
-          </ActionButton>
-        </template>
-      </EmptyState>
+      <template #emptyIcon>
+        <Wrench :size="28" />
+      </template>
 
-      <div v-else class="table-wrap">
+      <template #emptyAction>
+        <ActionButton v-if="search" variant="secondary" @click="clearSearch">
+          <X :size="17" />
+          <span>Clear search</span>
+        </ActionButton>
+        <ActionButton v-else :to="{ name: 'repair-task-create' }">
+          <Plus :size="18" />
+          <span>Create repair task</span>
+        </ActionButton>
+      </template>
+
+      <div class="table-wrap">
         <table class="data-table">
           <thead>
             <tr>
@@ -262,7 +307,7 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="task in repairTasks" :key="getRepairTaskId(task)">
+            <tr v-for="task in visibleRepairTasks" :key="getRepairTaskId(task)">
               <td>
                 <div class="entity-name">
                   <span class="entity-avatar entity-avatar--service">
@@ -275,10 +320,11 @@ onMounted(() => {
                 </div>
               </td>
               <td>
-                <span class="time-pill">
-                  <Clock3 :size="14" />
-                  {{ formatTime(getValue(task, "timeEstimated", "TimeEstimated")) }}
-                </span>
+                <StatusChip
+                  :label="formatMinutes(getValue(task, 'timeEstimated', 'TimeEstimated'))"
+                  tone="service"
+                  :icon="Clock3"
+                />
               </td>
               <td>
                 <div class="price-stack">
@@ -294,20 +340,24 @@ onMounted(() => {
               </td>
               <td>
                 <div class="parts-preview">
-                  <span class="parts-total">
-                    <Package :size="14" />
-                    {{ formatMoney(getPartsTotal(task)) }}
-                  </span>
-                  <span
+                  <StatusChip
+                    :label="formatMoney(getPartsTotal(task))"
+                    tone="info"
+                    :icon="Package"
+                  />
+                  <StatusChip
                     v-for="line in getParts(task).slice(0, 2)"
                     :key="`${getRepairTaskId(task)}-${getPartName(line)}`"
-                    class="part-chip"
-                  >
-                    {{ getLineQuantity(line) }}x {{ getPartName(line) }}
-                  </span>
-                  <span v-if="getParts(task).length > 2" class="part-chip">
-                    +{{ getParts(task).length - 2 }} more
-                  </span>
+                    :label="`${getLineQuantity(line)}x ${getPartName(line)}`"
+                    tone="neutral"
+                    size="sm"
+                  />
+                  <StatusChip
+                    v-if="getParts(task).length > 2"
+                    :label="`+${getParts(task).length - 2} more`"
+                    tone="neutral"
+                    size="sm"
+                  />
                 </div>
               </td>
               <td>
@@ -341,19 +391,7 @@ onMounted(() => {
           </tbody>
         </table>
       </div>
-
-      <PaginationBar
-        v-if="hasRepairTasks"
-        :first-item="firstItemNumber"
-        :last-item="lastItemNumber"
-        :total-items="totalItems"
-        :page="page"
-        :total-pages="totalPages"
-        :disabled="isLoading"
-        @previous="goToPreviousPage"
-        @next="goToNextPage"
-      />
-    </ContentPanel>
+    </EntityListShell>
   </PageShell>
 </template>
 
@@ -363,27 +401,6 @@ onMounted(() => {
   background: rgba(239, 68, 68, 0.12);
 }
 
-.time-pill,
-.parts-total,
-.part-chip,
-.price-stack span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.time-pill {
-  justify-content: center;
-  min-width: 92px;
-  padding: 7px 10px;
-  color: #b91c1c;
-  background: #fee2e2;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
-}
-
 .price-stack,
 .parts-preview {
   display: grid;
@@ -391,6 +408,9 @@ onMounted(() => {
 }
 
 .price-stack span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: #64748b;
   font-size: 13px;
   font-weight: 750;
@@ -398,25 +418,5 @@ onMounted(() => {
 
 .parts-preview {
   justify-items: flex-start;
-}
-
-.parts-total,
-.part-chip {
-  min-height: 28px;
-  padding: 0 9px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
-}
-
-.parts-total {
-  color: #075985;
-  background: #e0f2fe;
-}
-
-.part-chip {
-  color: #475569;
-  background: #f1f5f9;
 }
 </style>

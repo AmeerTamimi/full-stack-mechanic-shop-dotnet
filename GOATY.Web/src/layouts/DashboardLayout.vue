@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
-import { Gauge, LogOut, Package, UserRound, Users, Wrench } from "@lucide/vue";
+import { ClipboardList, Gauge, LogOut, Package, UserRound, Users, Wrench } from "@lucide/vue";
 import { useAuthStore } from "@/store/modules/auth";
 
 const route = useRoute();
@@ -13,28 +13,47 @@ const navItems = [
     label: "Dashboard",
     routeName: "home",
     icon: Gauge,
+    roles: ["Manager"],
   },
   {
     label: "Parts",
     routeName: "parts",
     icon: Package,
+    roles: ["Manager"],
+  },
+  {
+    label: "Work orders",
+    routeName: "work-orders",
+    icon: ClipboardList,
+    roles: ["Manager", "Technician"],
   },
   {
     label: "Repair tasks",
     routeName: "repair-tasks",
     icon: Wrench,
+    roles: ["Manager"],
   },
   {
     label: "Employees",
     routeName: "employees",
     icon: Users,
+    roles: ["Manager"],
   },
   {
     label: "Customers",
     routeName: "customers",
     icon: UserRound,
+    roles: ["Manager"],
   },
 ];
+
+const visibleNavItems = computed(() => {
+  return navItems.filter((item) => auth.canAccessRoles(item.roles ?? []));
+});
+
+const brandRoute = computed(() => {
+  return auth.isManager ? { name: "home" } : { name: "work-orders" };
+});
 
 const currentSection = computed(() => {
   return route.meta.title ?? navItems.find((item) => item.routeName === route.name)?.label ?? "GOATY";
@@ -50,7 +69,7 @@ function handleLogout() {
   <div class="dashboard-layout">
     <header class="app-header">
       <div class="header-shell">
-        <RouterLink class="brand" :to="{ name: 'home' }">
+        <RouterLink class="brand" :to="brandRoute">
           <span class="brand-mark">
             <Wrench :size="22" />
           </span>
@@ -60,9 +79,9 @@ function handleLogout() {
           </span>
         </RouterLink>
 
-        <nav class="nav-rail" aria-label="Main navigation">
+        <nav v-if="visibleNavItems.length" class="nav-rail" aria-label="Main navigation">
           <RouterLink
-            v-for="item in navItems"
+            v-for="item in visibleNavItems"
             :key="item.routeName"
             class="nav-link"
             :to="{ name: item.routeName }"
@@ -76,6 +95,11 @@ function handleLogout() {
           <div class="section-chip" aria-label="Current section">
             <span class="section-chip__dot"></span>
             <span>{{ currentSection }}</span>
+          </div>
+
+          <div v-if="auth.primaryRole" class="section-chip" aria-label="Signed in role">
+            <span class="section-chip__dot section-chip__dot--role"></span>
+            <span>{{ auth.primaryRole }}</span>
           </div>
 
           <button class="logout-button" type="button" @click="handleLogout">
@@ -305,6 +329,11 @@ function handleLogout() {
   background: #22c55e;
   border-radius: 999px;
   box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.14);
+}
+
+.section-chip__dot--role {
+  background: #38bdf8;
+  box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.14);
 }
 
 .logout-button {

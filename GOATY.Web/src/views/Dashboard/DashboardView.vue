@@ -27,6 +27,9 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { getDashboard } from "@/services/dashboard.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
+import { formatDate as formatDateValue, formatMoney, formatPercent } from "@/utils/formatters";
+import { readValue } from "@/utils/objectAccess";
 
 const ui = useUiStore();
 const isLoading = ref(false);
@@ -36,7 +39,7 @@ const timezone = ref(getBrowserTimeZone());
 const dashboard = ref(createEmptyDashboard());
 
 const displayedDay = computed(() => {
-  return formatDate(dashboard.value.day || selectedDay.value);
+  return formatDateValue(dashboard.value.day || selectedDay.value, { fallback: "Today" });
 });
 
 const hasOrders = computed(() => dashboard.value.totalOrders > 0);
@@ -207,10 +210,6 @@ function createEmptyDashboard() {
   };
 }
 
-function readValue(source, camelKey, pascalKey, fallback = 0) {
-  return source?.[camelKey] ?? source?.[pascalKey] ?? fallback;
-}
-
 function normalizeDashboard(data) {
   return {
     day: readValue(data, "day", "Day", selectedDay.value),
@@ -243,35 +242,6 @@ function normalizeDashboard(data) {
   };
 }
 
-function formatDate(value) {
-  if (!value) return "Today";
-
-  const parsedDate = new Date(`${value}T00:00:00`);
-
-  if (Number.isNaN(parsedDate.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(parsedDate);
-}
-
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
-}
-
-function formatPercent(value) {
-  return `${Number(value || 0).toFixed(1)}%`;
-}
-
 function getStatusWidth(value) {
   if (!dashboard.value.totalOrders) return "0%";
 
@@ -282,28 +252,6 @@ function getStatusWidth(value) {
 
 function getRatioProgress(value) {
   return `${Math.min(100, Math.max(0, Number(value || 0)))}%`;
-}
-
-function getBackendErrorMessage(error) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return "Unable to load dashboard data. Please check your connection and try again.";
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  return "Unable to load dashboard data. Please try again.";
 }
 
 async function loadDashboard() {
@@ -318,7 +266,10 @@ async function loadDashboard() {
     dashboard.value = normalizeDashboard(data);
     hasLoaded.value = true;
   } catch (error) {
-    ui.showErrorToast(getBackendErrorMessage(error), "Dashboard failed");
+    ui.showErrorToast(
+      getBackendErrorMessage(error, "Unable to load dashboard data. Please try again."),
+      "Dashboard failed"
+    );
   } finally {
     isLoading.value = false;
   }
