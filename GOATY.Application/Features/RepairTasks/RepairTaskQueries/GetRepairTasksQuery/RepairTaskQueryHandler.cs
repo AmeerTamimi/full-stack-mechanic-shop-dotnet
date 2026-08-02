@@ -16,6 +16,7 @@ namespace GOATY.Application.Features.RepairTasks.RepairTaskQueries.GetRepairTask
             var repairTasksQuery = context.RepairTasks
                                           .AsNoTracking()
                                           .Include(r => r.RepairTaskDetails)
+                                                .ThenInclude(rd => rd.Part)
                                           .Where(r => r.IsDeleted == false)
                                           .AsQueryable();
 

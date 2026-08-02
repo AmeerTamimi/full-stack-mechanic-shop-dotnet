@@ -77,10 +77,7 @@ namespace GOATY.Api.Controllers
             );
 
             return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetCustomerById",
-                routeValues: new { version = "1.0", customerId = response.Id },
-                value: response),
+            response => Created($"/api/Customers/{response.Id}", response),
             Problem);
         }
 

@@ -100,10 +100,7 @@ namespace GOATY.Api.Controllers
                 .ToList()));
 
             return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetWorkOrderById",
-                routeValues: new { version = "1.0", workOrderId = response.Id },
-                value: response),
+            response => Created($"/api/WorkOrders/{response.Id}", response),
             Problem);
         }
 

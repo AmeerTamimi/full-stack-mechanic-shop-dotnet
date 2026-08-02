@@ -30,8 +30,8 @@ namespace GOATY.Application.Features.Dashboards.DashboardQueries
             var localStart = request.Day.ToDateTime(TimeOnly.MinValue);
             var localEnd = localStart.AddDays(1);
 
-            var utcStart = TimeZoneInfo.ConvertTime(localStart, request.TimeZone);
-            var utcEnd = TimeZoneInfo.ConvertTime(localEnd, request.TimeZone);
+            var utcStart = TimeZoneInfo.ConvertTimeToUtc(localStart, request.TimeZone);
+            var utcEnd = TimeZoneInfo.ConvertTimeToUtc(localEnd, request.TimeZone);
 
             var workOrders = await workOrdersQuery.Where(wo => wo.StartTime >= utcStart &&
                                                                wo.EndTime <= utcEnd)

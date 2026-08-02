@@ -15,6 +15,7 @@ namespace GOATY.Application.Features.RepairTasks.Mapping
                 Description = model.Description,
                 TimeEstimated = model.TimeEstimated,
                 CostEstimated = model.CostEstimated,
+                TechnicianCost = model.TechnicianCost,
                 Parts = model.RepairTaskDetails is null ? null : model.RepairTaskDetails.ToList().ToDtos()
             };
         }
@@ -26,6 +27,7 @@ namespace GOATY.Application.Features.RepairTasks.Mapping
         {
             return new RepairTaskDetailsDto
             {
+                PartId = model.PartId,
                 Part = model.Part is null ? null : model.Part.ToDto(),
                 Quantity = model.Quantity,
                 UnitPrice = model.UnitPrice

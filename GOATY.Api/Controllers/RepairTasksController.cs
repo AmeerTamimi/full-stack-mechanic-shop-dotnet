@@ -47,7 +47,6 @@ namespace GOATY.Api.Controllers
         {
             var result = await mediator.Send(new GetRepairTaskByIdQuery(id));
 
-            Console.WriteLine(result.Errors);
             return result.Match<IActionResult>(
                     response => Ok(response),
                     Problem
@@ -75,10 +74,7 @@ namespace GOATY.Api.Controllers
                 .ToList()));
 
             return result.Match(
-            response => CreatedAtRoute(
-                routeName: "GetRepairTaskById",
-                routeValues: new { version = "1.0", repairTaskId = response.Id },
-                value: response),
+            response => Created($"/api/RepairTasks/{response.Id}", response),
             Problem);
         }
 

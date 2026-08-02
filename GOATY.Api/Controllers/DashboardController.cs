@@ -22,14 +22,37 @@ namespace GOATY.Api.Controllers
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetDashboard([FromQuery] DashboardRequest request)
         {
+            var timeZone = GetTimeZoneOrUtc(request.TimeZone);
+
             var result = await mediator.Send(new GetDashboardQuery(
                 request.Day == default ? DateOnly.FromDateTime(DateTime.UtcNow) : request.Day,
-                TimeZoneInfo.FindSystemTimeZoneById(request.TimeZone)));
+                timeZone));
 
             return result.Match(
                 response => Ok(response),
                 Problem
             );
+        }
+
+        private static TimeZoneInfo GetTimeZoneOrUtc(string timeZoneId)
+        {
+            if (string.IsNullOrWhiteSpace(timeZoneId))
+            {
+                return TimeZoneInfo.Utc;
+            }
+
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                return TimeZoneInfo.Utc;
+            }
+            catch (InvalidTimeZoneException)
+            {
+                return TimeZoneInfo.Utc;
+            }
         }
     }
 }
