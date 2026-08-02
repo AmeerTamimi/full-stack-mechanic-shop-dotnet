@@ -1,41 +1,79 @@
 <script setup>
-import { Car, Mail, Pencil, Phone, Plus, RefreshCw, Trash2, UserRound } from "@lucide/vue";
+import { Car, Mail, Pencil, Phone, Plus, RefreshCw, Trash2, UserRound, X } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import ActionButton from "@/components/Shared/ActionButton.vue";
-import ContentPanel from "@/components/Shared/ContentPanel.vue";
-import EmptyState from "@/components/Shared/EmptyState.vue";
-import LoadingState from "@/components/Shared/LoadingState.vue";
+import EntityFilterBar from "@/components/Shared/EntityFilterBar.vue";
+import EntityListShell from "@/components/Shared/EntityListShell.vue";
 import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
-import PaginationBar from "@/components/Shared/PaginationBar.vue";
+import StatusChip from "@/components/Shared/StatusChip.vue";
 import SummaryCard from "@/components/Shared/SummaryCard.vue";
 import SummaryGrid from "@/components/Shared/SummaryGrid.vue";
 import { deleteCustomer, getCustomers } from "@/services/customers.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { asArray, matchesSearch, readValue } from "@/utils/objectAccess";
 
 const ui = useUiStore();
 const customers = ref([]);
+const search = ref("");
 const page = ref(1);
 const pageSize = ref(10);
 const totalItems = ref(0);
 const totalPages = ref(1);
 const isLoading = ref(false);
 const deletingCustomerId = ref(null);
+const loadErrorMessage = ref("");
 
-const hasCustomers = computed(() => customers.value.length > 0);
+const visibleCustomers = computed(() => {
+  return customers.value.filter((customer) => {
+    const vehicles = getVehicles(customer);
+
+    return matchesSearch(
+      [
+        getCustomerId(customer),
+        getFullName(customer),
+        getValue(customer, "phone", "Phone"),
+        getValue(customer, "email", "Email"),
+        ...vehicles.flatMap((vehicle) => [
+          getValue(vehicle, "brand", "Brand"),
+          getValue(vehicle, "model", "Model"),
+          getValue(vehicle, "year", "Year"),
+          getValue(vehicle, "licensePlate", "LicensePlate"),
+        ]),
+      ],
+      search.value
+    );
+  });
+});
+
+const hasVisibleCustomers = computed(() => visibleCustomers.value.length > 0);
 const firstItemNumber = computed(() => {
   if (!totalItems.value) return 0;
   return (page.value - 1) * pageSize.value + 1;
 });
-const lastItemNumber = computed(() => {
-  return Math.min(page.value * pageSize.value, totalItems.value);
-});
+const lastItemNumber = computed(() => Math.min(page.value * pageSize.value, totalItems.value));
 const vehicleCount = computed(() => {
   return customers.value.reduce((count, customer) => count + getVehicles(customer).length, 0);
 });
+const resultLabel = computed(() => {
+  if (search.value.trim()) {
+    return `${visibleCustomers.value.length} match${visibleCustomers.value.length === 1 ? "" : "es"} on this page`;
+  }
+
+  return `${totalItems.value} total`;
+});
+const emptyTitle = computed(() =>
+  search.value.trim() ? "No customers match this search" : "No customers yet"
+);
+const emptyMessage = computed(() =>
+  search.value.trim()
+    ? "Clear the search or move to another page to keep scanning customers."
+    : "Create the first customer record and attach at least one vehicle."
+);
 
 function getValue(source, camelKey, pascalKey, fallback = "") {
-  return source?.[camelKey] ?? source?.[pascalKey] ?? fallback;
+  return readValue(source, camelKey, pascalKey, fallback);
 }
 
 function getCustomerId(customer) {
@@ -61,33 +99,33 @@ function getFullName(customer) {
 }
 
 function getVehicles(customer) {
-  return getValue(customer, "vehicles", "Vehicles", []);
-}
-
-function getErrorMessage(error) {
-  return (
-    error.response?.data?.detail ||
-    error.response?.data?.title ||
-    "Something went wrong while loading customers."
-  );
+  return asArray(getValue(customer, "vehicles", "Vehicles", []));
 }
 
 async function loadCustomers(targetPage = page.value) {
   isLoading.value = true;
+  loadErrorMessage.value = "";
 
   try {
     const { data } = await getCustomers({
       Page: targetPage,
       PageSize: pageSize.value,
     });
+    const pagination = normalizePaginatedResponse(data, {
+      page: targetPage,
+      pageSize: pageSize.value,
+    });
 
-    customers.value = data.items ?? data.Items ?? [];
-    page.value = data.page ?? data.Page ?? targetPage;
-    pageSize.value = data.pageSize ?? data.PageSize ?? pageSize.value;
-    totalItems.value = data.totalItems ?? data.TotalItems ?? customers.value.length;
-    totalPages.value = data.totalPages ?? data.TotalPages ?? 1;
+    customers.value = pagination.items;
+    page.value = pagination.page;
+    pageSize.value = pagination.pageSize;
+    totalItems.value = pagination.totalItems;
+    totalPages.value = pagination.totalPages;
   } catch (error) {
-    ui.showErrorToast(getErrorMessage(error), "Unable to load customers");
+    loadErrorMessage.value = getBackendErrorMessage(
+      error,
+      "Something went wrong while loading customers."
+    );
   } finally {
     isLoading.value = false;
   }
@@ -123,14 +161,16 @@ async function handleDelete(customer) {
     }
   } catch (error) {
     ui.showErrorToast(
-      error.response?.data?.detail ||
-        error.response?.data?.title ||
-        "Unable to delete this customer.",
+      getBackendErrorMessage(error, "Unable to delete this customer."),
       "Delete failed"
     );
   } finally {
     deletingCustomerId.value = null;
   }
+}
+
+function clearSearch() {
+  search.value = "";
 }
 
 function goToPreviousPage() {
@@ -181,26 +221,61 @@ onMounted(() => {
       <SummaryCard label="Current page" :value="`${page} / ${totalPages}`" />
     </SummaryGrid>
 
-    <ContentPanel>
-      <LoadingState v-if="isLoading && !hasCustomers" message="Loading customers..." />
+    <EntityListShell
+      :is-loading="isLoading"
+      :has-items="hasVisibleCustomers"
+      :error-message="loadErrorMessage"
+      loading-message="Loading customers..."
+      :empty-title="emptyTitle"
+      :empty-message="emptyMessage"
+      :first-item="firstItemNumber"
+      :last-item="lastItemNumber"
+      :total-items="totalItems"
+      :page="page"
+      :total-pages="totalPages"
+      @retry="loadCustomers()"
+      @previous="goToPreviousPage"
+      @next="goToNextPage"
+    >
+      <template #filters>
+        <EntityFilterBar
+          v-model:search="search"
+          search-placeholder="Search current page by name, phone, email, or vehicle"
+          :disabled="isLoading"
+          :result-label="resultLabel"
+          @clear="clearSearch"
+        >
+          <template #actions>
+            <ActionButton
+              v-if="search"
+              variant="secondary"
+              type="button"
+              :disabled="isLoading"
+              @click="clearSearch"
+            >
+              <X :size="17" />
+              <span>Clear</span>
+            </ActionButton>
+          </template>
+        </EntityFilterBar>
+      </template>
 
-      <EmptyState
-        v-else-if="!hasCustomers"
-        title="No customers yet"
-        message="Create the first customer record and attach at least one vehicle."
-      >
-        <template #icon>
-          <UserRound :size="28" />
-        </template>
-        <template #action>
-          <ActionButton :to="{ name: 'customer-create' }">
-            <Plus :size="18" />
-            <span>Create customer</span>
-          </ActionButton>
-        </template>
-      </EmptyState>
+      <template #emptyIcon>
+        <UserRound :size="28" />
+      </template>
 
-      <div v-else class="table-wrap">
+      <template #emptyAction>
+        <ActionButton v-if="search" variant="secondary" @click="clearSearch">
+          <X :size="17" />
+          <span>Clear search</span>
+        </ActionButton>
+        <ActionButton v-else :to="{ name: 'customer-create' }">
+          <Plus :size="18" />
+          <span>Create customer</span>
+        </ActionButton>
+      </template>
+
+      <div class="table-wrap">
         <table class="data-table">
           <thead>
             <tr>
@@ -211,7 +286,7 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="customer in customers" :key="getCustomerId(customer)">
+            <tr v-for="customer in visibleCustomers" :key="getCustomerId(customer)">
               <td>
                 <div class="entity-name">
                   <span class="entity-avatar">
@@ -236,10 +311,11 @@ onMounted(() => {
                 </div>
               </td>
               <td>
-                <span class="vehicle-pill">
-                  <Car :size="14" />
-                  {{ getVehicles(customer).length }} vehicles
-                </span>
+                <StatusChip
+                  :label="`${getVehicles(customer).length} vehicles`"
+                  tone="customers"
+                  :icon="Car"
+                />
               </td>
               <td>
                 <div class="row-actions">
@@ -272,19 +348,7 @@ onMounted(() => {
           </tbody>
         </table>
       </div>
-
-      <PaginationBar
-        v-if="hasCustomers"
-        :first-item="firstItemNumber"
-        :last-item="lastItemNumber"
-        :total-items="totalItems"
-        :page="page"
-        :total-pages="totalPages"
-        :disabled="isLoading"
-        @previous="goToPreviousPage"
-        @next="goToNextPage"
-      />
-    </ContentPanel>
+    </EntityListShell>
   </PageShell>
 </template>
 
@@ -297,22 +361,9 @@ onMounted(() => {
   font-weight: 750;
 }
 
-.contact-stack span,
-.vehicle-pill {
+.contact-stack span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-
-.vehicle-pill {
-  justify-content: center;
-  min-width: 112px;
-  padding: 7px 10px;
-  color: #075985;
-  background: #e0f2fe;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
 }
 </style>

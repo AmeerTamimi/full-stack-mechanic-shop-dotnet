@@ -10,6 +10,9 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { getPart, updatePart } from "@/services/parts.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
+import { formatMoney } from "@/utils/formatters";
+import { readValue } from "@/utils/objectAccess";
 
 const route = useRoute();
 const router = useRouter();
@@ -78,47 +81,10 @@ function validateForm() {
   return !errors.name && !errors.cost && !errors.quantity;
 }
 
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function getBackendErrorMessage(error, fallbackMessage) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return fallbackMessage;
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return fallbackMessage;
-}
-
 function fillForm(part) {
-  form.name = part.name ?? part.Name ?? "";
-  form.cost = String(part.cost ?? part.Cost ?? "");
-  form.quantity = String(part.quantity ?? part.Quantity ?? "");
+  form.name = readValue(part, "name", "Name");
+  form.cost = String(readValue(part, "cost", "Cost"));
+  form.quantity = String(readValue(part, "quantity", "Quantity"));
 }
 
 async function loadPart() {

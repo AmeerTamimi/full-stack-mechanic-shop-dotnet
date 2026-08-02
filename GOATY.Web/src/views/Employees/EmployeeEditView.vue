@@ -10,6 +10,8 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { getEmployee, updateEmployee } from "@/services/employees.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
+import { readValue } from "@/utils/objectAccess";
 
 const route = useRoute();
 const router = useRouter();
@@ -84,39 +86,10 @@ function getRoleLabel(roleValue) {
   return roleOptions.find((role) => role.value === String(roleValue))?.label ?? "Unknown role";
 }
 
-function getBackendErrorMessage(error, fallbackMessage) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return fallbackMessage;
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return fallbackMessage;
-}
-
 function fillForm(employee) {
-  form.firstName = employee.firstName ?? employee.FirstName ?? "";
-  form.lastName = employee.lastName ?? employee.LastName ?? "";
-  form.role = String(employee.role ?? employee.Role ?? "");
+  form.firstName = readValue(employee, "firstName", "FirstName");
+  form.lastName = readValue(employee, "lastName", "LastName");
+  form.role = String(readValue(employee, "role", "Role"));
 }
 
 async function loadEmployee() {

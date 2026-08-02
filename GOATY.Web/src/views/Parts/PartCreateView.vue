@@ -9,6 +9,8 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { addPart } from "@/services/parts.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
+import { formatMoney } from "@/utils/formatters";
 
 const router = useRouter();
 const ui = useUiStore();
@@ -67,43 +69,6 @@ function validateForm() {
   return !errors.name && !errors.cost && !errors.quantity;
 }
 
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function getBackendErrorMessage(error) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return "Unable to create part. Please check your connection and try again.";
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return "Unable to create part. Please try again.";
-}
-
 async function handleSubmit() {
   if (!validateForm()) return;
 
@@ -124,7 +89,10 @@ async function handleSubmit() {
     );
     await router.push({ name: "parts" });
   } catch (error) {
-    ui.showErrorToast(getBackendErrorMessage(error), "Create part failed");
+    ui.showErrorToast(
+      getBackendErrorMessage(error, "Unable to create part. Please try again."),
+      "Create part failed"
+    );
   } finally {
     isLoading.value = false;
   }

@@ -9,6 +9,7 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { addEmployee } from "@/services/employees.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
 
 const router = useRouter();
 const ui = useUiStore();
@@ -73,35 +74,6 @@ function getRoleLabel(roleValue) {
   return roleOptions.find((role) => role.value === String(roleValue))?.label ?? "Unknown role";
 }
 
-function getBackendErrorMessage(error) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return "Unable to create employee. Please check your connection and try again.";
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return "Unable to create employee. Please try again.";
-}
-
 async function handleSubmit() {
   if (!validateForm()) return;
 
@@ -122,7 +94,10 @@ async function handleSubmit() {
     );
     await router.push({ name: "employees" });
   } catch (error) {
-    ui.showErrorToast(getBackendErrorMessage(error), "Create employee failed");
+    ui.showErrorToast(
+      getBackendErrorMessage(error, "Unable to create employee. Please try again."),
+      "Create employee failed"
+    );
   } finally {
     isLoading.value = false;
   }

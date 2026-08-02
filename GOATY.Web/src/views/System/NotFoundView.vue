@@ -1,0 +1,99 @@
+<script setup>
+import { Gauge, LogIn, SearchX } from "@lucide/vue";
+import ActionButton from "@/components/Shared/ActionButton.vue";
+import { useAuthStore } from "@/store/modules/auth";
+
+const auth = useAuthStore();
+</script>
+
+<template>
+  <main class="system-page">
+    <section class="system-panel">
+      <span class="system-panel__icon">
+        <SearchX :size="34" />
+      </span>
+
+      <p class="system-panel__eyebrow">404</p>
+      <h1>That page does not exist.</h1>
+      <p>
+        The route may have changed, or the page has not been added to the frontend yet.
+      </p>
+
+      <div class="system-panel__actions">
+        <ActionButton v-if="auth.isAuthenticated && auth.isManager" :to="{ name: 'home' }">
+          <Gauge :size="18" />
+          <span>Go to dashboard</span>
+        </ActionButton>
+
+        <ActionButton v-else :to="{ name: 'login' }">
+          <LogIn :size="18" />
+          <span>Go to login</span>
+        </ActionButton>
+      </div>
+    </section>
+  </main>
+</template>
+
+<style scoped>
+.system-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.13), transparent 36%),
+    linear-gradient(180deg, #f8fafc, #e5edf6);
+}
+
+.system-panel {
+  width: min(560px, 100%);
+  padding: 34px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 24px 58px rgba(15, 23, 42, 0.13);
+}
+
+.system-panel__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 18px;
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.13);
+  border-radius: 8px;
+}
+
+.system-panel__eyebrow {
+  margin: 0 0 10px;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.system-panel h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 34px;
+  line-height: 1.08;
+}
+
+.system-panel p:last-of-type {
+  max-width: 410px;
+  margin: 14px auto 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.system-panel__actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+</style>

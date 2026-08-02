@@ -10,6 +10,7 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { getCustomer, updateCustomer } from "@/services/customers.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
 
 const route = useRoute();
 const router = useRouter();
@@ -19,35 +20,6 @@ const customerId = computed(() => route.params.id?.toString());
 const customer = ref(null);
 const isLoading = ref(false);
 const isSaving = ref(false);
-
-function getBackendErrorMessage(error, fallbackMessage) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return fallbackMessage;
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return fallbackMessage;
-}
 
 async function loadCustomer() {
   if (!customerId.value) {

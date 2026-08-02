@@ -3,6 +3,7 @@ import { Car, LoaderCircle, Plus, Save, Trash2 } from "@lucide/vue";
 import { computed, reactive, watch } from "vue";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import FormField from "@/components/Shared/FormField.vue";
+import { readValue as getValue } from "@/utils/objectAccess";
 
 const props = defineProps({
   initialCustomer: {
@@ -59,10 +60,6 @@ const canSubmit = computed(() => {
     form.vehicles.length > 0
   );
 });
-
-function getValue(source, camelKey, pascalKey, fallback = "") {
-  return source?.[camelKey] ?? source?.[pascalKey] ?? fallback;
-}
 
 function createLocalId() {
   return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;

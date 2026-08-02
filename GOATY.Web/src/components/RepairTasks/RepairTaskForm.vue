@@ -3,6 +3,8 @@ import { computed, reactive, watch } from "vue";
 import { LoaderCircle, Package, Plus, Save, Trash2, Wrench } from "@lucide/vue";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import FormField from "@/components/Shared/FormField.vue";
+import { formatMoney } from "@/utils/formatters";
+import { readValue as getValue } from "@/utils/objectAccess";
 
 const props = defineProps({
   initialRepairTask: {
@@ -107,10 +109,6 @@ const canSubmit = computed(() => {
   );
 });
 
-function getValue(source, camelKey, pascalKey, fallback = "") {
-  return source?.[camelKey] ?? source?.[pascalKey] ?? fallback;
-}
-
 function createLocalId() {
   return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -165,14 +163,6 @@ function getSelectedPart(partId) {
     cost: 0,
     quantity: 0,
   };
-}
-
-function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
 }
 
 function validateForm() {

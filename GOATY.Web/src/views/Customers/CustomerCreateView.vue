@@ -9,39 +9,11 @@ import PageHeader from "@/components/Shared/PageHeader.vue";
 import PageShell from "@/components/Shared/PageShell.vue";
 import { addCustomer } from "@/services/customers.service";
 import { useUiStore } from "@/store/modules/ui";
+import { getBackendErrorMessage } from "@/utils/api";
 
 const router = useRouter();
 const ui = useUiStore();
 const isSaving = ref(false);
-
-function getBackendErrorMessage(error) {
-  const data = error.response?.data;
-
-  if (!data) {
-    return "Unable to create customer. Please check your connection and try again.";
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
-
-  if (data.detail) {
-    return data.detail;
-  }
-
-  if (data.title) {
-    return data.title;
-  }
-
-  if (data.errors) {
-    const messages = Object.values(data.errors).flat();
-    if (messages.length) {
-      return messages.join(" ");
-    }
-  }
-
-  return "Unable to create customer. Please try again.";
-}
 
 async function handleSubmit(payload) {
   isSaving.value = true;
@@ -55,7 +27,10 @@ async function handleSubmit(payload) {
     );
     await router.push({ name: "customers" });
   } catch (error) {
-    ui.showErrorToast(getBackendErrorMessage(error), "Create customer failed");
+    ui.showErrorToast(
+      getBackendErrorMessage(error, "Unable to create customer. Please try again."),
+      "Create customer failed"
+    );
   } finally {
     isSaving.value = false;
   }
