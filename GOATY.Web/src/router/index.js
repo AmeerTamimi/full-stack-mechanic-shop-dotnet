@@ -6,6 +6,13 @@ import { operationDelayMs, waitForMinimumDuration } from "@/utils/operationDelay
 const MANAGER_ROLES = ["Manager"];
 const WORK_ORDER_ROLES = ["Manager", "Technician"];
 
+function getDefaultRouteName(auth) {
+    if (auth.isManager) return "home";
+    if (auth.isTechnician) return "schedule";
+
+    return "forbidden";
+}
+
 const routes = [
     {
         path: "/login",
@@ -57,6 +64,18 @@ const routes = [
                 name: "work-order-details",
                 component: () => import("@/views/WorkOrders/WorkOrderDetailsView.vue"),
                 meta: { title: "Work order details", roles: WORK_ORDER_ROLES },
+            },
+            {
+                path: "invoices",
+                name: "invoices",
+                component: () => import("@/views/Invoices/InvoiceListView.vue"),
+                meta: { title: "Invoices", roles: MANAGER_ROLES },
+            },
+            {
+                path: "invoices/:id",
+                name: "invoice-details",
+                component: () => import("@/views/Invoices/InvoiceDetailsView.vue"),
+                meta: { title: "Invoice details", roles: MANAGER_ROLES },
             },
             {
                 path: "parts/create",
@@ -223,6 +242,12 @@ router.beforeEach(async (to) => {
     }
 
     if (requiresAuth && allowedRoles.length && !auth.canAccessRoles(allowedRoles)) {
+        if (to.name === "home") {
+            return {
+                name: getDefaultRouteName(auth),
+            };
+        }
+
         return {
             name: "forbidden",
             query: {
@@ -233,7 +258,7 @@ router.beforeEach(async (to) => {
 
     if (guestOnly && auth.isAuthenticated && !auth.isTokenExpired) {
         return {
-            name: "home",
+            name: getDefaultRouteName(auth),
         };
     }
 

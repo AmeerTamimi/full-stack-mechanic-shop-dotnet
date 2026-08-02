@@ -90,6 +90,7 @@ const buttonClasses = computed(() => [
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-width: 0;
   border: 0;
   border-radius: 8px;
   font: inherit;
@@ -104,6 +105,12 @@ const buttonClasses = computed(() => [
     border-color 160ms ease,
     color 160ms ease,
     opacity 160ms ease;
+}
+
+.action-button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .action-button--md {

@@ -29,6 +29,8 @@ defineProps({
 
 .summary-card span {
   display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: #6b7280;
   font-size: 12px;
   font-weight: 800;
@@ -38,6 +40,8 @@ defineProps({
 .summary-card strong {
   display: block;
   margin-top: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: #111827;
   font-size: 26px;
   line-height: 1;

@@ -1,11 +1,16 @@
 <script setup>
-import { LogOut, ShieldAlert } from "@lucide/vue";
+import { CalendarDays, Gauge, LogOut, ShieldAlert } from "@lucide/vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import { useAuthStore } from "@/store/modules/auth";
 
 const router = useRouter();
 const auth = useAuthStore();
+const hasDefaultRoute = computed(() => auth.isManager || auth.isTechnician);
+const defaultRoute = computed(() => (auth.isManager ? { name: "home" } : { name: "schedule" }));
+const defaultRouteLabel = computed(() => (auth.isManager ? "Go to dashboard" : "Go to schedule"));
+const DefaultRouteIcon = computed(() => (auth.isManager ? Gauge : CalendarDays));
 
 async function signOut() {
   auth.logout();
@@ -27,8 +32,9 @@ async function signOut() {
       </p>
 
       <div class="system-panel__actions">
-        <ActionButton v-if="auth.isManager" :to="{ name: 'home' }">
-          <span>Go to dashboard</span>
+        <ActionButton v-if="auth.isAuthenticated && hasDefaultRoute" :to="defaultRoute">
+          <component :is="DefaultRouteIcon" :size="18" />
+          <span>{{ defaultRouteLabel }}</span>
         </ActionButton>
 
         <ActionButton variant="secondary" @click="signOut">

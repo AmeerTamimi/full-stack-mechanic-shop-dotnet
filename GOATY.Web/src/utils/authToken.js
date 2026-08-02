@@ -17,6 +17,26 @@ const EMAIL_CLAIMS = [
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
 ];
 
+const USER_ID_CLAIMS = [
+  "sub",
+  "nameid",
+  "userId",
+  "UserId",
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+];
+
+const EMPLOYEE_ID_CLAIMS = [
+  "employeeId",
+  "EmployeeId",
+  "employeeID",
+  "EmployeeID",
+  "employee_id",
+  "technicianId",
+  "TechnicianId",
+  "laborId",
+  "LaborId",
+];
+
 function decodeBase64Url(value) {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
@@ -71,8 +91,28 @@ function readClaim(payload, claimNames) {
   return null;
 }
 
+function normalizeGuidClaim(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeGuidClaim).find(Boolean) ?? null;
+  }
+
+  const candidate = String(value ?? "").trim();
+
+  if (!candidate) {
+    return null;
+  }
+
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(candidate)
+    ? candidate
+    : null;
+}
+
 export function getJwtRoles(payload) {
   return ROLE_CLAIMS.flatMap((claimName) => normalizeRoles(payload?.[claimName]));
+}
+
+export function getJwtEmployeeId(payload) {
+  return normalizeGuidClaim(readClaim(payload, EMPLOYEE_ID_CLAIMS));
 }
 
 export function getJwtUser(token) {
@@ -83,7 +123,9 @@ export function getJwtUser(token) {
   }
 
   return {
+    id: readClaim(payload, USER_ID_CLAIMS),
     email: readClaim(payload, EMAIL_CLAIMS),
+    employeeId: getJwtEmployeeId(payload),
     roles: [...new Set(getJwtRoles(payload))],
     payload,
   };

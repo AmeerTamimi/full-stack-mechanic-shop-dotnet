@@ -14,6 +14,7 @@ import {
 } from "@lucide/vue";
 import { computed, onMounted, reactive, ref } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useWorkOrderRealtime } from "@/composables/useWorkOrderRealtime";
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import ContentPanel from "@/components/Shared/ContentPanel.vue";
 import EmptyState from "@/components/Shared/EmptyState.vue";
@@ -26,6 +27,10 @@ import SummaryCard from "@/components/Shared/SummaryCard.vue";
 import SummaryGrid from "@/components/Shared/SummaryGrid.vue";
 import { getDailySchedule } from "@/services/schedule.service";
 import { getEmployees } from "@/services/employees.service";
+import {
+  getWorkOrderRealtimeStatusLabel,
+  getWorkOrderRealtimeStatusTone,
+} from "@/services/workOrderRealtime.service";
 import { useAuthStore } from "@/store/modules/auth";
 import { useUiStore } from "@/store/modules/ui";
 import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
@@ -52,6 +57,10 @@ const router = useRouter();
 const auth = useAuthStore();
 const ui = useUiStore();
 
+const isTechnicianView = computed(() => auth.isTechnician && !auth.isManager);
+const technicianEmployeeId = computed(() => auth.employeeId);
+const hasTechnicianEmployeeScope = computed(() => isTechnicianView.value && Boolean(technicianEmployeeId.value));
+const isTechnicianScopeUnavailable = computed(() => isTechnicianView.value && !technicianEmployeeId.value);
 const schedule = ref(null);
 const employees = ref([]);
 const isLoading = ref(false);
@@ -60,7 +69,9 @@ const loadErrorMessage = ref("");
 
 const filters = reactive({
   date: valueToInputDate(route.query.date),
-  employeeId: route.query.employeeId?.toString() ?? "",
+  employeeId: auth.isTechnician && !auth.isManager
+    ? auth.employeeId
+    : route.query.employeeId?.toString() ?? "",
 });
 
 const bayColumns = computed(() => normalizeSchedule(schedule.value));
@@ -88,6 +99,28 @@ const boardHeight = computed(() => getScheduleHeight(scheduleRange.value));
 const scheduleDateLabel = computed(() => {
   return formatScheduleDate(schedule.value ? getScheduleDate(schedule.value) : filters.date);
 });
+const pageSubtitle = computed(() => {
+  if (hasTechnicianEmployeeScope.value) {
+    return "Your assigned daily bay plan and active work order timeline.";
+  }
+
+  if (isTechnicianScopeUnavailable.value) {
+    return "Technician schedule is active; employee identity is not available in the login token.";
+  }
+
+  return "Daily bay plan for work orders, technicians, and shop capacity.";
+});
+const emptyScheduleMessage = computed(() => {
+  if (hasTechnicianEmployeeScope.value) {
+    return "No assigned work orders are scheduled on this day.";
+  }
+
+  if (isTechnicianScopeUnavailable.value) {
+    return "No schedule items were returned by the API for this technician session.";
+  }
+
+  return "Choose another date or create a new work order for this schedule.";
+});
 const technicianOptions = computed(() => {
   return employees.value
     .filter((employee) => Number(readValue(employee, "role", "Role")) === 2)
@@ -97,22 +130,40 @@ const technicianOptions = computed(() => {
     }));
 });
 const selectedTechnicianLabel = computed(() => {
+  if (hasTechnicianEmployeeScope.value) return "My schedule";
+  if (isTechnicianScopeUnavailable.value) return "Technician scope unavailable";
   if (!filters.employeeId) return "All technicians";
 
   return technicianOptions.value.find((employee) => employee.id === filters.employeeId)?.label ?? "Selected technician";
 });
+const {
+  realtimeStatus,
+} = useWorkOrderRealtime({
+  enabled: computed(() => auth.isAuthenticated),
+  onChanged: refreshFromRealtime,
+});
+const realtimeStatusLabel = computed(() => getWorkOrderRealtimeStatusLabel(realtimeStatus.value));
+const realtimeStatusTone = computed(() => getWorkOrderRealtimeStatusTone(realtimeStatus.value));
+
+function getEffectiveEmployeeId() {
+  if (isTechnicianView.value) {
+    return technicianEmployeeId.value || undefined;
+  }
+
+  return filters.employeeId || undefined;
+}
 
 function getScheduleQuery() {
   return {
     Day: filters.date || undefined,
-    EmployeeId: filters.employeeId || undefined,
+    EmployeeId: getEffectiveEmployeeId(),
   };
 }
 
 function getRouteQuery() {
   return {
     date: filters.date || undefined,
-    employeeId: filters.employeeId || undefined,
+    employeeId: auth.isManager ? filters.employeeId || undefined : undefined,
   };
 }
 
@@ -123,22 +174,32 @@ async function syncRouteQuery() {
   });
 }
 
-async function loadSchedule() {
-  isLoading.value = true;
-  loadErrorMessage.value = "";
+async function loadSchedule(options = {}) {
+  const { silent = false } = options;
+
+  if (!silent) {
+    isLoading.value = true;
+    loadErrorMessage.value = "";
+  }
 
   try {
-    const { data } = await getDailySchedule(getScheduleQuery());
+    const { data } = await getDailySchedule(getScheduleQuery(), {
+      skipLoader: silent,
+    });
     schedule.value = data;
     filters.date = getScheduleDate(data);
     await syncRouteQuery();
   } catch (error) {
-    loadErrorMessage.value = getBackendErrorMessage(
-      error,
-      "Unable to load the schedule for this day."
-    );
+    if (!silent) {
+      loadErrorMessage.value = getBackendErrorMessage(
+        error,
+        "Unable to load the schedule for this day."
+      );
+    }
   } finally {
-    isLoading.value = false;
+    if (!silent) {
+      isLoading.value = false;
+    }
   }
 }
 
@@ -219,7 +280,17 @@ function getBayHelperLabel(bay) {
   return `${bay.bookedSlots.length} booked / ${bay.availableSlots.length} open slots`;
 }
 
+async function refreshFromRealtime() {
+  if (isLoading.value) return;
+
+  await loadSchedule({ silent: true });
+}
+
 onMounted(async () => {
+  if (isTechnicianView.value) {
+    filters.employeeId = technicianEmployeeId.value || "";
+  }
+
   await loadReferences();
   await loadSchedule();
 });
@@ -230,11 +301,25 @@ onMounted(async () => {
     <PageHeader
       eyebrow="Operations"
       title="Schedule"
-      subtitle="Daily bay plan for work orders, technicians, and shop capacity."
+      :subtitle="pageSubtitle"
       :icon="CalendarDays"
       tone="dashboard"
     >
       <template #actions>
+        <StatusChip :label="realtimeStatusLabel" :tone="realtimeStatusTone" :icon="RefreshCw" />
+        <StatusChip
+          v-if="hasTechnicianEmployeeScope"
+          label="My schedule"
+          tone="info"
+          :icon="UserCog"
+        />
+        <StatusChip
+          v-else-if="isTechnicianScopeUnavailable"
+          label="Technician scope unavailable"
+          tone="warning"
+          :icon="UserCog"
+        />
+
         <ActionButton
           variant="secondary"
           icon-only
@@ -254,10 +339,15 @@ onMounted(async () => {
 
     <SummaryGrid aria-label="Schedule summary">
       <SummaryCard label="Schedule date" :value="scheduleDateLabel" />
-      <SummaryCard label="Booked jobs" :value="bookedSlots.length" />
+      <SummaryCard :label="hasTechnicianEmployeeScope ? 'Assigned jobs' : 'Booked jobs'" :value="bookedSlots.length" />
       <SummaryCard label="Active jobs" :value="activeSlots.length" />
       <SummaryCard label="Workload" :value="formatMinutes(totalWorkloadMinutes)" />
     </SummaryGrid>
+
+    <div v-if="isTechnicianScopeUnavailable" class="scope-alert">
+      <UserCog :size="18" />
+      <span>Employee id is missing from the login token, so automatic technician schedule filtering is unavailable.</span>
+    </div>
 
     <ContentPanel class="schedule-controls">
       <form class="schedule-filter-form" @submit.prevent="applyFilters">
@@ -455,7 +545,7 @@ onMounted(async () => {
         <EmptyState
           v-if="!bookedSlots.length"
           title="No work orders on this day"
-          message="Choose another date or create a new work order for this schedule."
+          :message="emptyScheduleMessage"
         >
           <template #icon>
             <CalendarDays :size="28" />
@@ -475,6 +565,26 @@ onMounted(async () => {
 <style scoped>
 .schedule-controls {
   margin-bottom: 18px;
+}
+
+.scope-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.scope-alert span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .schedule-filter-form {
@@ -780,6 +890,7 @@ onMounted(async () => {
 .schedule-list-item__main strong,
 .schedule-list-item__main small,
 .schedule-list-item__meta span {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

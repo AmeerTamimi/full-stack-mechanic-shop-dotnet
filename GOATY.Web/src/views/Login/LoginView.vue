@@ -90,8 +90,8 @@ async function handleSubmit() {
         </div>
 
         <div class="login-header">
-          <p class="login-eyebrow">Secure manager access</p>
-          <h2>Sign in to your dashboard</h2>
+          <p class="login-eyebrow">Secure workshop access</p>
+          <h2>Sign in to your workspace</h2>
           <p>Use your workshop credentials to continue.</p>
         </div>
 

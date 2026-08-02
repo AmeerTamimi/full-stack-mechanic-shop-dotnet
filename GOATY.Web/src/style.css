@@ -29,6 +29,7 @@ button,
 input,
 select,
 textarea {
+  min-width: 0;
   font: inherit;
 }
 

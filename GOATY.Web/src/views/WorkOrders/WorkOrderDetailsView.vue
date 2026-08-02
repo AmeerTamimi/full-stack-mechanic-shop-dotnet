@@ -5,8 +5,10 @@ import {
   Car,
   ClipboardList,
   DollarSign,
+  Download,
   LoaderCircle,
   Package,
+  ReceiptText,
   RefreshCw,
   Save,
   Trash2,
@@ -26,6 +28,7 @@ import StatusChip from "@/components/Shared/StatusChip.vue";
 import SummaryCard from "@/components/Shared/SummaryCard.vue";
 import SummaryGrid from "@/components/Shared/SummaryGrid.vue";
 import { getEmployees } from "@/services/employees.service";
+import { getInvoicePdf, getInvoices, issueInvoice } from "@/services/invoices.service";
 import { getRepairTasks } from "@/services/repairTasks.service";
 import {
   assignWorkOrderTechnician,
@@ -38,8 +41,17 @@ import {
 } from "@/services/workOrders.service";
 import { useAuthStore } from "@/store/modules/auth";
 import { useUiStore } from "@/store/modules/ui";
-import { getBackendErrorMessage, normalizePaginatedResponse } from "@/utils/api";
+import { getBackendErrorMessage, getBackendErrorTitle, normalizePaginatedResponse } from "@/utils/api";
 import { formatDateTime, formatMinutes, formatMoney } from "@/utils/formatters";
+import {
+  downloadInvoicePdfFromData,
+  formatInvoiceCode,
+  getInvoiceId,
+  getInvoiceStatus,
+  getInvoiceStatusLabel,
+  getInvoiceStatusTone,
+  getInvoiceWorkOrderId,
+} from "@/utils/invoices";
 import { asArray, readValue } from "@/utils/objectAccess";
 import {
   formatWorkOrderCode,
@@ -82,8 +94,10 @@ const employees = ref([]);
 const repairTasks = ref([]);
 const isLoading = ref(false);
 const isReferencesLoading = ref(false);
+const isInvoiceLookupLoading = ref(false);
 const loadErrorMessage = ref("");
 const savingAction = ref("");
+const relatedInvoice = ref(null);
 
 const managerForm = reactive({
   employeeId: "",
@@ -104,10 +118,14 @@ const customer = computed(() => getCustomer(workOrder.value));
 const vehicle = computed(() => getVehicle(workOrder.value));
 const employee = computed(() => getEmployee(workOrder.value));
 const invoice = computed(() => readValue(workOrder.value, "invoice", "Invoice", null));
+const displayedInvoice = computed(() => invoice.value ?? relatedInvoice.value);
 const repairTaskLines = computed(() => getWorkOrderRepairTaskLines(workOrder.value));
 const allowedNextStates = computed(() => getAllowedNextStates(state.value));
 const canManageScheduledFields = computed(() => auth.isManager && isScheduled(workOrder.value));
 const canDelete = computed(() => auth.isManager && state.value !== WORK_ORDER_STATES.inProgress);
+const canIssueInvoice = computed(() => {
+  return auth.isManager && !displayedInvoice.value && state.value === WORK_ORDER_STATES.completed;
+});
 const customerVehicleOptions = computed(() => getCustomerVehicles(customer.value));
 const technicianOptions = computed(() => {
   return employees.value.filter((item) => Number(readValue(item, "role", "Role")) === 2);
@@ -139,7 +157,7 @@ function fillManagerForm() {
 async function loadWorkOrder() {
   if (!workOrderId.value) {
     loadErrorMessage.value = "Missing work order id.";
-    return;
+    return false;
   }
 
   isLoading.value = true;
@@ -148,14 +166,49 @@ async function loadWorkOrder() {
   try {
     const { data } = await getWorkOrder(workOrderId.value);
     workOrder.value = data;
+    relatedInvoice.value = null;
     fillManagerForm();
+    return true;
   } catch (error) {
     loadErrorMessage.value = getBackendErrorMessage(
       error,
       "Unable to load this work order."
     );
+    return false;
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function loadInvoiceForWorkOrder() {
+  if (!auth.isManager || !workOrderId.value || invoice.value) return;
+
+  isInvoiceLookupLoading.value = true;
+
+  try {
+    let targetPage = 1;
+    let totalPages = 1;
+    let foundInvoice = null;
+
+    while (targetPage <= totalPages && !foundInvoice) {
+      const { data } = await getInvoices({ Page: targetPage, PageSize: 100 });
+      const pagination = normalizePaginatedResponse(data, {
+        page: targetPage,
+        pageSize: 100,
+      });
+
+      foundInvoice = pagination.items.find((item) => {
+        return String(getInvoiceWorkOrderId(item)).toLowerCase() === workOrderId.value.toLowerCase();
+      });
+      totalPages = pagination.totalPages;
+      targetPage += 1;
+    }
+
+    relatedInvoice.value = foundInvoice ?? null;
+  } catch {
+    relatedInvoice.value = null;
+  } finally {
+    isInvoiceLookupLoading.value = false;
   }
 }
 
@@ -190,7 +243,21 @@ async function loadManagerReferences() {
 
 async function refreshAfterAction(message, title) {
   ui.showSuccessToast(message, title);
-  await loadWorkOrder();
+  const loaded = await loadWorkOrder();
+
+  if (loaded) {
+    await loadInvoiceForWorkOrder();
+  }
+}
+
+async function refreshDetails() {
+  const loaded = await loadWorkOrder();
+
+  if (!loaded) return;
+
+  await loadInvoiceForWorkOrder();
+  await loadManagerReferences();
+  fillManagerForm();
 }
 
 async function handleStateUpdate(nextState) {
@@ -219,7 +286,9 @@ async function handleStateUpdate(nextState) {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to update work order status."),
-      "Status update failed"
+      getBackendErrorTitle(error, "Status update failed", {
+        conflictTitle: "Status conflict",
+      })
     );
   } finally {
     savingAction.value = "";
@@ -237,7 +306,9 @@ async function handleAssignTechnician() {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to assign technician."),
-      "Technician update failed"
+      getBackendErrorTitle(error, "Technician update failed", {
+        conflictTitle: "Scheduling conflict",
+      })
     );
   } finally {
     savingAction.value = "";
@@ -258,7 +329,9 @@ async function handleRelocate() {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to relocate work order."),
-      "Relocation failed"
+      getBackendErrorTitle(error, "Relocation failed", {
+        conflictTitle: "Scheduling conflict",
+      })
     );
   } finally {
     savingAction.value = "";
@@ -276,7 +349,9 @@ async function handleUpdateVehicle() {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to update vehicle."),
-      "Vehicle update failed"
+      getBackendErrorTitle(error, "Vehicle update failed", {
+        conflictTitle: "Scheduling conflict",
+      })
     );
   } finally {
     savingAction.value = "";
@@ -294,7 +369,9 @@ async function handleUpdateRepairTasks() {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to update repair tasks."),
-      "Repair task update failed"
+      getBackendErrorTitle(error, "Repair task update failed", {
+        conflictTitle: "Work order conflict",
+      })
     );
   } finally {
     savingAction.value = "";
@@ -321,41 +398,71 @@ async function handleDelete() {
   } catch (error) {
     ui.showErrorToast(
       getBackendErrorMessage(error, "Unable to delete this work order."),
-      "Delete failed"
+      getBackendErrorTitle(error, "Delete failed", {
+        conflictTitle: "Work order conflict",
+      })
     );
   } finally {
     savingAction.value = "";
   }
 }
 
-function getInvoiceStatusLabel(status) {
-  const value = Number(status);
-
-  if (value === 1) return "Paid";
-  if (value === 2) return "Not paid";
-  if (value === 3) return "Refunded";
-
-  return "Unknown";
-}
-
-function getInvoiceStatusTone(status) {
-  const value = Number(status);
-
-  if (value === 1) return "success";
-  if (value === 2) return "warning";
-  if (value === 3) return "danger";
-
-  return "neutral";
-}
-
 function getRepairTaskParts(repairTask) {
   return asArray(readValue(repairTask, "parts", "Parts", []));
 }
 
+async function handleIssueInvoice() {
+  const shouldIssue = await ui.confirm({
+    title: "Issue invoice?",
+    message: `${formatWorkOrderCode(workOrderId.value)} will receive a new invoice.`,
+    confirmText: "Issue invoice",
+    cancelText: "Keep unbilled",
+    variant: "primary",
+  });
+
+  if (!shouldIssue) return;
+
+  savingAction.value = "invoice";
+
+  try {
+    const { data } = await issueInvoice(workOrderId.value);
+    relatedInvoice.value = data;
+    ui.showSuccessToast(`${formatInvoiceCode(getInvoiceId(data))} was issued.`, "Invoice issued");
+    await router.push({ name: "invoice-details", params: { id: getInvoiceId(data) } });
+  } catch (error) {
+    ui.showErrorToast(
+      getBackendErrorMessage(error, "Unable to issue this invoice."),
+      getBackendErrorTitle(error, "Invoice issue failed", {
+        conflictTitle: "Invoice conflict",
+      })
+    );
+  } finally {
+    savingAction.value = "";
+  }
+}
+
+async function handleDownloadInvoice() {
+  const invoiceId = getInvoiceId(displayedInvoice.value);
+
+  if (!invoiceId) return;
+
+  savingAction.value = "invoice-pdf";
+
+  try {
+    const { data } = await getInvoicePdf(invoiceId);
+    downloadInvoicePdfFromData(data, `${formatInvoiceCode(invoiceId)}.pdf`);
+  } catch (error) {
+    ui.showErrorToast(
+      getBackendErrorMessage(error, "Unable to download this invoice PDF."),
+      "Download failed"
+    );
+  } finally {
+    savingAction.value = "";
+  }
+}
+
 onMounted(async () => {
-  await loadWorkOrder();
-  await loadManagerReferences();
-  fillManagerForm();
+  await refreshDetails();
 });
 </script>
 
@@ -378,7 +485,7 @@ onMounted(async () => {
           icon-only
           :disabled="isLoading"
           aria-label="Refresh work order"
-          @click="loadWorkOrder"
+          @click="refreshDetails"
         >
           <RefreshCw :class="{ spinning: isLoading }" :size="18" />
         </ActionButton>
@@ -507,25 +614,69 @@ onMounted(async () => {
               <h2>Invoice</h2>
             </div>
             <StatusChip
-              v-if="invoice"
-              :label="getInvoiceStatusLabel(readValue(invoice, 'status', 'Status'))"
-              :tone="getInvoiceStatusTone(readValue(invoice, 'status', 'Status'))"
+              v-if="displayedInvoice"
+              :label="getInvoiceStatusLabel(getInvoiceStatus(displayedInvoice))"
+              :tone="getInvoiceStatusTone(getInvoiceStatus(displayedInvoice))"
             />
+            <StatusChip v-else-if="isInvoiceLookupLoading" label="Checking" tone="info" />
             <StatusChip v-else label="No invoice" tone="neutral" />
           </div>
 
-          <div v-if="invoice" class="detail-list">
+          <LoadingState v-if="isInvoiceLookupLoading" message="Checking invoice..." />
+
+          <div v-else-if="displayedInvoice" class="detail-list">
+            <div class="detail-row">
+              <span>Invoice</span>
+              <strong>{{ formatInvoiceCode(getInvoiceId(displayedInvoice)) }}</strong>
+            </div>
             <div class="detail-row">
               <span>Issued</span>
-              <strong>{{ formatDateTime(readValue(invoice, "issuedAt", "IssuedAt")) }}</strong>
+              <strong>{{ formatDateTime(readValue(displayedInvoice, "issuedAt", "IssuedAt")) }}</strong>
             </div>
             <div class="detail-row">
               <span>Total</span>
-              <strong>{{ formatMoney(readValue(invoice, "total", "Total", 0)) }}</strong>
+              <strong>{{ formatMoney(readValue(displayedInvoice, "total", "Total", 0)) }}</strong>
             </div>
           </div>
 
-          <p v-else class="panel-note">An invoice will appear here once billing is generated.</p>
+          <p v-else-if="state === WORK_ORDER_STATES.completed" class="panel-note">
+            This completed work order is ready to be billed.
+          </p>
+          <p v-else class="panel-note">
+            Complete this work order before issuing an invoice.
+          </p>
+
+          <div class="action-strip invoice-actions">
+            <ActionButton
+              v-if="displayedInvoice"
+              variant="secondary"
+              :to="{ name: 'invoice-details', params: { id: getInvoiceId(displayedInvoice) } }"
+            >
+              <ReceiptText :size="18" />
+              <span>Open invoice</span>
+            </ActionButton>
+
+            <ActionButton
+              v-if="displayedInvoice"
+              variant="ghost"
+              :disabled="savingAction === 'invoice-pdf'"
+              @click="handleDownloadInvoice"
+            >
+              <LoaderCircle v-if="savingAction === 'invoice-pdf'" class="spinning" :size="18" />
+              <Download v-else :size="18" />
+              <span>Download PDF</span>
+            </ActionButton>
+
+            <ActionButton
+              v-if="canIssueInvoice"
+              :disabled="savingAction === 'invoice'"
+              @click="handleIssueInvoice"
+            >
+              <LoaderCircle v-if="savingAction === 'invoice'" class="spinning" :size="18" />
+              <ReceiptText v-else :size="18" />
+              <span>Issue invoice</span>
+            </ActionButton>
+          </div>
         </ContentPanel>
       </section>
 
@@ -746,6 +897,10 @@ onMounted(async () => {
   font-size: 21px;
 }
 
+.panel-heading > div {
+  min-width: 0;
+}
+
 .detail-list {
   display: grid;
   gap: 12px;
@@ -771,6 +926,8 @@ onMounted(async () => {
 }
 
 .detail-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: #111827;
   font-size: 15px;
 }
@@ -805,6 +962,8 @@ onMounted(async () => {
 .task-row strong,
 .task-row small {
   display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .task-row small {
@@ -816,6 +975,14 @@ onMounted(async () => {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.action-strip :deep(.action-button) {
+  max-width: 100%;
+}
+
+.invoice-actions {
+  margin-top: 18px;
 }
 
 .manager-grid {
@@ -882,6 +1049,8 @@ onMounted(async () => {
 .replacement-task strong,
 .replacement-task small {
   display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .replacement-task small {
@@ -916,6 +1085,11 @@ onMounted(async () => {
   .task-row,
   .manager-card__heading,
   .delete-zone {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .action-strip {
     align-items: stretch;
     flex-direction: column;
   }
