@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
-import { ClipboardList, Gauge, LogOut, Package, UserRound, Users, Wrench } from "@lucide/vue";
+import { CalendarDays, ClipboardList, Gauge, LogOut, Package, UserRound, Users, Wrench } from "@lucide/vue";
 import { useAuthStore } from "@/store/modules/auth";
 
 const route = useRoute();
@@ -20,6 +20,12 @@ const navItems = [
     routeName: "parts",
     icon: Package,
     roles: ["Manager"],
+  },
+  {
+    label: "Schedule",
+    routeName: "schedule",
+    icon: CalendarDays,
+    roles: ["Manager", "Technician"],
   },
   {
     label: "Work orders",
@@ -52,7 +58,7 @@ const visibleNavItems = computed(() => {
 });
 
 const brandRoute = computed(() => {
-  return auth.isManager ? { name: "home" } : { name: "work-orders" };
+  return auth.isManager ? { name: "home" } : { name: "schedule" };
 });
 
 const currentSection = computed(() => {
